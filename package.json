@@ -1,6 +1,6 @@
 {
-    "name": "douglasgreen/template",
-    "description": "Project containing generic templates to use in starting other projects",
+    "name": "douglasgreen/taskmaster",
+    "description": "A to-do list manager",
     "license": "MIT",
     "engines": {
         "node": ">=18",
