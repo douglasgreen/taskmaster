@@ -53,13 +53,11 @@ function loadTasks(string $filename, array $headers): array
             throw new Exception('Bad recur date range: ' . $recurStart . ' to ' . $recurEnd);
         }
 
-        $anyDay = ['*'];
+        $daysOfYear = splitField($daysOfYearField, '/^\d\d-\d\d$/');
 
-        $daysOfYear = $daysOfYearField === '*' ? $anyDay : splitField($daysOfYearField, '/^\d\d-\d\d$/');
+        $daysOfWeek = splitField($daysOfWeekField, '/^[1-7]$/');
 
-        $daysOfWeek = $daysOfWeekField === '*' ? $anyDay : splitField($daysOfWeekField, '/^[1-7]$/');
-
-        $daysOfMonth = $daysOfMonthField === '*' ? $anyDay : splitField($daysOfMonthField, '/^([1-9]|[12]\d|3[01])$/');
+        $daysOfMonth = splitField($daysOfMonthField, '/^([1-9]|[12]\d|3[01])$/');
 
         $timesOfDay = splitField($timesOfDayField, '/^\d\d:\d\d$/');
 
@@ -262,9 +260,9 @@ function addTimes(array $dates, array $times): array
 {
     $datetimes = [];
 
-    // There are always dates but there aren't always times. If not specified,
-    // time means "right now".
-    if ($times === []) {
+    // There are always dates but there aren't always times. If not specified
+    // or specified as '*', time means "right now".
+    if ($times === [] || $times === ['*']) {
         $times[] = date('H:i');
     }
 
@@ -288,6 +286,10 @@ function splitField(string $field, string $regex): array
     }
 
     foreach ($parts as $part) {
+        if ($part === '*') {
+            return ['*'];
+        }
+
         if (preg_match($regex, $part) === 0) {
             $error = sprintf('Field "%s" doesn\'t match regex "%s"', $field, $regex);
             throw new Exception($error);
