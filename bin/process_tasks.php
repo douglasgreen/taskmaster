@@ -53,7 +53,7 @@ function loadTasks(string $filename, array $headers): array
             throw new Exception('Bad recur date range: ' . $recurStart . ' to ' . $recurEnd);
         }
 
-        $daysOfYear = splitField($daysOfYearField, '/^\d\d-\d\d$/');
+        $daysOfYear = splitField($daysOfYearField, '/^(\d\d\d\d-)?\d\d-\d\d$/');
 
         $daysOfWeek = splitField($daysOfWeekField, '/^[1-7]$/');
 
@@ -196,7 +196,11 @@ function processTasks(string $filename, array $headers): void
         if (! empty($daysOfYear)) {
             $dates = [];
             foreach ($daysOfYear as $dayOfYear) {
-                $dates[] = $dayOfYear === '*' ? $currentDate : $currentYear . '-' . $dayOfYear;
+                if (preg_match('/^\d\d-\d\d$/', $dayOfYear)) {
+                    $dayOfYear = $currentYear . '-' . $dayOfYear;
+                }
+
+                $dates[] = $dayOfYear === '*' ? $currentDate : $dayOfYear;
             }
 
             $datetimes = addTimes($dates, $timesOfDay);

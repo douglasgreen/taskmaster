@@ -8,7 +8,7 @@ with these columns:
 -   Recurring? (0-1)
 -   Recur start (YYYY-MM-DD)
 -   Recur end (YYYY-MM-DD)
--   Days of year (MM-DD)
+-   Days of year (YYYY-MM-DD or MM-DD)
 -   Days of week (1-7)
 -   Days of month (1-31 where anything above last day of current month is
     counted as last)
@@ -20,6 +20,9 @@ Tasks are one-time or recurring.
 Only one of the days columns is set, so check Days of year, Days of week, and
 Days of month for the first non-empty column. An asterisk can be used in any of
 the day fields to mean every day or the time field to mean every time.
+
+Days of year can be specified as YYYY-MM-DD for non-recurring or MM-DD for
+recurring.
 
 Times allow a 14 minute interval so you should schedule your times at 0, 15, 30,
 and 45 minutes past the hour. And you should run the reminder program with a
