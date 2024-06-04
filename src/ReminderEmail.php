@@ -15,7 +15,8 @@ class ReminderEmail
         $subject = $isNudge ? 'Nudge: ' : 'Reminder: ';
         $subject .= $taskName;
 
-        // Send the email
+        // Send the email after 1-second delay
+        sleep(1);
         mail($this->email, $subject, 'Reminder sent by TaskMaster');
     }
 }
