@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 
 declare(strict_types=1);
@@ -30,8 +31,9 @@ function loadTasks(string $filename, array $headers): array
         }
 
         // Split these fields on load so we can check for error before taking any action.
+        $data = array_map('trim', $data);
         [$taskName, $done, $recurring, $recurStart, $recurEnd, $daysOfYearField, $daysOfWeekField, $daysOfMonthField, $timesOfDayField, $lastDateReminded] = $data;
-        $taskName = trim(preg_replace('/\s+/', ' ', $taskName));
+        $taskName = trim((string) preg_replace('/\s+/', ' ', $taskName));
         if (in_array($taskName, $taskNames, true)) {
             throw new Exception('Duplicate task name: ' . $taskName);
         }
@@ -39,12 +41,10 @@ function loadTasks(string $filename, array $headers): array
         $taskNames[] = $taskName;
         $done = (bool) $done;
         $recurring = (bool) $recurring;
-        $recurStart = trim((string) $recurStart);
         if ($recurStart !== '' && preg_match('/^\d\d\d\d-\d\d-\d\d$/', $recurStart) === 0) {
             throw new Exception('Bad recur start date: ' . $recurStart);
         }
 
-        $recurEnd = trim((string) $recurEnd);
         if ($recurEnd !== '' && preg_match('/^\d\d\d\d-\d\d-\d\d$/', $recurEnd) === 0) {
             throw new Exception('Bad recur end date: ' . $recurEnd);
         }
@@ -53,11 +53,16 @@ function loadTasks(string $filename, array $headers): array
             throw new Exception('Bad recur date range: ' . $recurStart . ' to ' . $recurEnd);
         }
 
-        $daysOfYear = splitField($daysOfYearField, '/^\d\d-\d\d$/');
-        $daysOfWeek = splitField($daysOfWeekField, '/^[1-7]$/');
-        $daysOfMonth = splitField($daysOfMonthField, '/^([1-9]|[12]\d|3[01])$/');
+        $anyDay = ['*'];
+
+        $daysOfYear = $daysOfYearField === '*' ? $anyDay : splitField($daysOfYearField, '/^\d\d-\d\d$/');
+
+        $daysOfWeek = $daysOfWeekField === '*' ? $anyDay : splitField($daysOfWeekField, '/^[1-7]$/');
+
+        $daysOfMonth = $daysOfMonthField === '*' ? $anyDay : splitField($daysOfMonthField, '/^([1-9]|[12]\d|3[01])$/');
+
         $timesOfDay = splitField($timesOfDayField, '/^\d\d:\d\d$/');
-        $lastDateReminded = trim((string) $lastDateReminded);
+
         $lastTimeReminded = 0;
         if ($lastDateReminded !== '') {
             $lastTimeReminded = strtotime($lastDateReminded);
@@ -156,14 +161,14 @@ function processTasks(string $filename, array $headers): void
         if (! empty($daysOfYear)) {
             $dates = [];
             foreach ($daysOfYear as $dayOfYear) {
-                $dates[] = $currentYear . '-' . $dayOfYear;
+                $dates[] = $dayOfYear === '*' ? $currentDate : $currentYear . '-' . $dayOfYear;
             }
 
             $datetimes = addTimes($dates, $timesOfDay);
         } elseif (! empty($daysOfWeek)) {
             $dates = [];
             foreach ($daysOfWeek as $dayOfWeek) {
-                if ($currentDayOfWeek === $dayOfWeek) {
+                if ($dayOfWeek === '*' || $currentDayOfWeek === $dayOfWeek) {
                     $dates[] = $currentDate;
                 }
             }
@@ -172,7 +177,9 @@ function processTasks(string $filename, array $headers): void
         } elseif (! empty($daysOfMonth)) {
             $dates = [];
             foreach ($daysOfMonth as $dayOfMonth) {
-                if ($dayOfMonth <= $daysInCurrentMonth) {
+                if ($dayOfMonth === '*') {
+                    $dates[] = $currentDate;
+                } elseif ($dayOfMonth <= $daysInCurrentMonth) {
                     $dates[] = date('Y-m') . '-' . str_pad((string) $dayOfMonth, 2, '0', STR_PAD_LEFT);
                 } else {
                     $dates[] = date('Y-m') . '-' . $daysInCurrentMonth;
@@ -245,6 +252,13 @@ function processTasks(string $filename, array $headers): void
 function addTimes(array $dates, array $times): array
 {
     $datetimes = [];
+
+    // There are always dates but there aren't always times. If not specified,
+    // time means "right now".
+    if ($times === []) {
+        $times[] = date('H:i');
+    }
+
     foreach ($dates as $date) {
         foreach ($times as $time) {
             $datetimes[] = $date . ' ' . $time . ':00';

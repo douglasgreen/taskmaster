@@ -18,7 +18,8 @@ with these columns:
 Tasks are one-time or recurring.
 
 Only one of the days columns is set, so check Days of year, Days of week, and
-Days of month for the first non-empty column.
+Days of month for the first non-empty column. An asterisk can be used in any of
+the day fields to mean every day.
 
 1. Go through the list for all tasks that are not done and haven't got a last
    date reminded of today.
