@@ -30,43 +30,42 @@ class TaskProcessor
         // Check if we have already run the program today before sending a nudge.
         $shouldNudge = true;
         foreach ($tasks as $task) {
-            $lastTimeReminded = $task[TaskFile::REMINDER_FIELD];
-            if (date('Y-m-d', $lastTimeReminded) === $currentDate) {
+            if (date('Y-m-d', $task->lastTimeReminded) === $currentDate) {
                 $shouldNudge = false;
                 break;
             }
         }
 
-        foreach ($tasks as &$task) {
-            [$taskName, $taskUrl, $done, $recurring, $recurStart, $recurEnd,
-                $daysOfYear, $daysOfMonth, $daysOfWeek, $timesOfDay, $lastTimeReminded] = $task;
-
+        foreach ($tasks as $task) {
             // Check whether the task is done.
-            if ($done) {
+            if ($task->done) {
                 continue;
             }
 
             // Don't send more than one reminder per 59 minutes to allow margin for error.
-            if ($lastTimeReminded > 0 && $currentTime - $lastTimeReminded < 3540) {
+            if ($task->lastTimeReminded > 0 && $currentTime - $task->lastTimeReminded < 3540) {
                 continue;
             }
 
             // Don't send more than one reminder on the same date if the time is
             // unspecified otherwise you'd get emails every hour.
-            if ($lastTimeReminded > 0 && $timesOfDay === [] && date('Y-m-d', $lastTimeReminded) === $currentDate) {
+            if ($task->lastTimeReminded > 0 && $task->timesOfDay === [] && date(
+                'Y-m-d',
+                $task->lastTimeReminded
+            ) === $currentDate) {
                 continue;
             }
 
             // Check if recurring dates are out of range.
-            if ($recurring) {
-                $recurStart = empty($recurStart) ? null : strtotime((string) $recurStart);
-                $recurEnd = empty($recurEnd) ? null : strtotime((string) $recurEnd);
+            if ($task->recurring) {
+                $recurStartTime = empty($task->recurStart) ? null : strtotime((string) $task->recurStart);
+                $recurEndTime = empty($task->recurEnd) ? null : strtotime((string) $task->recurEnd);
 
-                if ($recurStart && $currentTime < $recurStart) {
+                if ($recurStartTime && $currentTime < $recurStartTime) {
                     continue;
                 }
 
-                if ($recurEnd && $currentTime > $recurEnd) {
+                if ($recurEndTime && $currentTime > $recurEndTime) {
                     continue;
                 }
             }
@@ -74,9 +73,9 @@ class TaskProcessor
             // Multiply dates and times together into all possible combinations of
             // the chosen date format and the times.
             $datetimes = [];
-            if (! empty($daysOfYear)) {
+            if (! empty($task->daysOfYear)) {
                 $dates = [];
-                foreach ($daysOfYear as $dayOfYear) {
+                foreach ($task->daysOfYear as $dayOfYear) {
                     if (preg_match('/^\d\d-\d\d$/', (string) $dayOfYear)) {
                         $dayOfYear = $currentYear . '-' . $dayOfYear;
                     }
@@ -84,10 +83,10 @@ class TaskProcessor
                     $dates[] = $dayOfYear === '*' ? $currentDate : $dayOfYear;
                 }
 
-                $datetimes = $this->addTimes($dates, $timesOfDay);
-            } elseif (! empty($daysOfMonth)) {
+                $datetimes = $this->addTimes($dates, $task->timesOfDay);
+            } elseif (! empty($task->daysOfMonth)) {
                 $dates = [];
-                foreach ($daysOfMonth as $dayOfMonth) {
+                foreach ($task->daysOfMonth as $dayOfMonth) {
                     if ($dayOfMonth === '*') {
                         $dates[] = $currentDate;
                     } elseif ($dayOfMonth <= $daysInCurrentMonth) {
@@ -97,21 +96,21 @@ class TaskProcessor
                     }
                 }
 
-                $datetimes = $this->addTimes($dates, $timesOfDay);
-            } elseif (! empty($daysOfWeek)) {
+                $datetimes = $this->addTimes($dates, $task->timesOfDay);
+            } elseif (! empty($task->daysOfWeek)) {
                 $dates = [];
-                foreach ($daysOfWeek as $dayOfWeek) {
+                foreach ($task->daysOfWeek as $dayOfWeek) {
                     if ($dayOfWeek === '*' || $currentDayOfWeek === $dayOfWeek) {
                         $dates[] = $currentDate;
                     }
                 }
 
-                $datetimes = $this->addTimes($dates, $timesOfDay);
+                $datetimes = $this->addTimes($dates, $task->timesOfDay);
             }
 
             // If reminder is not recurring and hasn't been sent, send a nudge now.
             $isNudge = false;
-            if ($datetimes === [] && ! $recurring && $shouldNudge) {
+            if ($datetimes === [] && ! $task->recurring && $shouldNudge) {
                 $isNudge = true;
                 $datetimes[] = date('Y-m-d H:i:s', $currentTime);
             }
@@ -121,9 +120,9 @@ class TaskProcessor
 
                 // 14 minutes in seconds
                 if (abs($datetimeSeconds - $currentTime) < 840) {
-                    $this->reminderEmail->send($taskName, $taskUrl, $isNudge);
+                    $this->reminderEmail->send($task->taskName, $task->taskUrl, $isNudge);
                     $reminderSent = true;
-                    $task[TaskFile::REMINDER_FIELD] = $currentTime;
+                    $task->lastTimeReminded = $currentTime;
 
                     // Only send one nudge a day.
                     if ($isNudge) {

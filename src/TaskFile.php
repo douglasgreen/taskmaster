@@ -10,8 +10,6 @@ use DouglasGreen\Exceptions\ValueException;
 
 class TaskFile
 {
-    public const int REMINDER_FIELD = 10;
-
     protected const array HEADERS = [
         'Task name', 'Task URL', 'Done?', 'Recurring?', 'Recur start',
         'Recur end', 'Days of year', 'Days of month', 'Days of week',
@@ -58,7 +56,7 @@ class TaskFile
 
         $tasks = $this->loadTasks();
 
-        $task = [
+        $task = new Task(
             $taskName,
             $taskUrl,
             false,
@@ -69,26 +67,14 @@ class TaskFile
             $daysOfMonth,
             $daysOfWeek,
             $timesOfDay,
-            0,
-        ];
+            0
+        );
         $tasks[] = $task;
         $this->saveTasks($tasks);
     }
 
     /**
-     * @return list<array{
-     *     string,
-     *     string,
-     *     bool,
-     *     bool,
-     *     string,
-     *     string,
-     *     list<string>,
-     *     list<string>,
-     *     list<string>,
-     *     list<string>,
-     *     int
-     * }>
+     * @return list<Task>
      * @throws FileException
      * @throws ValueException
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
@@ -174,7 +160,7 @@ class TaskFile
                 }
             }
 
-            $task = [
+            $task = new Task(
                 $taskName,
                 $taskUrl,
                 $done,
@@ -186,33 +172,22 @@ class TaskFile
                 $daysOfWeek,
                 $timesOfDay,
                 $lastTimeReminded,
-            ];
+            );
             $tasks[] = $task;
         }
 
         fclose($handle);
 
         // Sort the tasks by $lastTimeReminded so the oldest is reminded first.
-        usort($tasks, static fn($first, $second): int => $first[self::REMINDER_FIELD] - $second[self::REMINDER_FIELD]);
+        usort($tasks, static fn($first, $second): int => $first->lastTimeReminded - $second->lastTimeReminded);
 
         return $tasks;
     }
 
     /**
-     * @param list<array{
-     *     string,
-     *     string,
-     *     bool,
-     *     bool,
-     *     string,
-     *     string,
-     *     list<string>,
-     *     list<string>,
-     *     list<string>,
-     *     list<string>,
-     *     int
-     * }> $tasks
+     * @param list<Task> $tasks
      * @throws FileException
+     * @throws ValueException
      */
     public function saveTasks(array $tasks): void
     {
@@ -223,35 +198,25 @@ class TaskFile
 
         fputcsv($handle, self::HEADERS);
         foreach ($tasks as $task) {
-            [
-                $taskName,
-                $taskUrl,
-                $done,
-                $recurring,
-                $recurStart,
-                $recurEnd,
-                $daysOfYear,
-                $daysOfMonth,
-                $daysOfWeek,
-                $timesOfDay,
-                $lastTimeReminded
-            ] = $task;
+            if (! $task instanceof Task) {
+                throw new ValueException('Invalid task provided');
+            }
 
-            $done = (int) $done;
-            $recurring = (int) $recurring;
-            $daysOfYearField = implode('|', $daysOfYear);
-            $daysOfMonthField = implode('|', $daysOfMonth);
-            $daysOfWeekField = implode('|', $daysOfWeek);
-            $timesOfDayField = implode('|', $timesOfDay);
-            $lastDateReminded = $lastTimeReminded > 0 ? date('Y-m-d H:i:s', $lastTimeReminded) : '';
+            $done = (int) $task->done;
+            $recurring = (int) $task->recurring;
+            $daysOfYearField = implode('|', $task->daysOfYear);
+            $daysOfMonthField = implode('|', $task->daysOfMonth);
+            $daysOfWeekField = implode('|', $task->daysOfWeek);
+            $timesOfDayField = implode('|', $task->timesOfDay);
+            $lastDateReminded = $task->lastTimeReminded > 0 ? date('Y-m-d H:i:s', $task->lastTimeReminded) : '';
 
             $data = [
-                $taskName,
-                $taskUrl,
+                $task->taskName,
+                $task->taskUrl,
                 $done,
                 $recurring,
-                $recurStart,
-                $recurEnd,
+                $task->recurStart,
+                $task->recurEnd,
                 $daysOfYearField,
                 $daysOfMonthField,
                 $daysOfWeekField,
@@ -262,6 +227,25 @@ class TaskFile
         }
 
         fclose($handle);
+    }
+
+    /**
+     * Search for a term.
+     *
+     * @return list<Task>
+     */
+    public function search(string $term): array
+    {
+        $tasks = $this->loadTasks();
+        $matches = [];
+        foreach ($tasks as $task) {
+            if (str_contains($task->taskName, $term)) {
+                $matches[$task->taskName] = $task;
+            }
+        }
+
+        ksort($matches);
+        return array_values($matches);
     }
 
     /**
