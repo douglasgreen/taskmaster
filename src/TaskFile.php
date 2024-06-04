@@ -124,10 +124,6 @@ class TaskFile
                 $lastDateReminded
             ] = $data;
             $taskName = trim((string) preg_replace('/\s+/', ' ', $taskName));
-            if (in_array($taskName, $taskNames, true)) {
-                throw new ValueException('Duplicate task name: ' . $taskName);
-            }
-
             $taskNames[] = $taskName;
             $done = (bool) $done;
             $recurring = (bool) $recurring;
