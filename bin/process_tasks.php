@@ -5,6 +5,8 @@ declare(strict_types=1);
 
 date_default_timezone_set('America/New_York');
 
+const REMINDER_FIELD = 9;
+
 /**
  * @param list<string> $headers
  * @return list<array{string, bool, bool, string, string, list<string>, list<string>, list<string>, list<string>, int}>
@@ -156,6 +158,17 @@ function processTasks(string $filename, array $headers): void
     $currentDate = date('Y-m-d', $currentTime);
     $daysInCurrentMonth = date('t', $currentTime);
     $reminderSent = false;
+
+    // Check if we have already run the program today before sending a nudge.
+    $shouldNudge = true;
+    foreach ($tasks as $task) {
+        $lastTimeReminded = $task[REMINDER_FIELD];
+        if (date('Y-m-d', $lastTimeReminded) === $currentDate) {
+            $shouldNudge = false;
+            break;
+        }
+    }
+
     foreach ($tasks as &$task) {
         [$taskName, $done, $recurring, $recurStart, $recurEnd,
             $daysOfYear, $daysOfWeek, $daysOfMonth, $timesOfDay, $lastTimeReminded] = $task;
@@ -172,7 +185,7 @@ function processTasks(string $filename, array $headers): void
 
         // Don't send more than one reminder on the same date if the time is
         // unspecified otherwise you'd get emails every hour.
-        if ($lastTimeReminded > 0 && $timesOfDay === [] && date('Y-m-d', $lastTimeReminded) === date('Y-m-d')) {
+        if ($lastTimeReminded > 0 && $timesOfDay === [] && date('Y-m-d', $lastTimeReminded) === $currentDate) {
             continue;
         }
 
@@ -228,8 +241,9 @@ function processTasks(string $filename, array $headers): void
             $datetimes = addTimes($dates, $timesOfDay);
         }
 
-        // If reminder is not recurring and hasn't been sent, remind now.
-        if ($datetimes === [] && ! $recurring) {
+        // If reminder is not recurring and hasn't been sent, send a nudge now.
+        $isNudge = false;
+        if ($datetimes === [] && ! $recurring && $shouldNudge) {
             if ($lastTimeReminded === 0) {
                 $useTime = $currentTime;
             } else {
@@ -239,6 +253,7 @@ function processTasks(string $filename, array $headers): void
                 $useTime = max($currentTime, $projectedTime);
             }
 
+            $isNudge = true;
             $datetimes[] = date('Y-m-d H:i:s', $useTime);
         }
 
@@ -249,7 +264,13 @@ function processTasks(string $filename, array $headers): void
             if (abs($datetimeSeconds - $currentTime) < 840) {
                 sendReminderEmail($taskName);
                 $reminderSent = true;
-                $task[9] = $currentTime;
+                $task[REMINDER_FIELD] = $currentTime;
+
+                // Only send one nudge a day.
+                if ($isNudge) {
+                    $shouldNudge = false;
+                }
+
                 break;
             }
         }

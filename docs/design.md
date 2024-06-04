@@ -28,6 +28,9 @@ Times allow a 14 minute interval so you should schedule your times at 0, 15, 30,
 and 45 minutes past the hour. And you should run the reminder program with a
 cron every 15 minutes to avoid overlap.
 
+If a reminder has no dates or times scheduled, a nudge email will be sent every
+30 days to remind you it exists. Only one nudge email is sent per day.
+
 There is a limit of no more than one email reminder per hour.
 
 You can't schedule times without dates.
