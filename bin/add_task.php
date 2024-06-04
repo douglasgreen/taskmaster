@@ -11,28 +11,27 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $optParser = new OptParser('Task Manager', 'Add tasks to list');
 
 $optParser->addParam(['name'], 'STRING', 'Task name')
-    ->addParam(['recurring'], 'BOOL', 'Recurring?')
-    ->addParam(['recur_start'], 'DATE', 'Recur start date')
-    ->addParam(['recur_end'], 'END', 'Recur end date')
-    ->addParam(['days_of_year'], '', 'Recur end date')
+    ->addParam(['recur'], 'BOOL', 'Recurring?')
+    ->addParam(['start'], 'DATE', 'Recur start date')
+    ->addParam(['end'], 'DATE', 'Recur end date')
+    ->addParam(['year'], 'STRING', 'Days of year')
+    ->addParam(['week'], 'STRING', 'Days of week')
+    ->addParam(['month'], 'STRING', 'Days of month')
+    ->addParam(['day'], 'STRING', 'Times of day')
     ->addUsageAll();
 
 $input = $optParser->parse();
 
-$email = $input->get('email');
-if ($email === null) {
-    die('Email is required' . PHP_EOL);
-}
-
-// Define the CSV filename and headers
 $filename = __DIR__ . '/../assets/data/tasks.csv';
-$headers = [
-    'Task name', 'Done?', 'Recurring?', 'Recur start', 'Recur end', 'Days of year',
-    'Days of week', 'Days of month', 'Times of day', 'Last date reminded',
-];
 
-$reminderEmail = new ReminderEmail((string) $email);
-$taskFile = new TaskFile($filename, $headers);
-$taskProcessor = new TaskProcessor($reminderEmail, $taskFile);
-$taskProcessor->processTasks();
-
+$taskFile = new TaskFile($filename);
+$taskFile->addTask(
+    (string) $input->get('name'),
+    (bool) $input->get('recur'),
+    (string) $input->get('start'),
+    (string) $input->get('end'),
+    (string) $input->get('year'),
+    (string) $input->get('week'),
+    (string) $input->get('month'),
+    (string) $input->get('day')
+);

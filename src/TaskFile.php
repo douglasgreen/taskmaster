@@ -12,13 +12,63 @@ class TaskFile
 {
     public const int REMINDER_FIELD = 9;
 
-    /**
-     * @param list<string> $headers
-     */
+    protected const array HEADERS = [
+        'Task name', 'Done?', 'Recurring?', 'Recur start', 'Recur end', 'Days of year',
+        'Days of week', 'Days of month', 'Times of day', 'Last date reminded',
+    ];
+
     public function __construct(
-        protected string $filename,
-        protected array $headers
+        protected string $filename
     ) {}
+
+    /**
+     * @throws ValueException
+     */
+    public function addTask(
+        string $taskName,
+        bool $recurring,
+        string $recurStart,
+        string $recurEnd,
+        string $daysOfYearField,
+        string $daysOfWeekField,
+        string $daysOfMonthField,
+        string $timesOfDayField
+    ): void {
+        $taskName = trim((string) preg_replace('/\s+/', ' ', $taskName));
+
+        if (preg_match('/^\d\d\d\d-\d\d-\d\d$/', $recurStart) === 0) {
+            throw new ValueException('Bad start date');
+        }
+
+        if (preg_match('/^\d\d\d\d-\d\d-\d\d$/', $recurEnd) === 0) {
+            throw new ValueException('Bad end date');
+        }
+
+        $daysOfYear = $this->splitField($daysOfYearField, '/^(\d\d\d\d-)?\d\d-\d\d$/');
+
+        $daysOfWeek = $this->splitField($daysOfWeekField, '/^[1-7]$/');
+
+        $daysOfMonth = $this->splitField($daysOfMonthField, '/^([1-9]|[12]\d|3[01])$/');
+
+        $timesOfDay = $this->splitField($timesOfDayField, '/^\d\d:\d\d$/');
+
+        $tasks = $this->loadTasks();
+
+        $task = [
+            $taskName,
+            false,
+            $recurring,
+            $recurStart,
+            $recurEnd,
+            $daysOfYear,
+            $daysOfWeek,
+            $daysOfMonth,
+            $timesOfDay,
+            0,
+        ];
+        $tasks[] = $task;
+        $this->saveTasks($tasks);
+    }
 
     /**
      * @return list<array{
@@ -51,7 +101,7 @@ class TaskFile
 
         while (($data = fgetcsv($handle)) !== false) {
             if (! $checkedHeaders) {
-                if ($this->headers !== $data) {
+                if ($data !== self::HEADERS) {
                     throw new ValueException('Bad headers');
                 }
 
@@ -167,7 +217,7 @@ class TaskFile
             throw new FileException('Unable to open file for writing');
         }
 
-        fputcsv($handle, $this->headers);
+        fputcsv($handle, self::HEADERS);
         foreach ($tasks as $task) {
             [
                 $taskName,

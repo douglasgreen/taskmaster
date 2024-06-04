@@ -28,14 +28,9 @@ if ($email === null) {
     die('Email is required' . PHP_EOL);
 }
 
-// Define the CSV filename and headers
 $filename = __DIR__ . '/../assets/data/tasks.csv';
-$headers = [
-    'Task name', 'Done?', 'Recurring?', 'Recur start', 'Recur end', 'Days of year',
-    'Days of week', 'Days of month', 'Times of day', 'Last date reminded',
-];
 
 $reminderEmail = new ReminderEmail((string) $email);
-$taskFile = new TaskFile($filename, $headers);
+$taskFile = new TaskFile($filename);
 $taskProcessor = new TaskProcessor($reminderEmail, $taskFile);
 $taskProcessor->processTasks();
