@@ -61,6 +61,11 @@ function loadTasks(string $filename, array $headers): array
 
         $timesOfDay = splitField($timesOfDayField, '/^\d\d:\d\d$/');
 
+        // If there is a time, then there must be a date so use today.
+        if ($timesOfDay && $daysOfYear === [] && $daysOfWeek === [] && $daysOfMonth === []) {
+            $daysOfYear = [date('Y-m-d')];
+        }
+
         $lastTimeReminded = 0;
         if ($lastDateReminded !== '') {
             $lastTimeReminded = strtotime($lastDateReminded);
