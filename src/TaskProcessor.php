@@ -38,7 +38,7 @@ class TaskProcessor
         }
 
         foreach ($tasks as &$task) {
-            [$taskName, $done, $recurring, $recurStart, $recurEnd,
+            [$taskName, $taskUrl, $done, $recurring, $recurStart, $recurEnd,
                 $daysOfYear, $daysOfMonth, $daysOfWeek, $timesOfDay, $lastTimeReminded] = $task;
 
             // Check whether the task is done.
@@ -121,7 +121,7 @@ class TaskProcessor
 
                 // 14 minutes in seconds
                 if (abs($datetimeSeconds - $currentTime) < 840) {
-                    $this->reminderEmail->send($taskName, $isNudge);
+                    $this->reminderEmail->send($taskName, $taskUrl, $isNudge);
                     $reminderSent = true;
                     $task[TaskFile::REMINDER_FIELD] = $currentTime;
 

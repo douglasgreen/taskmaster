@@ -10,11 +10,12 @@ use DouglasGreen\Exceptions\ValueException;
 
 class TaskFile
 {
-    public const int REMINDER_FIELD = 9;
+    public const int REMINDER_FIELD = 10;
 
     protected const array HEADERS = [
-        'Task name', 'Done?', 'Recurring?', 'Recur start', 'Recur end', 'Days of year',
-        'Days of month', 'Days of week', 'Times of day', 'Last date reminded',
+        'Task name', 'Task URL', 'Done?', 'Recurring?', 'Recur start',
+        'Recur end', 'Days of year', 'Days of month', 'Days of week',
+        'Times of day', 'Last date reminded',
     ];
 
     public function __construct(
@@ -26,6 +27,7 @@ class TaskFile
      */
     public function addTask(
         string $taskName,
+        string $taskUrl,
         bool $recurring,
         string $recurStart,
         string $recurEnd,
@@ -35,6 +37,8 @@ class TaskFile
         string $timesOfDayField
     ): void {
         $taskName = trim((string) preg_replace('/\s+/', ' ', $taskName));
+
+        $taskUrl = trim($taskUrl);
 
         if ($recurStart !== '' && preg_match('/^\d\d\d\d-\d\d-\d\d$/', $recurStart) === 0) {
             throw new ValueException('Bad start date');
@@ -56,6 +60,7 @@ class TaskFile
 
         $task = [
             $taskName,
+            $taskUrl,
             false,
             $recurring,
             $recurStart,
@@ -72,6 +77,7 @@ class TaskFile
 
     /**
      * @return list<array{
+     *     string,
      *     string,
      *     bool,
      *     bool,
@@ -92,7 +98,6 @@ class TaskFile
     public function loadTasks(): array
     {
         $tasks = [];
-        $taskNames = [];
         $checkedHeaders = false;
         $handle = fopen($this->filename, 'r');
         if ($handle === false) {
@@ -113,6 +118,7 @@ class TaskFile
             $data = array_map('trim', $data);
             [
                 $taskName,
+                $taskUrl,
                 $done,
                 $recurring,
                 $recurStart,
@@ -124,7 +130,7 @@ class TaskFile
                 $lastDateReminded
             ] = $data;
             $taskName = trim((string) preg_replace('/\s+/', ' ', $taskName));
-            $taskNames[] = $taskName;
+            $taskUrl = trim($taskUrl);
             $done = (bool) $done;
             $recurring = (bool) $recurring;
 
@@ -170,6 +176,7 @@ class TaskFile
 
             $task = [
                 $taskName,
+                $taskUrl,
                 $done,
                 $recurring,
                 $recurStart,
@@ -194,6 +201,7 @@ class TaskFile
     /**
      * @param list<array{
      *     string,
+     *     string,
      *     bool,
      *     bool,
      *     string,
@@ -217,6 +225,7 @@ class TaskFile
         foreach ($tasks as $task) {
             [
                 $taskName,
+                $taskUrl,
                 $done,
                 $recurring,
                 $recurStart,
@@ -238,6 +247,7 @@ class TaskFile
 
             $data = [
                 $taskName,
+                $taskUrl,
                 $done,
                 $recurring,
                 $recurStart,

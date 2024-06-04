@@ -11,6 +11,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $optParser = new OptParser('Task Manager', 'Add tasks to list');
 
 $optParser->addTerm('name', 'STRING', 'Task name')
+    ->addParam(['url'], 'URL', 'URL for documentation or action')
     ->addParam(['recur'], 'BOOL', 'Recurring?')
     ->addParam(['start'], 'DATE', 'Recur start date')
     ->addParam(['end'], 'DATE', 'Recur end date')
@@ -27,6 +28,7 @@ $filename = __DIR__ . '/../assets/data/tasks.csv';
 $taskFile = new TaskFile($filename);
 $taskFile->addTask(
     (string) $input->get('name'),
+    (string) $input->get('url'),
     (bool) $input->get('recur'),
     (string) $input->get('start'),
     (string) $input->get('end'),
