@@ -34,7 +34,8 @@
         }
     },
     "require": {
-        "php": ">=8.1"
+        "php": ">=8.1",
+        "douglasgreen/optparser": "^0.7"
     },
     "require-dev": {
         "phpmd/phpmd": "^2.15",
