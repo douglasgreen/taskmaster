@@ -10,7 +10,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 $optParser = new OptParser('Task Manager', 'Add tasks to list');
 
-$optParser->addParam(['name'], 'STRING', 'Task name')
+$optParser->addTerm('name', 'STRING', 'Task name')
     ->addParam(['recur'], 'BOOL', 'Recurring?')
     ->addParam(['start'], 'DATE', 'Recur start date')
     ->addParam(['end'], 'DATE', 'Recur end date')
