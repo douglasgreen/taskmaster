@@ -35,7 +35,9 @@ class TaskFile
      * }>
      * @throws FileException
      * @throws ValueException
+     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      * @SuppressWarnings(PHPMD.NPathComplexity)
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function loadTasks(): array
     {
@@ -79,6 +81,7 @@ class TaskFile
             $taskNames[] = $taskName;
             $done = (bool) $done;
             $recurring = (bool) $recurring;
+
             if ($recurStart !== '' && preg_match('/^\d\d\d\d-\d\d-\d\d$/', $recurStart) === 0) {
                 throw new ValueException('Bad recur start date: ' . $recurStart);
             }
@@ -100,8 +103,15 @@ class TaskFile
             $timesOfDay = $this->splitField($timesOfDayField, '/^\d\d:\d\d$/');
 
             // If there is a time, then there must be a date so use today.
-            if ($timesOfDay && $daysOfYear === [] && $daysOfWeek === [] && $daysOfMonth === []) {
+            $emptyDay = $daysOfYear === [] && $daysOfWeek === [] && $daysOfMonth === [];
+            if ($timesOfDay && $emptyDay) {
                 $daysOfYear = [date('Y-m-d')];
+                $emptyDay = false;
+            }
+
+            // If the task is recurring, it must specify a time.
+            if ($recurring && $emptyDay) {
+                throw new ValueException('Recurring tasks must specify a day: "' . $taskName . '"');
             }
 
             $lastTimeReminded = 0;
