@@ -36,11 +36,11 @@ class TaskFile
     ): void {
         $taskName = trim((string) preg_replace('/\s+/', ' ', $taskName));
 
-        if (preg_match('/^\d\d\d\d-\d\d-\d\d$/', $recurStart) === 0) {
+        if ($recurStart !== '' && preg_match('/^\d\d\d\d-\d\d-\d\d$/', $recurStart) === 0) {
             throw new ValueException('Bad start date');
         }
 
-        if (preg_match('/^\d\d\d\d-\d\d-\d\d$/', $recurEnd) === 0) {
+        if ($recurEnd !== '' && preg_match('/^\d\d\d\d-\d\d-\d\d$/', $recurEnd) === 0) {
             throw new ValueException('Bad end date');
         }
 
