@@ -17,7 +17,7 @@ $optParser->addParam(['name'], 'STRING', 'Task name')
     ->addParam(['year'], 'STRING', 'Days of year')
     ->addParam(['month'], 'STRING', 'Days of month')
     ->addParam(['week'], 'STRING', 'Days of week')
-    ->addParam(['day'], 'STRING', 'Times of day')
+    ->addParam(['time'], 'STRING', 'Times of day')
     ->addUsageAll();
 
 $input = $optParser->parse();
@@ -33,5 +33,5 @@ $taskFile->addTask(
     (string) $input->get('year'),
     (string) $input->get('month'),
     (string) $input->get('week'),
-    (string) $input->get('day')
+    (string) $input->get('time')
 );
