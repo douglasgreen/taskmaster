@@ -39,7 +39,7 @@ class TaskProcessor
 
         foreach ($tasks as &$task) {
             [$taskName, $done, $recurring, $recurStart, $recurEnd,
-                $daysOfYear, $daysOfWeek, $daysOfMonth, $timesOfDay, $lastTimeReminded] = $task;
+                $daysOfYear, $daysOfMonth, $daysOfWeek, $timesOfDay, $lastTimeReminded] = $task;
 
             // Check whether the task is done.
             if ($done) {
@@ -85,15 +85,6 @@ class TaskProcessor
                 }
 
                 $datetimes = $this->addTimes($dates, $timesOfDay);
-            } elseif (! empty($daysOfWeek)) {
-                $dates = [];
-                foreach ($daysOfWeek as $dayOfWeek) {
-                    if ($dayOfWeek === '*' || $currentDayOfWeek === $dayOfWeek) {
-                        $dates[] = $currentDate;
-                    }
-                }
-
-                $datetimes = $this->addTimes($dates, $timesOfDay);
             } elseif (! empty($daysOfMonth)) {
                 $dates = [];
                 foreach ($daysOfMonth as $dayOfMonth) {
@@ -103,6 +94,15 @@ class TaskProcessor
                         $dates[] = date('Y-m') . '-' . str_pad((string) $dayOfMonth, 2, '0', STR_PAD_LEFT);
                     } else {
                         $dates[] = date('Y-m') . '-' . $daysInCurrentMonth;
+                    }
+                }
+
+                $datetimes = $this->addTimes($dates, $timesOfDay);
+            } elseif (! empty($daysOfWeek)) {
+                $dates = [];
+                foreach ($daysOfWeek as $dayOfWeek) {
+                    if ($dayOfWeek === '*' || $currentDayOfWeek === $dayOfWeek) {
+                        $dates[] = $currentDate;
                     }
                 }
 

@@ -14,7 +14,7 @@ class TaskFile
 
     protected const array HEADERS = [
         'Task name', 'Done?', 'Recurring?', 'Recur start', 'Recur end', 'Days of year',
-        'Days of week', 'Days of month', 'Times of day', 'Last date reminded',
+        'Days of month', 'Days of week', 'Times of day', 'Last date reminded',
     ];
 
     public function __construct(
@@ -30,8 +30,8 @@ class TaskFile
         string $recurStart,
         string $recurEnd,
         string $daysOfYearField,
-        string $daysOfWeekField,
         string $daysOfMonthField,
+        string $daysOfWeekField,
         string $timesOfDayField
     ): void {
         $taskName = trim((string) preg_replace('/\s+/', ' ', $taskName));
@@ -46,9 +46,9 @@ class TaskFile
 
         $daysOfYear = $this->splitField($daysOfYearField, '/^(\d\d\d\d-)?\d\d-\d\d$/');
 
-        $daysOfWeek = $this->splitField($daysOfWeekField, '/^[1-7]$/');
-
         $daysOfMonth = $this->splitField($daysOfMonthField, '/^([1-9]|[12]\d|3[01])$/');
+
+        $daysOfWeek = $this->splitField($daysOfWeekField, '/^[1-7]$/');
 
         $timesOfDay = $this->splitField($timesOfDayField, '/^\d\d:\d\d$/');
 
@@ -61,8 +61,8 @@ class TaskFile
             $recurStart,
             $recurEnd,
             $daysOfYear,
-            $daysOfWeek,
             $daysOfMonth,
+            $daysOfWeek,
             $timesOfDay,
             0,
         ];
@@ -118,8 +118,8 @@ class TaskFile
                 $recurStart,
                 $recurEnd,
                 $daysOfYearField,
-                $daysOfWeekField,
                 $daysOfMonthField,
+                $daysOfWeekField,
                 $timesOfDayField,
                 $lastDateReminded
             ] = $data;
@@ -146,14 +146,14 @@ class TaskFile
 
             $daysOfYear = $this->splitField($daysOfYearField, '/^(\d\d\d\d-)?\d\d-\d\d$/');
 
-            $daysOfWeek = $this->splitField($daysOfWeekField, '/^[1-7]$/');
-
             $daysOfMonth = $this->splitField($daysOfMonthField, '/^([1-9]|[12]\d|3[01])$/');
+
+            $daysOfWeek = $this->splitField($daysOfWeekField, '/^[1-7]$/');
 
             $timesOfDay = $this->splitField($timesOfDayField, '/^\d\d:\d\d$/');
 
             // If there is a time, then there must be a date so use today.
-            $emptyDay = $daysOfYear === [] && $daysOfWeek === [] && $daysOfMonth === [];
+            $emptyDay = $daysOfYear === [] && $daysOfMonth === [] && $daysOfWeek === [];
             if ($timesOfDay && $emptyDay) {
                 $daysOfYear = [date('Y-m-d')];
                 $emptyDay = false;
@@ -179,8 +179,8 @@ class TaskFile
                 $recurStart,
                 $recurEnd,
                 $daysOfYear,
-                $daysOfWeek,
                 $daysOfMonth,
+                $daysOfWeek,
                 $timesOfDay,
                 $lastTimeReminded,
             ];
@@ -226,8 +226,8 @@ class TaskFile
                 $recurStart,
                 $recurEnd,
                 $daysOfYear,
-                $daysOfWeek,
                 $daysOfMonth,
+                $daysOfWeek,
                 $timesOfDay,
                 $lastTimeReminded
             ] = $task;
@@ -235,8 +235,8 @@ class TaskFile
             $done = (int) $done;
             $recurring = (int) $recurring;
             $daysOfYearField = implode('|', $daysOfYear);
-            $daysOfWeekField = implode('|', $daysOfWeek);
             $daysOfMonthField = implode('|', $daysOfMonth);
+            $daysOfWeekField = implode('|', $daysOfWeek);
             $timesOfDayField = implode('|', $timesOfDay);
             $lastDateReminded = $lastTimeReminded > 0 ? date('Y-m-d H:i:s', $lastTimeReminded) : '';
 
@@ -247,8 +247,8 @@ class TaskFile
                 $recurStart,
                 $recurEnd,
                 $daysOfYearField,
-                $daysOfWeekField,
                 $daysOfMonthField,
+                $daysOfWeekField,
                 $timesOfDayField,
                 $lastDateReminded,
             ];

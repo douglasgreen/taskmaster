@@ -15,8 +15,8 @@ $optParser->addParam(['name'], 'STRING', 'Task name')
     ->addParam(['start'], 'DATE', 'Recur start date')
     ->addParam(['end'], 'DATE', 'Recur end date')
     ->addParam(['year'], 'STRING', 'Days of year')
-    ->addParam(['week'], 'STRING', 'Days of week')
     ->addParam(['month'], 'STRING', 'Days of month')
+    ->addParam(['week'], 'STRING', 'Days of week')
     ->addParam(['day'], 'STRING', 'Times of day')
     ->addUsageAll();
 
@@ -31,7 +31,7 @@ $taskFile->addTask(
     (string) $input->get('start'),
     (string) $input->get('end'),
     (string) $input->get('year'),
-    (string) $input->get('week'),
     (string) $input->get('month'),
+    (string) $input->get('week'),
     (string) $input->get('day')
 );
