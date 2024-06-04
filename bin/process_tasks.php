@@ -37,7 +37,7 @@ function processTasks(TaskFile $taskFile): void
     // Check if we have already run the program today before sending a nudge.
     $shouldNudge = true;
     foreach ($tasks as $task) {
-        $lastTimeReminded = $task[REMINDER_FIELD];
+        $lastTimeReminded = $task[TaskFile::REMINDER_FIELD];
         if (date('Y-m-d', $lastTimeReminded) === $currentDate) {
             $shouldNudge = false;
             break;
@@ -130,7 +130,7 @@ function processTasks(TaskFile $taskFile): void
             if (abs($datetimeSeconds - $currentTime) < 840) {
                 sendReminderEmail($taskName, $isNudge);
                 $reminderSent = true;
-                $task[REMINDER_FIELD] = $currentTime;
+                $task[TaskFile::REMINDER_FIELD] = $currentTime;
 
                 // Only send one nudge a day.
                 if ($isNudge) {

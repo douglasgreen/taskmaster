@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+namespace DouglasGreen\TaskMaster;
+
+use DouglasGreen\Exceptions\FileException;
+use DouglasGreen\Exceptions\RegexException;
+use DouglasGreen\Exceptions\ValueException;
+
 class TaskFile
 {
     public const REMINDER_FIELD = 9;
@@ -16,6 +22,8 @@ class TaskFile
 
     /**
      * @return list<array{string, bool, bool, string, string, list<string>, list<string>, list<string>, list<string>, int}>
+     * @throws FileException
+     * @throws ValueException
      * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function loadTasks(): array
@@ -25,13 +33,13 @@ class TaskFile
         $checkedHeaders = false;
         $handle = fopen($this->filename, 'r');
         if ($handle === false) {
-            throw new Exception('Unable to open file');
+            throw new FileException('Unable to open file');
         }
 
         while (($data = fgetcsv($handle)) !== false) {
             if (! $checkedHeaders) {
                 if ($this->headers !== $data) {
-                    throw new Exception('Bad headers');
+                    throw new ValueException('Bad headers');
                 }
 
                 $checkedHeaders = true;
@@ -43,22 +51,22 @@ class TaskFile
             [$taskName, $done, $recurring, $recurStart, $recurEnd, $daysOfYearField, $daysOfWeekField, $daysOfMonthField, $timesOfDayField, $lastDateReminded] = $data;
             $taskName = trim((string) preg_replace('/\s+/', ' ', $taskName));
             if (in_array($taskName, $taskNames, true)) {
-                throw new Exception('Duplicate task name: ' . $taskName);
+                throw new ValueException('Duplicate task name: ' . $taskName);
             }
 
             $taskNames[] = $taskName;
             $done = (bool) $done;
             $recurring = (bool) $recurring;
             if ($recurStart !== '' && preg_match('/^\d\d\d\d-\d\d-\d\d$/', $recurStart) === 0) {
-                throw new Exception('Bad recur start date: ' . $recurStart);
+                throw new ValueException('Bad recur start date: ' . $recurStart);
             }
 
             if ($recurEnd !== '' && preg_match('/^\d\d\d\d-\d\d-\d\d$/', $recurEnd) === 0) {
-                throw new Exception('Bad recur end date: ' . $recurEnd);
+                throw new ValueException('Bad recur end date: ' . $recurEnd);
             }
 
             if ($recurEnd !== '' && $recurStart !== '' && $recurEnd < $recurStart) {
-                throw new Exception('Bad recur date range: ' . $recurStart . ' to ' . $recurEnd);
+                throw new ValueException('Bad recur date range: ' . $recurStart . ' to ' . $recurEnd);
             }
 
             $daysOfYear = $this->splitField($daysOfYearField, '/^(\d\d\d\d-)?\d\d-\d\d$/');
@@ -78,7 +86,7 @@ class TaskFile
             if ($lastDateReminded !== '') {
                 $lastTimeReminded = strtotime($lastDateReminded);
                 if ($lastTimeReminded === false) {
-                    throw new Exception('Bad last date reminded: ' . $lastDateReminded);
+                    throw new ValueException('Bad last date reminded: ' . $lastDateReminded);
                 }
             }
 
@@ -107,12 +115,13 @@ class TaskFile
 
     /**
      * @param list<array{string, bool, bool, string, string, list<string>, list<string>, list<string>, list<string>, int}> $tasks
+     * @throws FileException
      */
     public function saveTasks(array $tasks): void
     {
         $handle = fopen($this->filename, 'w');
         if ($handle === false) {
-            throw new Exception('Unable to open file for writing');
+            throw new FileException('Unable to open file for writing');
         }
 
         fputcsv($handle, $this->headers);
@@ -147,12 +156,14 @@ class TaskFile
 
     /**
      * @return list<string>
+     * @throws RegexException
+     * @throws ValueException
      */
     protected function splitField(string $field, string $regex): array
     {
         $parts = preg_split('/\s*\|\s*/', $field, -1, PREG_SPLIT_NO_EMPTY);
         if ($parts === false) {
-            throw new Exception('Bad regex');
+            throw new RegexException('Bad regex');
         }
 
         foreach ($parts as $part) {
@@ -162,7 +173,7 @@ class TaskFile
 
             if (preg_match($regex, $part) === 0) {
                 $error = sprintf('Field "%s" doesn\'t match regex "%s"', $field, $regex);
-                throw new Exception($error);
+                throw new ValueException($error);
             }
         }
 
