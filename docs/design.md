@@ -21,6 +21,16 @@ Only one of the days columns is set, so check Days of year, Days of week, and
 Days of month for the first non-empty column. An asterisk can be used in any of
 the day fields to mean every day.
 
+Times allow a 14 minute interval so you should schedule your times at 0, 15, 30,
+and 45 minutes past the hour. And you should run the reminder program with a
+cron every 15 minutes to avoid overlap.
+
+There is a limit of no more than one email reminder per hour.
+
+You can't schedule times without dates.
+
+Here is the algorithm:
+
 1. Go through the list for all tasks that are not done and haven't got a last
    date reminded of today.
 2. If the task is recurring, either start or end date can be empty or set. If

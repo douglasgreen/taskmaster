@@ -157,6 +157,38 @@ function processTasks(string $filename, array $headers): void
         [$taskName, $done, $recurring, $recurStart, $recurEnd,
             $daysOfYear, $daysOfWeek, $daysOfMonth, $timesOfDay, $lastTimeReminded] = $task;
 
+        // Check whether the task is done.
+        if ($done) {
+            continue;
+        }
+
+        // Don't send more than one reminder per 59 minutes to allow margin for error.
+        if ($lastTimeReminded > 0 && $currentTime - $lastTimeReminded < 3540) {
+            continue;
+        }
+
+        // Don't send more than one reminder on the same date if the time is
+        // unspecified otherwise you'd get emails every hour.
+        if ($lastTimeReminded > 0 && $timesOfDay === [] && date('Y-m-d', $lastTimeReminded) === date('Y-m-d')) {
+            continue;
+        }
+
+        // Check if recurring dates are out of range.
+        if ($recurring) {
+            $recurStart = empty($recurStart) ? null : strtotime((string) $recurStart);
+            $recurEnd = empty($recurEnd) ? null : strtotime((string) $recurEnd);
+
+            if ($recurStart && $currentTime < $recurStart) {
+                continue;
+            }
+
+            if ($recurEnd && $currentTime > $recurEnd) {
+                continue;
+            }
+        }
+
+        // Multiply dates and times together into all possible combinations of
+        // the chosen date format and the times.
         $datetimes = [];
         if (! empty($daysOfYear)) {
             $dates = [];
@@ -203,34 +235,11 @@ function processTasks(string $filename, array $headers): void
             $datetimes[] = date('Y-m-d H:i:s', $useTime);
         }
 
-        // Check whether the task is done after doing all the error checking.
-        if ($done) {
-            continue;
-        }
-
-        // Don't send more than one reminder on the same date.
-        if ($lastTimeReminded > 0 && date('Y-m-d', $lastTimeReminded) === date('Y-m-d')) {
-            continue;
-        }
-
-        if ($recurring) {
-            $recurStart = empty($recurStart) ? null : strtotime((string) $recurStart);
-            $recurEnd = empty($recurEnd) ? null : strtotime((string) $recurEnd);
-
-            if ($recurStart && $currentTime < $recurStart) {
-                continue;
-            }
-
-            if ($recurEnd && $currentTime > $recurEnd) {
-                continue;
-            }
-        }
-
         foreach ($datetimes as $datetime) {
             $datetimeSeconds = strtotime((string) $datetime);
 
-            // 3 hours in seconds
-            if (abs($datetimeSeconds - $currentTime) < 10800) {
+            // 14 minutes in seconds
+            if (abs($datetimeSeconds - $currentTime) < 840) {
                 sendReminderEmail($taskName);
                 $reminderSent = true;
                 $task[9] = $currentTime;
