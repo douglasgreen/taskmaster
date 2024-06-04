@@ -1,0 +1,38 @@
+# Design
+
+The is the design of a task reminder program. The tasks are stored in a CSV file
+with these columns:
+
+-   Task name
+-   Done? (0-1)
+-   Recurring? (0-1)
+-   Recur start (YYYY-MM-DD)
+-   Recur end (YYYY-MM-DD)
+-   Days of year (MM-DD)
+-   Days of week (1-7)
+-   Days of month (1-31 where anything above last day of current month is
+    counted as last)
+-   Time of day (00:00 - 23:59)
+-   Last date reminded
+
+Tasks are one-time or recurring.
+
+Only one of the days columns is set, so check Days of year, Days of week, and
+Days of month for the first non-empty column.
+
+1. Go through the list for all tasks that are not done and haven't got a last
+   date reminded of today.
+2. If the task is recurring, either start or end date can be empty or set. If
+   start date is set, reminders are only sent on or after the start date. If the
+   end date is set, reminders are only sent on or before the end date.
+3. If the task specifies a day, convert it to YYYY-MM-DD form.
+4. If the task specifies a time, convert it to HH:MM:SS form.
+5. Append time to date to create datetime.
+6. If there is no datetime, use the last date reminded plus 30 days with a time
+   of 00:00:00.
+7. Render the datetime to seconds using strtotime().
+8. If the difference between the datetime seconds and the current time seconds
+   is less than 3 hours, send a separate reminder email for each current task
+   and update the last date reminded field to the current time.
+9. When finished processing all tasks, rewrite them out to the CSV file with the
+   same columns.
