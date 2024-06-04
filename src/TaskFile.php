@@ -10,7 +10,7 @@ use DouglasGreen\Exceptions\ValueException;
 
 class TaskFile
 {
-    public const REMINDER_FIELD = 9;
+    public const int REMINDER_FIELD = 9;
 
     /**
      * @param list<string> $headers
@@ -21,7 +21,18 @@ class TaskFile
     ) {}
 
     /**
-     * @return list<array{string, bool, bool, string, string, list<string>, list<string>, list<string>, list<string>, int}>
+     * @return list<array{
+     *     string,
+     *     bool,
+     *     bool,
+     *     string,
+     *     string,
+     *     list<string>,
+     *     list<string>,
+     *     list<string>,
+     *     list<string>,
+     *     int
+     * }>
      * @throws FileException
      * @throws ValueException
      * @SuppressWarnings(PHPMD.NPathComplexity)
@@ -48,7 +59,18 @@ class TaskFile
 
             // Split these fields on load so we can check for error before taking any action.
             $data = array_map('trim', $data);
-            [$taskName, $done, $recurring, $recurStart, $recurEnd, $daysOfYearField, $daysOfWeekField, $daysOfMonthField, $timesOfDayField, $lastDateReminded] = $data;
+            [
+                $taskName,
+                $done,
+                $recurring,
+                $recurStart,
+                $recurEnd,
+                $daysOfYearField,
+                $daysOfWeekField,
+                $daysOfMonthField,
+                $timesOfDayField,
+                $lastDateReminded
+            ] = $data;
             $taskName = trim((string) preg_replace('/\s+/', ' ', $taskName));
             if (in_array($taskName, $taskNames, true)) {
                 throw new ValueException('Duplicate task name: ' . $taskName);
@@ -114,7 +136,18 @@ class TaskFile
     }
 
     /**
-     * @param list<array{string, bool, bool, string, string, list<string>, list<string>, list<string>, list<string>, int}> $tasks
+     * @param list<array{
+     *     string,
+     *     bool,
+     *     bool,
+     *     string,
+     *     string,
+     *     list<string>,
+     *     list<string>,
+     *     list<string>,
+     *     list<string>,
+     *     int
+     * }> $tasks
      * @throws FileException
      */
     public function saveTasks(array $tasks): void
@@ -126,7 +159,18 @@ class TaskFile
 
         fputcsv($handle, $this->headers);
         foreach ($tasks as $task) {
-            [$taskName, $done, $recurring, $recurStart, $recurEnd, $daysOfYear, $daysOfWeek, $daysOfMonth, $timesOfDay, $lastTimeReminded] = $task;
+            [
+                $taskName,
+                $done,
+                $recurring,
+                $recurStart,
+                $recurEnd,
+                $daysOfYear,
+                $daysOfWeek,
+                $daysOfMonth,
+                $timesOfDay,
+                $lastTimeReminded
+            ] = $task;
 
             $done = (int) $done;
             $recurring = (int) $recurring;

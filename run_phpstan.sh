@@ -1,4 +1,4 @@
-#!/bin/env bash
+#!/usr/bin/env bash
 
 # Read file and directory paths into an array
 IFS=$'\n' read -d '' -r -a files < php_paths

@@ -8,18 +8,23 @@
  * Usage:
  * - To perform risky changes, set the environment variable ECS_RISKY to true.
  *   This should be carefully reviewed to ensure it doesn't break anything.
- * - The file paths for PHP files to analyze come from a file named 'php_paths' in the top-level directory
- *   of the repository. This file should contain PHP files in the top-level directory as well as directories
- *   that contain PHP files. It is shared with other PHP linting utilities so they can all lint the same file list.
- * - The presence of PHPUnit, Symfony, and Doctrine in the composer.json file is automatically detected,
- *   and the relevant ECS rule sets are enabled or disabled accordingly based on the $hasPhpUnit,
- *   $hasSymfony, and $hasDoctrine variables.
+ * - The file paths for PHP files to analyze come from a file named 'php_paths'
+ *   in the top-level directory of the repository. This file should contain PHP
+ *   files in the top-level directory as well as directories that contain PHP
+ *   files. It is shared with other PHP linting utilities so they can all lint the
+ *   same file list.
+ * - The presence of PHPUnit, Symfony, and Doctrine in the composer.json file is
+ *   automatically detected, and the relevant ECS rule sets are enabled or
+ *   disabled accordingly based on the $hasPhpUnit, $hasSymfony, and $hasDoctrine
+ *   variables.
  * - The PHP version in composer.json is detected and set as $phpVersion.
- * - Be cautious when configuring the list of annotations to remove using the GeneralPhpdocAnnotationRemoveFixer.
- *   ECS removes both the tag and its contents, whereas in many cases, you may only want to remove or modify
- *   the tag itself without affecting its contents.
+ * - Be cautious when configuring the list of annotations to remove using the
+ *   GeneralPhpdocAnnotationRemoveFixer.  ECS removes both the tag and its
+ *   contents, whereas in many cases, you may only want to remove or modify the
+ *   tag itself without affecting its contents.
  *
- * For more information on configuring ECS, see https://github.com/easy-coding-standard/easy-coding-standard
+ * For more information on configuring ECS, see
+ * https://github.com/easy-coding-standard/easy-coding-standard.
  */
 
 declare(strict_types=1);

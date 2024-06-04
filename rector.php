@@ -7,14 +7,19 @@
  *
  * Usage:
  * - To perform upgrades, set the environment variable RECTOR_UPGRADE to true.
- *   This should only be done once when upgrading, then disabled again for normal usage.
- * - The file paths for PHP files to analyze come from a file named 'php_paths' in the top-level directory
- *   of the repository. This file should contain PHP files in the top-level directory as well as directories
- *   that contain PHP files. It is shared with other PHP linting utilities so they can all lint the same file list.
- * - The presence of PHPUnit, Symfony, and Doctrine in the composer.json file is automatically detected,
- *   and the relevant Rector rule sets are enabled or disabled accordingly based on the $hasPhpUnit,
- *   $hasSymfony, and $hasDoctrine variables.
- * The PHP version in composer.json is detected and set as $upToPhp for upgrades.
+ *   This should only be done once when upgrading, then disabled again for normal
+ *   usage.
+ * - The file paths for PHP files to analyze come from a file named 'php_paths'
+ *   in the top-level directory of the repository. This file should contain PHP
+ *   files in the top-level directory as well as directories that contain PHP
+ *   files. It is shared with other PHP linting utilities so they can all lint the
+ *   same file list.
+ * - The presence of PHPUnit, Symfony, and Doctrine in the composer.json file is
+ *   automatically detected, and the relevant Rector rule sets are enabled or
+ *   disabled accordingly based on the $hasPhpUnit, $hasSymfony, and $hasDoctrine
+ *   variables.
+ * - The PHP version in composer.json is detected and set as $upToPhp for
+ *   upgrades.
  *
  * For more information on configuring Rector, see https://getrector.com/
  */
