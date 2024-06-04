@@ -19,7 +19,7 @@ Tasks are one-time or recurring.
 
 Only one of the days columns is set, so check Days of year, Days of week, and
 Days of month for the first non-empty column. An asterisk can be used in any of
-the day fields to mean every day.
+the day fields to mean every day or the time field to mean every time.
 
 Times allow a 14 minute interval so you should schedule your times at 0, 15, 30,
 and 45 minutes past the hour. And you should run the reminder program with a
