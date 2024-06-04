@@ -93,6 +93,9 @@ function loadTasks(string $filename, array $headers): array
 
     fclose($handle);
 
+    // Sort the tasks by $lastTimeReminded so the oldest is reminded first.
+    usort($tasks, static fn($first, $second): int => $first[REMINDER_FIELD] - $second[REMINDER_FIELD]);
+
     return $tasks;
 }
 
@@ -137,10 +140,13 @@ function saveTasks(string $filename, array $headers, array $tasks): void
     fclose($handle);
 }
 
-function sendReminderEmail(string $taskName): void
+function sendReminderEmail(string $taskName, bool $isNudge): void
 {
+    $subject = $isNudge ? 'Nudge: ' : 'Reminder: ';
+    $subject .= $taskName;
+
     // Send the email. For simplicity, we just print a message here.
-    echo sprintf('Sending reminder for task: %s%s', $taskName, PHP_EOL);
+    echo sprintf('Sending reminder for task: %s%s', $subject, PHP_EOL);
 }
 
 /**
@@ -244,17 +250,8 @@ function processTasks(string $filename, array $headers): void
         // If reminder is not recurring and hasn't been sent, send a nudge now.
         $isNudge = false;
         if ($datetimes === [] && ! $recurring && $shouldNudge) {
-            if ($lastTimeReminded === 0) {
-                $useTime = $currentTime;
-            } else {
-                $projectedTime = strtotime('+30 days', $lastTimeReminded);
-
-                // Allow for last date reminded somehow being in the distant past.
-                $useTime = max($currentTime, $projectedTime);
-            }
-
             $isNudge = true;
-            $datetimes[] = date('Y-m-d H:i:s', $useTime);
+            $datetimes[] = date('Y-m-d H:i:s', $currentTime);
         }
 
         foreach ($datetimes as $datetime) {
@@ -262,7 +259,7 @@ function processTasks(string $filename, array $headers): void
 
             // 14 minutes in seconds
             if (abs($datetimeSeconds - $currentTime) < 840) {
-                sendReminderEmail($taskName);
+                sendReminderEmail($taskName, $isNudge);
                 $reminderSent = true;
                 $task[REMINDER_FIELD] = $currentTime;
 
