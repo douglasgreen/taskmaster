@@ -95,10 +95,6 @@ switch ($command) {
                     echo sprintf('Task URL: %s%s', $task->taskUrl, PHP_EOL);
                 }
 
-                if ($task->done) {
-                    echo 'Done: Yes' . PHP_EOL;
-                }
-
                 echo 'Recurring: ' . ($task->recurring ? 'Yes' : 'No') . PHP_EOL;
 
                 if ($task->recurring) {

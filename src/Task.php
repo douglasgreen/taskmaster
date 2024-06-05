@@ -19,7 +19,6 @@ class Task
     public function __construct(
         public string $taskName,
         public string $taskUrl,
-        public bool $done,
         public bool $recurring,
         public ?string $recurStart,
         public ?string $recurEnd,

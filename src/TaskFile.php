@@ -11,7 +11,7 @@ use DouglasGreen\Exceptions\ValueException;
 class TaskFile
 {
     protected const array HEADERS = [
-        'Task name', 'Task URL', 'Done?', 'Recurring?', 'Recur start',
+        'Task name', 'Task URL', 'Recurring?', 'Recur start',
         'Recur end', 'Days of year', 'Days of month', 'Days of week',
         'Times of day', 'Last date reminded',
     ];
@@ -59,7 +59,6 @@ class TaskFile
         $task = new Task(
             $taskName,
             $taskUrl,
-            false,
             $recurring,
             $recurStart,
             $recurEnd,
@@ -105,7 +104,6 @@ class TaskFile
             [
                 $taskName,
                 $taskUrl,
-                $done,
                 $recurring,
                 $recurStart,
                 $recurEnd,
@@ -117,7 +115,6 @@ class TaskFile
             ] = $data;
             $taskName = trim((string) preg_replace('/\s+/', ' ', $taskName));
             $taskUrl = trim($taskUrl);
-            $done = (bool) $done;
             $recurring = (bool) $recurring;
 
             if ($recurStart !== '' && preg_match('/^\d\d\d\d-\d\d-\d\d$/', $recurStart) === 0) {
@@ -163,7 +160,6 @@ class TaskFile
             $task = new Task(
                 $taskName,
                 $taskUrl,
-                $done,
                 $recurring,
                 $recurStart,
                 $recurEnd,
@@ -202,7 +198,6 @@ class TaskFile
                 throw new ValueException('Invalid task provided');
             }
 
-            $done = (int) $task->done;
             $recurring = (int) $task->recurring;
             $daysOfYearField = implode('|', $task->daysOfYear);
             $daysOfMonthField = implode('|', $task->daysOfMonth);
@@ -213,7 +208,6 @@ class TaskFile
             $data = [
                 $task->taskName,
                 $task->taskUrl,
-                $done,
                 $recurring,
                 $task->recurStart,
                 $task->recurEnd,

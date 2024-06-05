@@ -37,11 +37,6 @@ class TaskProcessor
         }
 
         foreach ($tasks as $task) {
-            // Check whether the task is done.
-            if ($task->done) {
-                continue;
-            }
-
             // Don't send more than one reminder per 59 minutes to allow margin for error.
             if ($task->lastTimeReminded > 0 && $currentTime - $task->lastTimeReminded < 3540) {
                 continue;
