@@ -16,9 +16,7 @@ class Task
      * @param list<string> $daysOfMonth
      * @param list<string> $daysOfWeek
      * @param list<string> $timesOfDay
-     * @throws ValueException
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
-     * @SuppressWarnings(PHPMD.NPathComplexity)
      */
     public function __construct(
         public string $taskName,
@@ -44,34 +42,96 @@ class Task
             $this->recurEnd = null;
         }
 
-        if ($this->recurStart !== null && preg_match('/^\d\d\d\d-\d\d-\d\d$/', $this->recurStart) === 0) {
-            throw new ValueException('Bad start date');
-        }
+        $this->checkRecurDates();
 
-        if ($this->recurEnd !== null && preg_match('/^\d\d\d\d-\d\d-\d\d$/', $this->recurEnd) === 0) {
-            throw new ValueException('Bad end date');
-        }
-
-        if ($this->recurEnd !== null && $this->recurStart !== null && $this->recurEnd < $this->recurStart) {
-            throw new ValueException('Bad recur date range: ' . $this->recurStart . ' to ' . $this->recurEnd);
+        $dayTypeCount = $this->getDayTypeCount();
+        if ($dayTypeCount > 1) {
+            $this->error('Only one type of day should be specified');
         }
 
         // If there is a time, then there must be a date so use today.
-        $emptyDay = $this->daysOfYear === [] && $this->daysOfMonth === [] && $this->daysOfWeek === [];
-        if ($this->timesOfDay && $emptyDay) {
+        $hasDayType = $dayTypeCount !== 0;
+        if ($this->timesOfDay && ! $hasDayType) {
             $this->daysOfYear = [date('Y-m-d')];
-            $emptyDay = false;
+            $hasDayType = true;
         }
 
-        // If the task is recurring, it must specify a time.
         if (! $this->recurring) {
+            if ($hasDayType) {
+                $this->checkNonRecurDates();
+            }
+
             return;
         }
 
-        if (! $emptyDay) {
+        if (! $hasDayType) {
+            $this->error('Recurring tasks must specify a day');
+        }
+    }
+
+    protected function checkNonRecurDates(): void
+    {
+        $error = 'Non-recurring tasks that specify date must use full YYYY-MM-DD day of year';
+        if ($this->daysOfYear === []) {
+            $this->error($error);
+        }
+
+        foreach ($this->daysOfYear as $dayOfYear) {
+            if (preg_match('/^\\d\\d\\d\\d-\\d\\d-\\d\\d$/', $dayOfYear) === 0) {
+                $this->error($error);
+            }
+        }
+    }
+
+    protected function checkRecurDates(): void
+    {
+        if ($this->recurStart !== null && preg_match('/^\d\d\d\d-\d\d-\d\d$/', $this->recurStart) === 0) {
+            $this->error('Bad recur start date');
+        }
+
+        if ($this->recurEnd !== null && preg_match('/^\d\d\d\d-\d\d-\d\d$/', $this->recurEnd) === 0) {
+            $this->error('Bad recur end date');
+        }
+
+        if ($this->recurEnd !== null && $this->recurStart !== null && $this->recurEnd < $this->recurStart) {
+            $this->error('Bad recur date range: ' . $this->recurStart . ' to ' . $this->recurEnd);
+        }
+
+        if ($this->recurring) {
             return;
         }
 
-        throw new ValueException('Recurring tasks must specify a day: "' . $this->taskName . '"');
+        if ($this->recurEnd === null && $this->recurStart === null) {
+            return;
+        }
+
+        $this->error('Non-recurring tasks must not specify a recur start or end');
+    }
+
+    /**
+     * @throws ValueException
+     */
+    protected function error(string $message): void
+    {
+        $fullMessage = $this->taskName . ': ' . $message;
+        throw new ValueException($fullMessage);
+    }
+
+    protected function getDayTypeCount(): int
+    {
+        $count = 0;
+        if ($this->daysOfYear !== []) {
+            ++$count;
+        }
+
+        if ($this->daysOfMonth !== []) {
+            ++$count;
+        }
+
+        if ($this->daysOfWeek !== []) {
+            ++$count;
+        }
+
+        return $count;
     }
 }

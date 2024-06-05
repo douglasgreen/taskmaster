@@ -61,9 +61,6 @@ class TaskFile
      * @return list<Task>
      * @throws FileException
      * @throws ValueException
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
-     * @SuppressWarnings(PHPMD.NPathComplexity)
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function loadTasks(): array
     {

@@ -56,7 +56,11 @@
 
     <rule ref="rulesets/codesize.xml/ExcessivePublicCount" />
 
+    <!--
+    This rule is redundant and overestimates complexity by multiplying unrelated
+    decision statements together even if they are in a sequence.
     <rule ref="rulesets/codesize.xml/NPathComplexity" />
+    -->
 
     <rule ref="rulesets/codesize.xml/TooManyFields" />
 
