@@ -98,11 +98,11 @@ switch ($command) {
                 echo 'Recurring: ' . ($task->recurring ? 'Yes' : 'No') . PHP_EOL;
 
                 if ($task->recurring) {
-                    if ($task->recurStart !== '') {
+                    if ($task->recurStart !== null) {
                         echo sprintf('Recur Start: %s%s', $task->recurStart, PHP_EOL);
                     }
 
-                    if ($task->recurEnd !== '') {
+                    if ($task->recurEnd !== null) {
                         echo sprintf('Recur End: %s%s', $task->recurEnd, PHP_EOL);
                     }
                 }
