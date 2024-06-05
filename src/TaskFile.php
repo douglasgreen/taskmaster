@@ -20,9 +20,6 @@ class TaskFile
         protected string $filename
     ) {}
 
-    /**
-     * @throws ValueException
-     */
     public function addTask(
         string $taskName,
         string $taskUrl,
@@ -34,18 +31,6 @@ class TaskFile
         string $daysOfWeekField,
         string $timesOfDayField
     ): void {
-        $taskName = trim((string) preg_replace('/\s+/', ' ', $taskName));
-
-        $taskUrl = trim($taskUrl);
-
-        if ($recurStart !== '' && preg_match('/^\d\d\d\d-\d\d-\d\d$/', $recurStart) === 0) {
-            throw new ValueException('Bad start date');
-        }
-
-        if ($recurEnd !== '' && preg_match('/^\d\d\d\d-\d\d-\d\d$/', $recurEnd) === 0) {
-            throw new ValueException('Bad end date');
-        }
-
         $daysOfYear = $this->splitField($daysOfYearField, '/^(\d\d\d\d-)?\d\d-\d\d$/');
 
         $daysOfMonth = $this->splitField($daysOfMonthField, '/^([1-9]|[12]\d|3[01])$/');
@@ -113,21 +98,8 @@ class TaskFile
                 $timesOfDayField,
                 $lastDateReminded
             ] = $data;
-            $taskName = trim((string) preg_replace('/\s+/', ' ', $taskName));
-            $taskUrl = trim($taskUrl);
+
             $recurring = (bool) $recurring;
-
-            if ($recurStart !== '' && preg_match('/^\d\d\d\d-\d\d-\d\d$/', $recurStart) === 0) {
-                throw new ValueException('Bad recur start date: ' . $recurStart);
-            }
-
-            if ($recurEnd !== '' && preg_match('/^\d\d\d\d-\d\d-\d\d$/', $recurEnd) === 0) {
-                throw new ValueException('Bad recur end date: ' . $recurEnd);
-            }
-
-            if ($recurEnd !== '' && $recurStart !== '' && $recurEnd < $recurStart) {
-                throw new ValueException('Bad recur date range: ' . $recurStart . ' to ' . $recurEnd);
-            }
 
             $daysOfYear = $this->splitField($daysOfYearField, '/^(\d\d\d\d-)?\d\d-\d\d$/');
 
@@ -136,18 +108,6 @@ class TaskFile
             $daysOfWeek = $this->splitField($daysOfWeekField, '/^[1-7]$/');
 
             $timesOfDay = $this->splitField($timesOfDayField, '/^\d\d:\d\d$/');
-
-            // If there is a time, then there must be a date so use today.
-            $emptyDay = $daysOfYear === [] && $daysOfMonth === [] && $daysOfWeek === [];
-            if ($timesOfDay && $emptyDay) {
-                $daysOfYear = [date('Y-m-d')];
-                $emptyDay = false;
-            }
-
-            // If the task is recurring, it must specify a time.
-            if ($recurring && $emptyDay) {
-                throw new ValueException('Recurring tasks must specify a day: "' . $taskName . '"');
-            }
 
             $lastTimeReminded = 0;
             if ($lastDateReminded !== '') {
@@ -217,6 +177,7 @@ class TaskFile
                 $timesOfDayField,
                 $lastDateReminded,
             ];
+
             fputcsv($handle, $data);
         }
 
