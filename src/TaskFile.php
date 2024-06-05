@@ -233,7 +233,7 @@ class TaskFile
         $tasks = $this->loadTasks();
         $matches = [];
         foreach ($tasks as $task) {
-            if (str_contains($task->taskName, $term)) {
+            if (stripos($task->taskName, $term) !== false) {
                 $matches[$task->taskName] = $task;
             }
         }
