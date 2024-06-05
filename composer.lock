@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "34ce640e2aa81c5fb8185c1f62fac2cc",
+    "content-hash": "1a28c2f728627e6f82ead3a1bd240d27",
     "packages": [
         {
             "name": "douglasgreen/optparser",
-            "version": "0.7.5",
+            "version": "0.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/optparser.git",
-                "reference": "ca8f6c1088a2f8ce6178086d4193191ca67e2607"
+                "reference": "f9160978663a4d08601e3797829220de260ca38f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/ca8f6c1088a2f8ce6178086d4193191ca67e2607",
-                "reference": "ca8f6c1088a2f8ce6178086d4193191ca67e2607",
+                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/f9160978663a4d08601e3797829220de260ca38f",
+                "reference": "f9160978663a4d08601e3797829220de260ca38f",
                 "shasum": ""
             },
             "require": {
@@ -75,9 +75,9 @@
             ],
             "support": {
                 "issues": "https://github.com/douglasgreen/optparser/issues",
-                "source": "https://github.com/douglasgreen/optparser/tree/0.7.5"
+                "source": "https://github.com/douglasgreen/optparser/tree/0.8.0"
             },
-            "time": "2024-06-01T00:16:20+00:00"
+            "time": "2024-06-05T00:46:21+00:00"
         }
     ],
     "packages-dev": [

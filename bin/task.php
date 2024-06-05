@@ -37,13 +37,13 @@ $optParser->addTerm('name', 'STRING', 'Task name')
 $optParser->addTerm('term', 'STRING', 'Term to search form');
 
 // Add usage for process command.
-$optParser->addUsage(['process', 'email', 'timezone']);
+$optParser->addUsage('process', ['email', 'timezone']);
 
 // Add usage for add command.
-$optParser->addUsage(['add', 'name', 'url', 'recur', 'start', 'end', 'year', 'month', 'week', 'time']);
+$optParser->addUsage('add', ['name', 'url', 'recur', 'start', 'end', 'year', 'month', 'week', 'time']);
 
 // Add usage for search command.
-$optParser->addUsage(['search', 'term']);
+$optParser->addUsage('search', ['term']);
 
 $input = $optParser->parse();
 
