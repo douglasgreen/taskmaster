@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "douglasgreen/optparser",
-            "version": "0.8.0",
+            "version": "0.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/optparser.git",
-                "reference": "f9160978663a4d08601e3797829220de260ca38f"
+                "reference": "35550ac8c6279419f90ec2286f53d50a5a9a0d67"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/f9160978663a4d08601e3797829220de260ca38f",
-                "reference": "f9160978663a4d08601e3797829220de260ca38f",
+                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/35550ac8c6279419f90ec2286f53d50a5a9a0d67",
+                "reference": "35550ac8c6279419f90ec2286f53d50a5a9a0d67",
                 "shasum": ""
             },
             "require": {
@@ -75,9 +75,9 @@
             ],
             "support": {
                 "issues": "https://github.com/douglasgreen/optparser/issues",
-                "source": "https://github.com/douglasgreen/optparser/tree/0.8.0"
+                "source": "https://github.com/douglasgreen/optparser/tree/0.8.1"
             },
-            "time": "2024-06-05T00:46:21+00:00"
+            "time": "2024-06-05T06:26:25+00:00"
         }
     ],
     "packages-dev": [
