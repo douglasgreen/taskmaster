@@ -91,7 +91,9 @@ class Task
     {
         $names = [];
         foreach ($this->daysOfWeek as $dayOfWeek) {
-            if (isset(self::DAYS_OF_WEEK_NAMES[$dayOfWeek]) || $dayOfWeek === '*') {
+            if ($dayOfWeek === '*') {
+                $names[] = '*';
+            } elseif (isset(self::DAYS_OF_WEEK_NAMES[$dayOfWeek])) {
                 $names[] = self::DAYS_OF_WEEK_NAMES[$dayOfWeek];
             }
         }
