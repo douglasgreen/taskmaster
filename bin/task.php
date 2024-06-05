@@ -116,7 +116,7 @@ switch ($command) {
                 }
 
                 if ($task->daysOfWeek !== []) {
-                    echo 'Days of Week: ' . implode(', ', $task->daysOfWeek) . PHP_EOL;
+                    echo 'Days of Week: ' . implode(', ', $task->getWeekdayNames()) . PHP_EOL;
                 }
 
                 if ($task->timesOfDay !== []) {

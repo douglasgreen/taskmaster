@@ -12,6 +12,19 @@ use DouglasGreen\Exceptions\ValueException;
 class Task
 {
     /**
+     * @var array<int, string>
+     */
+    protected const array DAYS_OF_WEEK_NAMES = [
+        1 => 'Monday',
+        2 => 'Tuesday',
+        3 => 'Wednesday',
+        4 => 'Thursday',
+        5 => 'Friday',
+        6 => 'Saturday',
+        7 => 'Sunday',
+    ];
+
+    /**
      * @param list<string> $daysOfYear
      * @param list<string> $daysOfMonth
      * @param list<string> $daysOfWeek
@@ -67,6 +80,23 @@ class Task
         if (! $hasDayType) {
             $this->error('Recurring tasks must specify a day');
         }
+    }
+
+    /**
+     * Represent $daysOfWeek as a list of names (Monday, etc.)
+     *
+     * @return list<string>
+     */
+    public function getWeekdayNames(): array
+    {
+        $names = [];
+        foreach ($this->daysOfWeek as $dayOfWeek) {
+            if (isset(self::DAYS_OF_WEEK_NAMES[$dayOfWeek]) || $dayOfWeek === '*') {
+                $names[] = self::DAYS_OF_WEEK_NAMES[$dayOfWeek];
+            }
+        }
+
+        return $names;
     }
 
     protected function checkNonRecurDates(): void
