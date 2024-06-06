@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster;
 
+use DouglasGreen\Exceptions\Regex;
 use DouglasGreen\Exceptions\ValueException;
 
 /**
@@ -43,7 +44,7 @@ class Task
         public array $timesOfDay,
         public int $lastTimeReminded
     ) {
-        $this->taskName = trim((string) preg_replace('/\s+/', ' ', $this->taskName));
+        $this->taskName = trim(Regex::replace('/\s+/', ' ', $this->taskName));
 
         $this->taskUrl = trim($this->taskUrl);
 
@@ -109,7 +110,7 @@ class Task
         }
 
         foreach ($this->daysOfYear as $dayOfYear) {
-            if (preg_match('/^\\d\\d\\d\\d-\\d\\d-\\d\\d$/', $dayOfYear) === 0) {
+            if (! Regex::hasMatches('/^\d\d\d\d-\d\d-\d\d$/', $dayOfYear)) {
                 $this->error($error);
             }
         }
@@ -120,11 +121,11 @@ class Task
      */
     protected function checkRecurDates(): void
     {
-        if ($this->recurStart !== null && preg_match('/^\d\d\d\d-\d\d-\d\d$/', $this->recurStart) === 0) {
+        if ($this->recurStart !== null && ! Regex::hasMatches('/^\d\d\d\d-\d\d-\d\d$/', $this->recurStart)) {
             $this->error('Bad recur start date');
         }
 
-        if ($this->recurEnd !== null && preg_match('/^\d\d\d\d-\d\d-\d\d$/', $this->recurEnd) === 0) {
+        if ($this->recurEnd !== null && ! Regex::hasMatches('/^\d\d\d\d-\d\d-\d\d$/', $this->recurEnd)) {
             $this->error('Bad recur end date');
         }
 

@@ -5,6 +5,8 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster;
 
+use DouglasGreen\Exceptions\Regex;
+
 class TaskProcessor
 {
     public function __construct(
@@ -70,7 +72,7 @@ class TaskProcessor
             if (! empty($task->daysOfYear)) {
                 $dates = [];
                 foreach ($task->daysOfYear as $dayOfYear) {
-                    if (preg_match('/^\d\d-\d\d$/', (string) $dayOfYear)) {
+                    if (Regex::hasMatches('/^\d\d-\d\d$/', (string) $dayOfYear)) {
                         $dayOfYear = $currentYear . '-' . $dayOfYear;
                     }
 

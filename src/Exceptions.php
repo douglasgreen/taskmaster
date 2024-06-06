@@ -375,37 +375,19 @@ class Regex
     }
 
     /**
-     * Substitute for preg_grep.
+     * Substitute for preg_match_all.
      *
-     * @param list<string> $array
-     * @return list<string>
+     * @return array<array<int, string|int|null>>
      * @throws RegexException
      */
-    public static function grep(string $pattern, array $array, int $flags = 0): array
+    public static function getAllMatches(string $pattern, string $subject, int $flags = 0, int $offset = 0): array
     {
-        $result = preg_grep($pattern, $array, $flags);
+        $result = preg_match_all($pattern, $subject, $matches, $flags, $offset);
         if ($result === false) {
             throw new RegexException('Regex failed: ' . $pattern);
         }
 
-        return $result;
-    }
-
-    /**
-     * Substitute for preg_match that returns bool
-     *
-     * @param 0|256|512|768 $flags
-     * @throws RegexException
-     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
-     */
-    public static function hasMatch(string $pattern, string $subject, int $flags = 0, int $offset = 0): bool
-    {
-        $result = preg_match($pattern, $subject, $match, $flags, $offset);
-        if ($result === false) {
-            throw new RegexException('Regex failed: ' . $pattern);
-        }
-
-        return $result !== 0;
+        return $matches;
     }
 
     /**
@@ -415,7 +397,7 @@ class Regex
      * @return array<int, string>
      * @throws RegexException
      */
-    public static function match(string $pattern, string $subject, int $flags = 0, int $offset = 0): array
+    public static function getMatches(string $pattern, string $subject, int $flags = 0, int $offset = 0): array
     {
         $result = preg_match($pattern, $subject, $matches, $flags, $offset);
         if ($result === false) {
@@ -445,7 +427,7 @@ class Regex
      * @return array<string, string>
      * @throws RegexException
      */
-    public static function matchNamed(string $pattern, string $subject, int $flags = 0, int $offset = 0): array
+    public static function getNamedMatched(string $pattern, string $subject, int $flags = 0, int $offset = 0): array
     {
         $result = preg_match($pattern, $subject, $matches, $flags, $offset);
         if ($result === false) {
@@ -469,38 +451,37 @@ class Regex
     }
 
     /**
-     * Substitute for preg_match with PREG_OFFSET_CAPTURE that returns the
-     * matches.
+     * Substitute for preg_grep.
      *
-     * @param 0|256|512|768 $flags
-     * @return array<array<int, string|int|null>>
+     * @param list<string> $array
+     * @return list<string>
      * @throws RegexException
      */
-    public static function matchOffset(string $pattern, string $subject, int $flags = 0, int $offset = 0): array
+    public static function grep(string $pattern, array $array, int $flags = 0): array
     {
-        $flags |= PREG_OFFSET_CAPTURE;
-        $result = preg_match($pattern, $subject, $matches, $flags, $offset);
+        $result = preg_grep($pattern, $array, $flags);
         if ($result === false) {
             throw new RegexException('Regex failed: ' . $pattern);
         }
 
-        return $matches;
+        return $result;
     }
 
     /**
-     * Substitute for preg_match_all.
+     * Substitute for preg_match that returns bool
      *
-     * @return array<array<int, string|int|null>>
+     * @param 0|256|512|768 $flags
      * @throws RegexException
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
-    public static function matchAll(string $pattern, string $subject, int $flags = 0, int $offset = 0): array
+    public static function hasMatches(string $pattern, string $subject, int $flags = 0, int $offset = 0): bool
     {
-        $result = preg_match_all($pattern, $subject, $matches, $flags, $offset);
+        $result = preg_match($pattern, $subject, $match, $flags, $offset);
         if ($result === false) {
             throw new RegexException('Regex failed: ' . $pattern);
         }
 
-        return $matches;
+        return $result !== 0;
     }
 
     /**

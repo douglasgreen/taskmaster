@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster;
 
-use DouglasGreen\Exceptions\FileException;
-use DouglasGreen\Exceptions\RegexException;
+use DouglasGreen\Exceptions\File;
+use DouglasGreen\Exceptions\Regex;
 use DouglasGreen\Exceptions\ValueException;
 
 class TaskFile
@@ -59,18 +59,13 @@ class TaskFile
 
     /**
      * @return list<Task>
-     * @throws FileException
      * @throws ValueException
      */
     public function loadTasks(): array
     {
         $tasks = [];
         $checkedHeaders = false;
-        $handle = fopen($this->filename, 'r');
-        if ($handle === false) {
-            throw new FileException('Unable to open file');
-        }
-
+        $handle = File::open($this->filename, 'r');
         while (($data = fgetcsv($handle)) !== false) {
             if (! $checkedHeaders) {
                 if ($data !== self::HEADERS) {
@@ -129,7 +124,7 @@ class TaskFile
             $tasks[] = $task;
         }
 
-        fclose($handle);
+        File::close($handle);
 
         // Sort the tasks by $lastTimeReminded so the oldest is reminded first.
         usort($tasks, static fn($first, $second): int => $first->lastTimeReminded - $second->lastTimeReminded);
@@ -139,16 +134,11 @@ class TaskFile
 
     /**
      * @param list<Task> $tasks
-     * @throws FileException
      * @throws ValueException
      */
     public function saveTasks(array $tasks): void
     {
-        $handle = fopen($this->filename, 'w');
-        if ($handle === false) {
-            throw new FileException('Unable to open file for writing');
-        }
-
+        $handle = File::open($this->filename, 'w');
         fputcsv($handle, self::HEADERS);
         foreach ($tasks as $task) {
             if (! $task instanceof Task) {
@@ -178,7 +168,7 @@ class TaskFile
             fputcsv($handle, $data);
         }
 
-        fclose($handle);
+        File::close($handle);
     }
 
     /**
@@ -202,22 +192,17 @@ class TaskFile
 
     /**
      * @return list<string>
-     * @throws RegexException
      * @throws ValueException
      */
     protected function splitField(string $field, string $regex): array
     {
-        $parts = preg_split('/\s*\|\s*/', $field, -1, PREG_SPLIT_NO_EMPTY);
-        if ($parts === false) {
-            throw new RegexException('Bad regex');
-        }
-
+        $parts = Regex::split('/\s*\|\s*/', $field, -1, PREG_SPLIT_NO_EMPTY);
         foreach ($parts as $part) {
             if ($part === '*') {
                 return ['*'];
             }
 
-            if (preg_match($regex, $part) === 0) {
+            if (! Regex::hasMatches($regex, $part)) {
                 $error = sprintf('Field "%s" doesn\'t match regex "%s"', $field, $regex);
                 throw new ValueException($error);
             }
