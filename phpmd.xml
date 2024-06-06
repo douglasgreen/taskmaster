@@ -35,16 +35,15 @@
         </properties>
     </rule>
 
+    <!--
+    Calling existing static methods is OK. Just don't define new ones in
+    general.
     <rule ref="rulesets/cleancode.xml/StaticAccess" />
+    -->
 
     <rule ref="rulesets/cleancode.xml/UndefinedVariable" />
 
-    <!-- The default value was 10, which is too restrictive -->
-    <rule ref="rulesets/codesize.xml/CyclomaticComplexity">
-        <properties>
-            <property name="reportLevel" value="20" />
-        </properties>
-    </rule>
+    <rule ref="rulesets/codesize.xml/CyclomaticComplexity" />
 
     <rule ref="rulesets/codesize.xml/ExcessiveClassComplexity" />
 
@@ -64,9 +63,25 @@
 
     <rule ref="rulesets/codesize.xml/TooManyFields" />
 
-    <rule ref="rulesets/codesize.xml/TooManyMethods" />
+    <!--
+    Ignore getters, setters, and unit tests, which are usually named
+    "test*"
+    -->
+    <rule ref="rulesets/codesize.xml/TooManyMethods">
+        <properties>
+            <property name="ignorepattern" value="/^(get|set|test)/" />
+        </properties>
+    </rule>
 
-    <rule ref="rulesets/codesize.xml/TooManyPublicMethods" />
+    <!--
+    Ignore getters, setters, and unit tests, which are usually named
+    "test*"
+    -->
+    <rule ref="rulesets/codesize.xml/TooManyPublicMethods">
+        <properties>
+            <property name="ignorepattern" value="/^(get|set|test)/" />
+        </properties>
+    </rule>
 
     <rule ref="rulesets/controversial.xml/CamelCaseClassName" />
 

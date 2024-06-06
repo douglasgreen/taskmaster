@@ -115,6 +115,9 @@ class Task
         }
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     */
     protected function checkRecurDates(): void
     {
         if ($this->recurStart !== null && preg_match('/^\d\d\d\d-\d\d-\d\d$/', $this->recurStart) === 0) {

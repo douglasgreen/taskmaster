@@ -27,14 +27,6 @@ class DataException extends BaseException {}
 class TypeException extends DataException {}
 
 /**
- * Thrown when URL is badly formed or invalid
- * Example: A function receives a URL without the proper scheme (http/https).
- *
- * @see https://www.php.net/manual/en/ref.url.php
- */
-class UrlException extends DataException {}
-
-/**
  * Thrown when numeric input is out of range or not an accepted value
  * - A value for age is provided as -5, which is not valid.
  * - A value is not found on an enumerated list of accepted values.
@@ -248,3 +240,326 @@ class SocketException extends ServiceException {}
  * @see https://www.php.net/manual/en/book.ssh2.php
  */
 class Ssh2Exception extends ServiceException {}
+
+/**
+ * These utility classes exist because basic PHP functions return a mix of false
+ * or null on failure rather than throwing exceptions which is tedious to deal
+ * with.
+ */
+
+/**
+ * File utility class to throw exceptions when basic operations fail.
+ *
+ * @todo Add other file functions from this list.
+ * file_get_contents
+ * rewind
+ * delete
+ * is_dir
+ * unlink
+ * fwrite
+ * file_put_contents
+ * is_file
+ * is_readable
+ * basename
+ * file
+ * touch
+ * mkdir
+ * fread
+ * fseek
+ * copy
+ * chmod
+ * tempnam
+ * filesize
+ * rename
+ * feof
+ * rmdir
+ * ftell
+ * pathinfo
+ * is_link
+ * readfile
+ * fgets
+ * is_writable
+ * glob
+ * symlink
+ * fstat
+ * filemtime
+ * clearstatcache
+ * umask
+ * fileperms
+ * link
+ * fputs
+ * ftruncate
+ * flock
+ * readlink
+ * chgrp
+ * stat
+ * chown
+ * move_uploaded_file
+ * is_executable
+ * disk_free_space
+ * fpassthru
+ * popen
+ * pclose
+ * lstat
+ * parse_ini_file
+ * is_uploaded_file
+ */
+class File
+{
+    /**
+     * @param resource $stream
+     * @throws FileException
+     */
+    public static function close($stream): void
+    {
+        if (fclose($stream) === false) {
+            throw new FileException('Unable to close file');
+        }
+    }
+
+    /**
+     * @param resource $context
+     * @return resource
+     * @throws FileException
+     */
+    public static function open(string $filename, string $mode, bool $useIncludePath = false, $context = null)
+    {
+        $handle = fopen($filename, $mode, $useIncludePath, $context);
+        if ($handle === false) {
+            throw new FileException(sprintf('Unable to open "%s"', $filename));
+        }
+
+        return $handle;
+    }
+
+    /**
+     * @throws FileException
+     */
+    public static function path(string $path): void
+    {
+        $result = realpath($path);
+        if ($result === false) {
+            throw new FileException(sprintf('Unable to get real path on "%s"', $path));
+        }
+    }
+}
+
+/**
+ * Regex utility class to throw exceptions when basic operations fail.
+ *
+ * No replacement is provided for preg_filter with array argumnts because it
+ * returns array on regex failure or no matches and so no distinction can be
+ * made.
+ *
+ * @todo Add preg_replace_callback and preg_replace_callback_array.
+ */
+class Regex
+{
+    /**
+     * Substitute for preg_filter with string arguments.
+     * @throws RegexException
+     */
+    public static function filter(
+        string $pattern,
+        string $replacement,
+        string $subject,
+        int $limit = -1,
+        int &$count = null
+    ): string {
+        $result = preg_filter($pattern, $replacement, $subject, $limit, $count);
+        if ($result === null) {
+            throw new RegexException('Regex failed: ' . $pattern);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Substitute for preg_grep.
+     *
+     * @param list<string> $array
+     * @return list<string>
+     * @throws RegexException
+     */
+    public static function grep(string $pattern, array $array, int $flags = 0): array
+    {
+        $result = preg_grep($pattern, $array, $flags);
+        if ($result === false) {
+            throw new RegexException('Regex failed: ' . $pattern);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Substitute for preg_match that returns bool
+     *
+     * @param 0|256|512|768 $flags
+     * @throws RegexException
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
+     */
+    public static function hasMatch(string $pattern, string $subject, int $flags = 0, int $offset = 0): bool
+    {
+        $result = preg_match($pattern, $subject, $match, $flags, $offset);
+        if ($result === false) {
+            throw new RegexException('Regex failed: ' . $pattern);
+        }
+
+        return $result !== 0;
+    }
+
+    /**
+     * Substitute for preg_match that returns non-null numbered matches.
+     *
+     * @param 0|256|512|768 $flags
+     * @return array<int, string>
+     * @throws RegexException
+     */
+    public static function match(string $pattern, string $subject, int $flags = 0, int $offset = 0): array
+    {
+        $result = preg_match($pattern, $subject, $matches, $flags, $offset);
+        if ($result === false) {
+            throw new RegexException('Regex failed: ' . $pattern);
+        }
+
+        $filteredMatches = [];
+        foreach ($matches as $key => $value) {
+            if (! is_int($key)) {
+                continue;
+            }
+
+            if (! is_string($value)) {
+                continue;
+            }
+
+            $filteredMatches[$key] = $value;
+        }
+
+        return $filteredMatches;
+    }
+
+    /**
+     * Substitute for preg_match that returns non-null named matches.
+     *
+     * @param 0|256|512|768 $flags
+     * @return array<string, string>
+     * @throws RegexException
+     */
+    public static function matchNamed(string $pattern, string $subject, int $flags = 0, int $offset = 0): array
+    {
+        $result = preg_match($pattern, $subject, $matches, $flags, $offset);
+        if ($result === false) {
+            throw new RegexException('Regex failed: ' . $pattern);
+        }
+
+        $filteredMatches = [];
+        foreach ($matches as $key => $value) {
+            if (! is_string($key)) {
+                continue;
+            }
+
+            if (! is_string($value)) {
+                continue;
+            }
+
+            $filteredMatches[$key] = $value;
+        }
+
+        return $filteredMatches;
+    }
+
+    /**
+     * Substitute for preg_match with PREG_OFFSET_CAPTURE that returns the
+     * matches.
+     *
+     * @param 0|256|512|768 $flags
+     * @return array<array<int, string|int|null>>
+     * @throws RegexException
+     */
+    public static function matchOffset(string $pattern, string $subject, int $flags = 0, int $offset = 0): array
+    {
+        $flags |= PREG_OFFSET_CAPTURE;
+        $result = preg_match($pattern, $subject, $matches, $flags, $offset);
+        if ($result === false) {
+            throw new RegexException('Regex failed: ' . $pattern);
+        }
+
+        return $matches;
+    }
+
+    /**
+     * Substitute for preg_match_all.
+     *
+     * @return array<array<int, string|int|null>>
+     * @throws RegexException
+     */
+    public static function matchAll(string $pattern, string $subject, int $flags = 0, int $offset = 0): array
+    {
+        $result = preg_match_all($pattern, $subject, $matches, $flags, $offset);
+        if ($result === false) {
+            throw new RegexException('Regex failed: ' . $pattern);
+        }
+
+        return $matches;
+    }
+
+    /**
+     * Substitute for preg_replace with string arguments.
+     *
+     * @throws RegexException
+     */
+    public static function replace(
+        string $pattern,
+        string $replacement,
+        string $subject,
+        int $limit = -1,
+        int &$count = null
+    ): string {
+        $result = preg_replace($pattern, $replacement, $subject, $limit, $count);
+        if ($result === null) {
+            throw new RegexException('Regex failed: ' . $pattern);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Substitute for preg_replace_array with string arguments.
+     *
+     * @param list<string> $pattern
+     * @param list<string> $replacement
+     * @param list<string> $subject
+     * @return list<string>
+     * @throws RegexException
+     */
+    public static function replaceArray(
+        array $pattern,
+        array $replacement,
+        array $subject,
+        int $limit = -1,
+        int &$count = null
+    ): array {
+        $result = preg_replace($pattern, $replacement, $subject, $limit, $count);
+        if ($result === null) {
+            throw new RegexException('Regex failed: ' . implode('; ', $pattern));
+        }
+
+        return $result;
+    }
+
+    /**
+     * Substitute for preg_split.
+     *
+     * @return list<string>
+     * @throws RegexException
+     */
+    public static function split(string $pattern, string $subject, int $limit = -1, int $flags = 0): array
+    {
+        $result = preg_split($pattern, $subject, $limit, $flags);
+        if ($result === false) {
+            throw new RegexException('Regex failed: ' . $pattern);
+        }
+
+        return $result;
+    }
+}
