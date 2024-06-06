@@ -244,7 +244,7 @@ class Ssh2Exception extends ServiceException {}
 /**
  * These utility classes exist because basic PHP functions return a mix of false
  * or null on failure rather than throwing exceptions which is tedious to deal
- * with.
+ * with. If a signal value is returned, return null rather than false.
  */
 
 /**
@@ -277,7 +277,6 @@ class Ssh2Exception extends ServiceException {}
  * pathinfo
  * is_link
  * readfile
- * fgets
  * is_writable
  * glob
  * symlink
@@ -315,6 +314,54 @@ class File
         if (fclose($stream) === false) {
             throw new FileException('Unable to close file');
         }
+    }
+
+    /**
+     * @param ?int<0, max> $length
+     * @param resource $stream
+     * @return ?list<string>
+     * @throws FileException
+     */
+    public static function getCsv(
+        $stream,
+        ?int $length = null,
+        string $separator = ',',
+        string $enclosure = '"',
+        string $escape = '\\'
+    ): ?array {
+        $fields = fgetcsv($stream, $length, $separator, $enclosure, $escape);
+
+        // Distinguish between end-of-data false and error false.
+        if ($fields === false) {
+            if (! feof($stream)) {
+                throw new FileException('Unable to get line from file');
+            }
+
+            return null;
+        }
+
+        return $fields;
+    }
+
+    /**
+     * @param ?int<0, max> $length
+     * @param resource $stream
+     * @throws FileException
+     */
+    public static function getLine($stream, ?int $length = null): ?string
+    {
+        $buffer = fgets($stream, $length);
+
+        // Distinguish between end-of-data false and error false.
+        if ($buffer === false) {
+            if (! feof($stream)) {
+                throw new FileException('Unable to get line from file');
+            }
+
+            return null;
+        }
+
+        return $buffer;
     }
 
     /**

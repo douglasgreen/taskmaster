@@ -66,7 +66,7 @@ class TaskFile
         $tasks = [];
         $checkedHeaders = false;
         $handle = File::open($this->filename, 'r');
-        while (($data = fgetcsv($handle)) !== false) {
+        while (($data = File::getCsv($handle)) !== null) {
             if (! $checkedHeaders) {
                 if ($data !== self::HEADERS) {
                     throw new ValueException('Bad headers');
