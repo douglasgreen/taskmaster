@@ -202,7 +202,7 @@ class TaskFile
                 return ['*'];
             }
 
-            if (! Regex::hasMatches($regex, $part)) {
+            if (! Regex::hasMatch($regex, $part)) {
                 $error = sprintf('Field "%s" doesn\'t match regex "%s"', $field, $regex);
                 throw new ValueException($error);
             }

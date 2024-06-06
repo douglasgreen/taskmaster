@@ -72,7 +72,7 @@ class TaskProcessor
             if (! empty($task->daysOfYear)) {
                 $dates = [];
                 foreach ($task->daysOfYear as $dayOfYear) {
-                    if (Regex::hasMatches('/^\d\d-\d\d$/', (string) $dayOfYear)) {
+                    if (Regex::hasMatch('/^\d\d-\d\d$/', (string) $dayOfYear)) {
                         $dayOfYear = $currentYear . '-' . $dayOfYear;
                     }
 

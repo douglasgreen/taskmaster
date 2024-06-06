@@ -110,7 +110,7 @@ class Task
         }
 
         foreach ($this->daysOfYear as $dayOfYear) {
-            if (! Regex::hasMatches('/^\d\d\d\d-\d\d-\d\d$/', $dayOfYear)) {
+            if (! Regex::hasMatch('/^\d\d\d\d-\d\d-\d\d$/', $dayOfYear)) {
                 $this->error($error);
             }
         }
@@ -121,11 +121,11 @@ class Task
      */
     protected function checkRecurDates(): void
     {
-        if ($this->recurStart !== null && ! Regex::hasMatches('/^\d\d\d\d-\d\d-\d\d$/', $this->recurStart)) {
+        if ($this->recurStart !== null && ! Regex::hasMatch('/^\d\d\d\d-\d\d-\d\d$/', $this->recurStart)) {
             $this->error('Bad recur start date');
         }
 
-        if ($this->recurEnd !== null && ! Regex::hasMatches('/^\d\d\d\d-\d\d-\d\d$/', $this->recurEnd)) {
+        if ($this->recurEnd !== null && ! Regex::hasMatch('/^\d\d\d\d-\d\d-\d\d$/', $this->recurEnd)) {
             $this->error('Bad recur end date');
         }
 

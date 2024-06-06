@@ -248,6 +248,25 @@ class Ssh2Exception extends ServiceException {}
  */
 
 /**
+ * Directory utility class to throw exceptions when basic operations fail.
+ */
+class Dir
+{
+    /**
+     * @throws DirectoryException
+     */
+    public static function getCurrent(): string
+    {
+        $result = getcwd();
+        if ($result === false) {
+            throw new DirectoryException('Unable to get current working directory');
+        }
+
+        return $result;
+    }
+}
+
+/**
  * File utility class to throw exceptions when basic operations fail.
  *
  * @todo Add other file functions from this list.
@@ -521,7 +540,7 @@ class Regex
      * @throws RegexException
      * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
-    public static function hasMatches(string $pattern, string $subject, int $flags = 0, int $offset = 0): bool
+    public static function hasMatch(string $pattern, string $subject, int $flags = 0, int $offset = 0): bool
     {
         $result = preg_match($pattern, $subject, $match, $flags, $offset);
         if ($result === false) {
