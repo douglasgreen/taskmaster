@@ -4,37 +4,35 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1a28c2f728627e6f82ead3a1bd240d27",
+    "content-hash": "42b6488ea48340d7fcfc3b2d79dad267",
     "packages": [
         {
             "name": "douglasgreen/optparser",
-            "version": "0.8.2",
+            "version": "0.8.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/optparser.git",
-                "reference": "abba1edab25eea10d657bcdefbd78f339a99fc5e"
+                "reference": "f923b990a7055e11f1e6908630c5b4c837b0d63c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/abba1edab25eea10d657bcdefbd78f339a99fc5e",
-                "reference": "abba1edab25eea10d657bcdefbd78f339a99fc5e",
+                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/f923b990a7055e11f1e6908630c5b4c837b0d63c",
+                "reference": "f923b990a7055e11f1e6908630c5b4c837b0d63c",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.1"
             },
             "require-dev": {
+                "douglasgreen/utility": "^0.1",
                 "phpmd/phpmd": "^2.15",
                 "phpstan/phpstan": "^1.10",
                 "phpunit/phpunit": "^10.5",
                 "rector/rector": "^1.0",
-                "symplify/easy-coding-standard": "^12.1"
+                "symplify/easy-coding-standard": "^12.2"
             },
             "type": "library",
             "autoload": {
-                "files": [
-                    "src/Exceptions.php"
-                ],
                 "psr-4": {
                     "DouglasGreen\\OptParser\\": "src/",
                     "DouglasGreen\\OptParser\\Tests\\": "tests/"
@@ -75,9 +73,69 @@
             ],
             "support": {
                 "issues": "https://github.com/douglasgreen/optparser/issues",
-                "source": "https://github.com/douglasgreen/optparser/tree/0.8.2"
+                "source": "https://github.com/douglasgreen/optparser/tree/0.8.5"
             },
-            "time": "2024-06-05T13:15:06+00:00"
+            "time": "2024-06-07T10:23:34+00:00"
+        },
+        {
+            "name": "douglasgreen/utility",
+            "version": "0.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/douglasgreen/utility.git",
+                "reference": "7622b2bd4ab3db1316e694dc21a5f45f6b9bd22c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/7622b2bd4ab3db1316e694dc21a5f45f6b9bd22c",
+                "reference": "7622b2bd4ab3db1316e694dc21a5f45f6b9bd22c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "phpmd/phpmd": "^2.15",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^10.5",
+                "rector/rector": "^1.0",
+                "symplify/easy-coding-standard": "^12.2"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "DouglasGreen\\Utility\\": "src/",
+                    "DouglasGreen\\Utility\\Tests\\": "tests/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Douglas Green",
+                    "email": "douglas@nurd.site",
+                    "homepage": "https://nurd.site/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A PHP utility project for exception classes and wrapper functions",
+            "homepage": "https://github.com/douglasgreen/utility",
+            "keywords": [
+                "directory",
+                "exceptions",
+                "file",
+                "php",
+                "regex",
+                "utility",
+                "wrapper"
+            ],
+            "support": {
+                "issues": "https://github.com/douglasgreen/utility/issues",
+                "source": "https://github.com/douglasgreen/utility/tree/0.1.1"
+            },
+            "time": "2024-06-07T10:21:52+00:00"
         }
     ],
     "packages-dev": [
@@ -601,16 +659,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.11.3",
+            "version": "1.11.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "e64220a05c1209fc856d58e789c3b7a32c0bb9a5"
+                "reference": "9100a76ce8015b9aa7125b9171ae3a76887b6c82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e64220a05c1209fc856d58e789c3b7a32c0bb9a5",
-                "reference": "e64220a05c1209fc856d58e789c3b7a32c0bb9a5",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/9100a76ce8015b9aa7125b9171ae3a76887b6c82",
+                "reference": "9100a76ce8015b9aa7125b9171ae3a76887b6c82",
                 "shasum": ""
             },
             "require": {
@@ -655,7 +713,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-05-31T13:53:37+00:00"
+            "time": "2024-06-06T12:19:22+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",

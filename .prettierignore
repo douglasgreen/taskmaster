@@ -1,52 +1,49 @@
-# This file contains common files and directories to ignore when checking code
-# with CSS/JS linters. It includes ignore rules for:
-#  - Dependency directories for package managers like npm, Bower, and Composer
-#  - Build output directories for tools like next.js, nuxt.js, and parcel
-#  - Configuration and cache files for tools like eslint and PHP Code Sniffer
-#  - IDE specific files and directories
-#  - Text files and licenses
-# The ignored files are applicable to many languages, frameworks, and environments.
-# Adjust this file according to your project's specific needs by adding
-# project-specific files and directories below.
+# This file ignores build directories and project tool directories.
 
-# Project-specific settings
+# Project-specific settings (put your files here)
 
 # Bower
-bower/
 bower_components/
 
 # Build directories
 build/
 .cache/
 .next/
-.nuxt/
-.serverless/
-.vuepress/dist/
 
 # Composer
 composer.lock
 vendor/
 
-# Configuration and cache files
+# eslint
 .eslintcache
-.phpcs-cache
-.phpunit.result.cache
-.yarn-integrity
+
+# Grunt
+.grunt/
 
 # Husky
 .husky/_/
 
-# IDE-specific files
-.idea/
-*.iml
+# Minified css/js files
+*.min.*
 
 # Node
+.node_repl_history
+.npm/
 node_modules/
+npm-debug.log*
 package-lock.json
 
 # PHP
 .php
 
-# Text
-LICENSE
-*.txt
+# PHPUnit
+.phpunit.result.cache
+
+# Python
+*.pyc
+__pycache__/
+*.pyo
+
+# Symfony
+/.env.local.php
+/var/

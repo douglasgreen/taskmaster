@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster;
 
-use DouglasGreen\Exceptions\File;
-use DouglasGreen\Exceptions\Regex;
-use DouglasGreen\Exceptions\ValueException;
+use DouglasGreen\Utility\Exceptions\Data\ValueException;
+use DouglasGreen\Utility\File;
+use DouglasGreen\Utility\Regex;
 
 class TaskFile
 {

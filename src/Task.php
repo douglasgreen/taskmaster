@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster;
 
-use DouglasGreen\Exceptions\Regex;
-use DouglasGreen\Exceptions\ValueException;
+use DouglasGreen\Utility\Exceptions\Data\ValueException;
+use DouglasGreen\Utility\Regex;
 
 /**
  * Represents a task with various attributes.

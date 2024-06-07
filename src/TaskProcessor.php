@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster;
 
-use DouglasGreen\Exceptions\Regex;
+use DouglasGreen\Utility\Regex;
 
 class TaskProcessor
 {
