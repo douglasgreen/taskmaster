@@ -11,7 +11,7 @@ class TaskProcessor
 {
     public function __construct(
         protected ReminderEmail $reminderEmail,
-        protected TaskFile $taskFile
+        protected TaskFile $taskFile,
     ) {}
 
     /**
@@ -39,23 +39,31 @@ class TaskProcessor
 
         foreach ($tasks as $task) {
             // Don't send more than one reminder per 59 minutes to allow margin for error.
-            if ($task->lastTimeReminded > 0 && $currentTime - $task->lastTimeReminded < 3540) {
+            if (
+                $task->lastTimeReminded > 0 &&
+                $currentTime - $task->lastTimeReminded < 3540
+            ) {
                 continue;
             }
 
             // Don't send more than one reminder on the same date if the time is
             // unspecified otherwise you'd get emails every hour.
-            if ($task->lastTimeReminded > 0 && $task->timesOfDay === [] && date(
-                'Y-m-d',
-                $task->lastTimeReminded
-            ) === $currentDate) {
+            if (
+                $task->lastTimeReminded > 0 &&
+                $task->timesOfDay === [] &&
+                date('Y-m-d', $task->lastTimeReminded) === $currentDate
+            ) {
                 continue;
             }
 
             // Check if recurring dates are out of range.
             if ($task->recurring) {
-                $recurStartTime = empty($task->recurStart) ? null : strtotime((string) $task->recurStart);
-                $recurEndTime = empty($task->recurEnd) ? null : strtotime((string) $task->recurEnd);
+                $recurStartTime = empty($task->recurStart)
+                    ? null
+                    : strtotime((string) $task->recurStart);
+                $recurEndTime = empty($task->recurEnd)
+                    ? null
+                    : strtotime((string) $task->recurEnd);
 
                 if ($recurStartTime && $currentTime < $recurStartTime) {
                     continue;
@@ -86,7 +94,10 @@ class TaskProcessor
                     if ($dayOfMonth === '*') {
                         $dates[] = $currentDate;
                     } elseif ($dayOfMonth <= $daysInCurrentMonth) {
-                        $dates[] = date('Y-m') . '-' . str_pad((string) $dayOfMonth, 2, '0', STR_PAD_LEFT);
+                        $dates[] =
+                            date('Y-m') .
+                            '-' .
+                            str_pad((string) $dayOfMonth, 2, '0', STR_PAD_LEFT);
                     } else {
                         $dates[] = date('Y-m') . '-' . $daysInCurrentMonth;
                     }
@@ -96,7 +107,10 @@ class TaskProcessor
             } elseif (! empty($task->daysOfWeek)) {
                 $dates = [];
                 foreach ($task->daysOfWeek as $dayOfWeek) {
-                    if ($dayOfWeek === '*' || $currentDayOfWeek === $dayOfWeek) {
+                    if (
+                        $dayOfWeek === '*' ||
+                        $currentDayOfWeek === $dayOfWeek
+                    ) {
                         $dates[] = $currentDate;
                     }
                 }
@@ -116,7 +130,11 @@ class TaskProcessor
 
                 // 14 minutes in seconds
                 if (abs($datetimeSeconds - $currentTime) < 840) {
-                    $this->reminderEmail->send($task->taskName, $task->taskUrl, $isNudge);
+                    $this->reminderEmail->send(
+                        $task->taskName,
+                        $task->taskUrl,
+                        $isNudge,
+                    );
                     $reminderSent = true;
                     $task->lastTimeReminded = $currentTime;
 

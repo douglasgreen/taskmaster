@@ -30,6 +30,7 @@
 declare(strict_types=1);
 
 use PhpCsFixer\Fixer\Phpdoc\GeneralPhpdocAnnotationRemoveFixer;
+use Symplify\CodingStandard\Fixer\LineLength\LineLengthFixer;
 use Symplify\EasyCodingStandard\Config\ECSConfig;
 
 $hasPhpUnit = false;
@@ -40,7 +41,12 @@ $phpVersion = null;
 if (file_exists('composer.json')) {
     $composerContent = file_get_contents('composer.json');
     if ($composerContent !== false) {
-        $composerData = json_decode($composerContent, true, 16, JSON_THROW_ON_ERROR);
+        $composerData = json_decode(
+            $composerContent,
+            true,
+            16,
+            JSON_THROW_ON_ERROR,
+        );
 
         // Check for PHPUnit, Symfony, and Doctrine
         $requires = $composerData['require'] ?? [];
@@ -134,7 +140,13 @@ $paths = array_map('trim', $paths);
 return ECSConfig::configure()
     ->withPaths($paths)
     ->withRootFiles()
-    ->withPreparedSets(cleanCode: true, common: true, psr12: true, strict: true, symplify: true)
+    ->withPreparedSets(
+        cleanCode: true,
+        common: true,
+        psr12: true,
+        strict: true,
+        symplify: true,
+    )
     ->withPhpCsFixerSets(
         doctrineAnnotation: $sets['doctrineAnnotation'],
         perCS: $sets['perCS'],
@@ -147,6 +159,9 @@ return ECSConfig::configure()
         symfony: $sets['symfony'],
         symfonyRisky: $sets['symfonyRisky'],
     )
+    ->withConfiguredRule(LineLengthFixer::class, [
+        'line_length' => 80,
+    ])
     ->withConfiguredRule(
         // Be careful about this part of the config. ECS removes the tag and its
         // contents when what you often want to do is remove or modify the tag
@@ -236,5 +251,5 @@ return ECSConfig::configure()
                 // Use @uses on the other code instead
                 'usedby',
             ],
-        ]
+        ],
     );

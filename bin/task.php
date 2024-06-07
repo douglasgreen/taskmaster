@@ -11,19 +11,25 @@ use DouglasGreen\TaskMaster\TaskProcessor;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$optParser = new OptParser('Task Manager', 'Command-line version of task manager');
+$optParser = new OptParser(
+    'Task Manager',
+    'Command-line version of task manager',
+);
 
 // Add commands.
-$optParser->addCommand(['process'], 'Process tasks and send emails')
+$optParser
+    ->addCommand(['process'], 'Process tasks and send emails')
     ->addCommand(['add'], 'Add a new task')
     ->addCommand(['search'], 'Search for tasks');
 
 // Add params for process command.
-$optParser->addTerm('email', 'EMAIL', 'Your email address')
+$optParser
+    ->addTerm('email', 'EMAIL', 'Your email address')
     ->addParam(['timezone', 't'], 'STRING', 'Your timezone');
 
 // Add params for add command.
-$optParser->addTerm('name', 'STRING', 'Task name')
+$optParser
+    ->addTerm('name', 'STRING', 'Task name')
     ->addParam(['url'], 'URL', 'URL for documentation or action')
     ->addParam(['recur'], 'BOOL', 'Recurring?')
     ->addParam(['start'], 'DATE', 'Recur start date')
@@ -40,7 +46,17 @@ $optParser->addTerm('term', 'STRING', 'Term to search form');
 $optParser->addUsage('process', ['email', 'timezone']);
 
 // Add usage for add command.
-$optParser->addUsage('add', ['name', 'url', 'recur', 'start', 'end', 'year', 'month', 'week', 'time']);
+$optParser->addUsage('add', [
+    'name',
+    'url',
+    'recur',
+    'start',
+    'end',
+    'year',
+    'month',
+    'week',
+    'time',
+]);
 
 // Add usage for search command.
 $optParser->addUsage('search', ['term']);
@@ -80,7 +96,7 @@ switch ($command) {
             (string) $input->get('year'),
             (string) $input->get('month'),
             (string) $input->get('week'),
-            (string) $input->get('time')
+            (string) $input->get('time'),
         );
         break;
     case 'search':
@@ -95,36 +111,56 @@ switch ($command) {
                     echo sprintf('Task URL: %s%s', $task->taskUrl, PHP_EOL);
                 }
 
-                echo 'Recurring: ' . ($task->recurring ? 'Yes' : 'No') . PHP_EOL;
+                echo 'Recurring: ' .
+                    ($task->recurring ? 'Yes' : 'No') .
+                    PHP_EOL;
 
                 if ($task->recurring) {
                     if ($task->recurStart !== null) {
-                        echo sprintf('Recur Start: %s%s', $task->recurStart, PHP_EOL);
+                        echo sprintf(
+                            'Recur Start: %s%s',
+                            $task->recurStart,
+                            PHP_EOL,
+                        );
                     }
 
                     if ($task->recurEnd !== null) {
-                        echo sprintf('Recur End: %s%s', $task->recurEnd, PHP_EOL);
+                        echo sprintf(
+                            'Recur End: %s%s',
+                            $task->recurEnd,
+                            PHP_EOL,
+                        );
                     }
                 }
 
                 if ($task->daysOfYear !== []) {
-                    echo 'Days of Year: ' . implode(', ', $task->daysOfYear) . PHP_EOL;
+                    echo 'Days of Year: ' .
+                        implode(', ', $task->daysOfYear) .
+                        PHP_EOL;
                 }
 
                 if ($task->daysOfMonth !== []) {
-                    echo 'Days of Month: ' . implode(', ', $task->daysOfMonth) . PHP_EOL;
+                    echo 'Days of Month: ' .
+                        implode(', ', $task->daysOfMonth) .
+                        PHP_EOL;
                 }
 
                 if ($task->daysOfWeek !== []) {
-                    echo 'Days of Week: ' . implode(', ', $task->getWeekdayNames()) . PHP_EOL;
+                    echo 'Days of Week: ' .
+                        implode(', ', $task->getWeekdayNames()) .
+                        PHP_EOL;
                 }
 
                 if ($task->timesOfDay !== []) {
-                    echo 'Times of Day: ' . implode(', ', $task->timesOfDay) . PHP_EOL;
+                    echo 'Times of Day: ' .
+                        implode(', ', $task->timesOfDay) .
+                        PHP_EOL;
                 }
 
                 if ($task->lastTimeReminded !== 0) {
-                    echo 'Last Date Reminded: ' . date('Y-m-d H:i:s', $task->lastTimeReminded) . PHP_EOL;
+                    echo 'Last Date Reminded: ' .
+                        date('Y-m-d H:i:s', $task->lastTimeReminded) .
+                        PHP_EOL;
                 }
 
                 echo '---------------------------------------' . PHP_EOL;
