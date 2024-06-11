@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace DouglasGreen\TaskMaster;
 
 use DouglasGreen\Utility\Exceptions\Data\ValueException;
-use DouglasGreen\Utility\File;
-use DouglasGreen\Utility\Regex;
+use DouglasGreen\Utility\FileSystem\File;
+use DouglasGreen\Utility\Regex\Regex;
 
 class TaskFile
 {
@@ -20,6 +20,9 @@ class TaskFile
         protected string $filename
     ) {}
 
+    /**
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
+     */
     public function addTask(
         string $taskName,
         string $taskUrl,
@@ -71,8 +74,8 @@ class TaskFile
     {
         $tasks = [];
         $checkedHeaders = false;
-        $handle = File::open($this->filename, 'r');
-        while (($data = File::getCsv($handle)) !== null) {
+        $file = new File($this->filename);
+        while (($data = $file->getFields()) !== null) {
             if (! $checkedHeaders) {
                 if ($data !== self::HEADERS) {
                     throw new ValueException('Bad headers');
@@ -138,8 +141,6 @@ class TaskFile
             $tasks[] = $task;
         }
 
-        File::close($handle);
-
         // Sort the tasks by $lastTimeReminded so the oldest is reminded first.
         usort(
             $tasks,
@@ -155,8 +156,8 @@ class TaskFile
      */
     public function saveTasks(array $tasks): void
     {
-        $handle = File::open($this->filename, 'w');
-        fputcsv($handle, self::HEADERS);
+        $file = new File($this->filename, 'w');
+        $file->putFields(self::HEADERS);
         foreach ($tasks as $task) {
             if (! $task instanceof Task) {
                 throw new ValueException('Invalid task provided');
@@ -185,10 +186,8 @@ class TaskFile
                 $lastDateReminded,
             ];
 
-            fputcsv($handle, $data);
+            $file->putFields($data);
         }
-
-        File::close($handle);
     }
 
     /**
@@ -216,7 +215,7 @@ class TaskFile
      */
     protected function splitField(string $field, string $regex): array
     {
-        $parts = Regex::split('/\s*\|\s*/', $field, -1, PREG_SPLIT_NO_EMPTY);
+        $parts = Regex::doSplit('/\s*\|\s*/', $field, -1, PREG_SPLIT_NO_EMPTY);
         foreach ($parts as $part) {
             if ($part === '*') {
                 return ['*'];

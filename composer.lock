@@ -4,27 +4,27 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "42b6488ea48340d7fcfc3b2d79dad267",
+    "content-hash": "56c1c1cd62ffeb44c938a2e7394b0934",
     "packages": [
         {
             "name": "douglasgreen/optparser",
-            "version": "0.8.5",
+            "version": "0.8.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/optparser.git",
-                "reference": "f923b990a7055e11f1e6908630c5b4c837b0d63c"
+                "reference": "35378c5e0ead54dae7f4cd2093bb9ba9743e50ec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/f923b990a7055e11f1e6908630c5b4c837b0d63c",
-                "reference": "f923b990a7055e11f1e6908630c5b4c837b0d63c",
+                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/35378c5e0ead54dae7f4cd2093bb9ba9743e50ec",
+                "reference": "35378c5e0ead54dae7f4cd2093bb9ba9743e50ec",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.1"
             },
             "require-dev": {
-                "douglasgreen/utility": "^0.1",
+                "douglasgreen/utility": "^0.3",
                 "phpmd/phpmd": "^2.15",
                 "phpstan/phpstan": "^1.10",
                 "phpunit/phpunit": "^10.5",
@@ -73,22 +73,22 @@
             ],
             "support": {
                 "issues": "https://github.com/douglasgreen/optparser/issues",
-                "source": "https://github.com/douglasgreen/optparser/tree/0.8.5"
+                "source": "https://github.com/douglasgreen/optparser/tree/0.8.8"
             },
-            "time": "2024-06-07T10:23:34+00:00"
+            "time": "2024-06-10T10:03:10+00:00"
         },
         {
             "name": "douglasgreen/utility",
-            "version": "0.1.1",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/utility.git",
-                "reference": "7622b2bd4ab3db1316e694dc21a5f45f6b9bd22c"
+                "reference": "692addbe741af7fb928f97864a5c4c89ec6d5a63"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/7622b2bd4ab3db1316e694dc21a5f45f6b9bd22c",
-                "reference": "7622b2bd4ab3db1316e694dc21a5f45f6b9bd22c",
+                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/692addbe741af7fb928f97864a5c4c89ec6d5a63",
+                "reference": "692addbe741af7fb928f97864a5c4c89ec6d5a63",
                 "shasum": ""
             },
             "require": {
@@ -98,9 +98,11 @@
                 "phpmd/phpmd": "^2.15",
                 "phpstan/phpstan": "^1.10",
                 "phpunit/phpunit": "^10.5",
+                "phpunitgen/console": "^6.1",
                 "rector/rector": "^1.0",
                 "symplify/easy-coding-standard": "^12.2"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -108,7 +110,21 @@
                     "DouglasGreen\\Utility\\Tests\\": "tests/"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "scripts": {
+                "lint": [
+                    "ecs",
+                    "rector --dry-run",
+                    "./run_phpmd.sh",
+                    "./run_phpstan.sh"
+                ],
+                "lint:fix": [
+                    "ecs --fix",
+                    "rector"
+                ],
+                "test": [
+                    "phpunit"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -132,10 +148,10 @@
                 "wrapper"
             ],
             "support": {
-                "issues": "https://github.com/douglasgreen/utility/issues",
-                "source": "https://github.com/douglasgreen/utility/tree/0.1.1"
+                "source": "https://github.com/douglasgreen/utility/tree/main",
+                "issues": "https://github.com/douglasgreen/utility/issues"
             },
-            "time": "2024-06-07T10:21:52+00:00"
+            "time": "2024-06-11T12:19:49+00:00"
         }
     ],
     "packages-dev": [
@@ -275,6 +291,84 @@
                 }
             ],
             "time": "2024-05-06T16:37:16+00:00"
+        },
+        {
+            "name": "douglasgreen/config-setup",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/douglasgreen/config-setup.git",
+                "reference": "e89610479ecf08686af13ac1ff0e817790fde74f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/e89610479ecf08686af13ac1ff0e817790fde74f",
+                "reference": "e89610479ecf08686af13ac1ff0e817790fde74f",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "phpmd/phpmd": "^2.15",
+                "phpstan/phpstan": "^1.10",
+                "phpunit/phpunit": "^10.5",
+                "rector/rector": "^1.0",
+                "symplify/easy-coding-standard": "^12.2"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "DouglasGreen\\ConfigSetup\\": "src/"
+                }
+            },
+            "scripts": {
+                "lint": [
+                    "ecs",
+                    "rector --dry-run",
+                    "./run_phpmd.sh",
+                    "./run_phpstan.sh"
+                ],
+                "lint:fix": [
+                    "ecs --fix",
+                    "rector"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Douglas Green",
+                    "email": "douglas@nurd.site",
+                    "homepage": "https://nurd.site/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Preconfigured setup files for linting, fixing, and testing PHP and JavaScript projects",
+            "homepage": "https://github.com/douglasgreen/config-setup",
+            "keywords": [
+                "automation",
+                "ci-cd",
+                "code-quality",
+                "coding-standards",
+                "composer",
+                "config",
+                "fixing",
+                "linting",
+                "php",
+                "php-cs-fixer",
+                "phpcs",
+                "phpunit",
+                "static-analysis",
+                "testing"
+            ],
+            "support": {
+                "source": "https://github.com/douglasgreen/config-setup/tree/main",
+                "issues": "https://github.com/douglasgreen/config-setup/issues"
+            },
+            "time": "2024-06-11T17:17:23+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -2935,7 +3029,10 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "douglasgreen/utility": 20,
+        "douglasgreen/config-setup": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
