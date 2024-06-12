@@ -42,7 +42,7 @@ class Task
         public array $daysOfMonth,
         public array $daysOfWeek,
         public array $timesOfDay,
-        public int $lastTimeReminded
+        public int $lastTimeReminded,
     ) {
         $this->taskName = trim(Regex::doReplace('/\s+/', ' ', $this->taskName));
 
@@ -121,24 +121,26 @@ class Task
      */
     protected function checkRecurDates(): void
     {
-        if ($this->recurStart !== null && ! Regex::hasMatch(
-            '/^\d\d\d\d-\d\d-\d\d$/',
-            $this->recurStart
-        )) {
+        if (
+            $this->recurStart !== null &&
+            ! Regex::hasMatch('/^\d\d\d\d-\d\d-\d\d$/', $this->recurStart)
+        ) {
             $this->error('Bad recur start date');
         }
 
-        if ($this->recurEnd !== null && ! Regex::hasMatch(
-            '/^\d\d\d\d-\d\d-\d\d$/',
-            $this->recurEnd
-        )) {
+        if (
+            $this->recurEnd !== null &&
+            ! Regex::hasMatch('/^\d\d\d\d-\d\d-\d\d$/', $this->recurEnd)
+        ) {
             $this->error('Bad recur end date');
         }
 
-        if ($this->recurEnd !== null && $this->recurStart !== null && $this->recurEnd < $this->recurStart) {
-            $this->error(
-                'Bad recur date range: ' . $this->recurStart . ' to ' . $this->recurEnd
-            );
+        if (
+            $this->recurEnd !== null &&
+            $this->recurStart !== null &&
+            $this->recurEnd < $this->recurStart
+        ) {
+            $this->error('Bad recur date range: ' . $this->recurStart . ' to ' . $this->recurEnd);
         }
 
         if ($this->recurring) {
@@ -149,9 +151,7 @@ class Task
             return;
         }
 
-        $this->error(
-            'Non-recurring tasks must not specify a recur start or end'
-        );
+        $this->error('Non-recurring tasks must not specify a recur start or end');
     }
 
     /**

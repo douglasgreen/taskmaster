@@ -11,10 +11,7 @@ use DouglasGreen\TaskMaster\TaskProcessor;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$optParser = new OptParser(
-    'Task Manager',
-    'Command-line version of task manager',
-);
+$optParser = new OptParser('Task Manager', 'Command-line version of task manager');
 
 // Add commands.
 $optParser
@@ -111,50 +108,32 @@ switch ($command) {
                     echo sprintf('Task URL: %s%s', $task->taskUrl, PHP_EOL);
                 }
 
-                echo 'Recurring: ' .
-                    ($task->recurring ? 'Yes' : 'No') .
-                    PHP_EOL;
+                echo 'Recurring: ' . ($task->recurring ? 'Yes' : 'No') . PHP_EOL;
 
                 if ($task->recurring) {
                     if ($task->recurStart !== null) {
-                        echo sprintf(
-                            'Recur Start: %s%s',
-                            $task->recurStart,
-                            PHP_EOL,
-                        );
+                        echo sprintf('Recur Start: %s%s', $task->recurStart, PHP_EOL);
                     }
 
                     if ($task->recurEnd !== null) {
-                        echo sprintf(
-                            'Recur End: %s%s',
-                            $task->recurEnd,
-                            PHP_EOL,
-                        );
+                        echo sprintf('Recur End: %s%s', $task->recurEnd, PHP_EOL);
                     }
                 }
 
                 if ($task->daysOfYear !== []) {
-                    echo 'Days of Year: ' .
-                        implode(', ', $task->daysOfYear) .
-                        PHP_EOL;
+                    echo 'Days of Year: ' . implode(', ', $task->daysOfYear) . PHP_EOL;
                 }
 
                 if ($task->daysOfMonth !== []) {
-                    echo 'Days of Month: ' .
-                        implode(', ', $task->daysOfMonth) .
-                        PHP_EOL;
+                    echo 'Days of Month: ' . implode(', ', $task->daysOfMonth) . PHP_EOL;
                 }
 
                 if ($task->daysOfWeek !== []) {
-                    echo 'Days of Week: ' .
-                        implode(', ', $task->getWeekdayNames()) .
-                        PHP_EOL;
+                    echo 'Days of Week: ' . implode(', ', $task->getWeekdayNames()) . PHP_EOL;
                 }
 
                 if ($task->timesOfDay !== []) {
-                    echo 'Times of Day: ' .
-                        implode(', ', $task->timesOfDay) .
-                        PHP_EOL;
+                    echo 'Times of Day: ' . implode(', ', $task->timesOfDay) . PHP_EOL;
                 }
 
                 if ($task->lastTimeReminded !== 0) {

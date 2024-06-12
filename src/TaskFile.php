@@ -11,9 +11,16 @@ use DouglasGreen\Utility\Regex\Regex;
 class TaskFile
 {
     protected const HEADERS = [
-        'Task name', 'Task URL', 'Recurring?', 'Recur start',
-        'Recur end', 'Days of year', 'Days of month', 'Days of week',
-        'Times of day', 'Last date reminded',
+        'Task name',
+        'Task URL',
+        'Recurring?',
+        'Recur start',
+        'Recur end',
+        'Days of year',
+        'Days of month',
+        'Days of week',
+        'Times of day',
+        'Last date reminded',
     ];
 
     public function __construct(
@@ -32,17 +39,11 @@ class TaskFile
         string $daysOfYearField,
         string $daysOfMonthField,
         string $daysOfWeekField,
-        string $timesOfDayField
+        string $timesOfDayField,
     ): void {
-        $daysOfYear = $this->splitField(
-            $daysOfYearField,
-            '/^(\d\d\d\d-)?\d\d-\d\d$/'
-        );
+        $daysOfYear = $this->splitField($daysOfYearField, '/^(\d\d\d\d-)?\d\d-\d\d$/');
 
-        $daysOfMonth = $this->splitField(
-            $daysOfMonthField,
-            '/^([1-9]|[12]\d|3[01])$/'
-        );
+        $daysOfMonth = $this->splitField($daysOfMonthField, '/^([1-9]|[12]\d|3[01])$/');
 
         $daysOfWeek = $this->splitField($daysOfWeekField, '/^[1-7]$/');
 
@@ -60,7 +61,7 @@ class TaskFile
             $daysOfMonth,
             $daysOfWeek,
             $timesOfDay,
-            0
+            0,
         );
         $tasks[] = $task;
         $this->saveTasks($tasks);
@@ -97,20 +98,14 @@ class TaskFile
                 $daysOfMonthField,
                 $daysOfWeekField,
                 $timesOfDayField,
-                $lastDateReminded
+                $lastDateReminded,
             ] = $data;
 
             $recurring = (bool) $recurring;
 
-            $daysOfYear = $this->splitField(
-                $daysOfYearField,
-                '/^(\d\d\d\d-)?\d\d-\d\d$/'
-            );
+            $daysOfYear = $this->splitField($daysOfYearField, '/^(\d\d\d\d-)?\d\d-\d\d$/');
 
-            $daysOfMonth = $this->splitField(
-                $daysOfMonthField,
-                '/^([1-9]|[12]\d|3[01])$/'
-            );
+            $daysOfMonth = $this->splitField($daysOfMonthField, '/^([1-9]|[12]\d|3[01])$/');
 
             $daysOfWeek = $this->splitField($daysOfWeekField, '/^[1-7]$/');
 
@@ -120,9 +115,7 @@ class TaskFile
             if ($lastDateReminded !== '') {
                 $lastTimeReminded = strtotime($lastDateReminded);
                 if ($lastTimeReminded === false) {
-                    throw new ValueException(
-                        'Bad last date reminded: ' . $lastDateReminded
-                    );
+                    throw new ValueException('Bad last date reminded: ' . $lastDateReminded);
                 }
             }
 
@@ -144,7 +137,7 @@ class TaskFile
         // Sort the tasks by $lastTimeReminded so the oldest is reminded first.
         usort(
             $tasks,
-            static fn($first, $second): int => $first->lastTimeReminded - $second->lastTimeReminded
+            static fn($first, $second): int => $first->lastTimeReminded - $second->lastTimeReminded,
         );
 
         return $tasks;
@@ -168,10 +161,8 @@ class TaskFile
             $daysOfMonthField = implode('|', $task->daysOfMonth);
             $daysOfWeekField = implode('|', $task->daysOfWeek);
             $timesOfDayField = implode('|', $task->timesOfDay);
-            $lastDateReminded = $task->lastTimeReminded > 0 ? date(
-                'Y-m-d H:i:s',
-                $task->lastTimeReminded
-            ) : '';
+            $lastDateReminded =
+                $task->lastTimeReminded > 0 ? date('Y-m-d H:i:s', $task->lastTimeReminded) : '';
 
             $data = [
                 $task->taskName,
@@ -222,11 +213,7 @@ class TaskFile
             }
 
             if (! Regex::hasMatch($regex, $part)) {
-                $error = sprintf(
-                    'Field "%s" doesn\'t match regex "%s"',
-                    $field,
-                    $regex
-                );
+                $error = sprintf('Field "%s" doesn\'t match regex "%s"', $field, $regex);
                 throw new ValueException($error);
             }
         }

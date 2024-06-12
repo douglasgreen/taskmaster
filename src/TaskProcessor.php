@@ -39,10 +39,7 @@ class TaskProcessor
 
         foreach ($tasks as $task) {
             // Don't send more than one reminder per 59 minutes to allow margin for error.
-            if (
-                $task->lastTimeReminded > 0 &&
-                $currentTime - $task->lastTimeReminded < 3540
-            ) {
+            if ($task->lastTimeReminded > 0 && $currentTime - $task->lastTimeReminded < 3540) {
                 continue;
             }
 
@@ -61,9 +58,7 @@ class TaskProcessor
                 $recurStartTime = empty($task->recurStart)
                     ? null
                     : strtotime((string) $task->recurStart);
-                $recurEndTime = empty($task->recurEnd)
-                    ? null
-                    : strtotime((string) $task->recurEnd);
+                $recurEndTime = empty($task->recurEnd) ? null : strtotime((string) $task->recurEnd);
 
                 if ($recurStartTime && $currentTime < $recurStartTime) {
                     continue;
@@ -95,9 +90,7 @@ class TaskProcessor
                         $dates[] = $currentDate;
                     } elseif ($dayOfMonth <= $daysInCurrentMonth) {
                         $dates[] =
-                            date('Y-m') .
-                            '-' .
-                            str_pad((string) $dayOfMonth, 2, '0', STR_PAD_LEFT);
+                            date('Y-m') . '-' . str_pad((string) $dayOfMonth, 2, '0', STR_PAD_LEFT);
                     } else {
                         $dates[] = date('Y-m') . '-' . $daysInCurrentMonth;
                     }
@@ -107,10 +100,7 @@ class TaskProcessor
             } elseif (! empty($task->daysOfWeek)) {
                 $dates = [];
                 foreach ($task->daysOfWeek as $dayOfWeek) {
-                    if (
-                        $dayOfWeek === '*' ||
-                        $currentDayOfWeek === $dayOfWeek
-                    ) {
+                    if ($dayOfWeek === '*' || $currentDayOfWeek === $dayOfWeek) {
                         $dates[] = $currentDate;
                     }
                 }
@@ -130,11 +120,7 @@ class TaskProcessor
 
                 // 14 minutes in seconds
                 if (abs($datetimeSeconds - $currentTime) < 840) {
-                    $this->reminderEmail->send(
-                        $task->taskName,
-                        $task->taskUrl,
-                        $isNudge,
-                    );
+                    $this->reminderEmail->send($task->taskName, $task->taskUrl, $isNudge);
                     $reminderSent = true;
                     $task->lastTimeReminded = $currentTime;
 
