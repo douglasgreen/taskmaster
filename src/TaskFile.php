@@ -10,7 +10,7 @@ use DouglasGreen\Utility\Regex\Regex;
 
 class TaskFile
 {
-    protected const array HEADERS = [
+    protected const HEADERS = [
         'Task name', 'Task URL', 'Recurring?', 'Recur start',
         'Recur end', 'Days of year', 'Days of month', 'Days of week',
         'Times of day', 'Last date reminded',

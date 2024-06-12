@@ -4,33 +4,35 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "56c1c1cd62ffeb44c938a2e7394b0934",
+    "content-hash": "931ea12a284938912d6ac10255227f13",
     "packages": [
         {
             "name": "douglasgreen/optparser",
-            "version": "0.8.8",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/optparser.git",
-                "reference": "35378c5e0ead54dae7f4cd2093bb9ba9743e50ec"
+                "reference": "647f270a217b122363e4e7d262cd39e1d3e527d9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/35378c5e0ead54dae7f4cd2093bb9ba9743e50ec",
-                "reference": "35378c5e0ead54dae7f4cd2093bb9ba9743e50ec",
+                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/647f270a217b122363e4e7d262cd39e1d3e527d9",
+                "reference": "647f270a217b122363e4e7d262cd39e1d3e527d9",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.1"
             },
             "require-dev": {
-                "douglasgreen/utility": "^0.3",
+                "douglasgreen/config-setup": "dev-main",
+                "douglasgreen/utility": "dev-main",
                 "phpmd/phpmd": "^2.15",
                 "phpstan/phpstan": "^1.10",
                 "phpunit/phpunit": "^10.5",
                 "rector/rector": "^1.0",
                 "symplify/easy-coding-standard": "^12.2"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -73,9 +75,9 @@
             ],
             "support": {
                 "issues": "https://github.com/douglasgreen/optparser/issues",
-                "source": "https://github.com/douglasgreen/optparser/tree/0.8.8"
+                "source": "https://github.com/douglasgreen/optparser/tree/main"
             },
-            "time": "2024-06-10T10:03:10+00:00"
+            "time": "2024-06-11T21:13:54+00:00"
         },
         {
             "name": "douglasgreen/utility",
@@ -83,18 +85,19 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/utility.git",
-                "reference": "692addbe741af7fb928f97864a5c4c89ec6d5a63"
+                "reference": "2ffb41b826a0ed5075c27f37395c4fda719eada5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/692addbe741af7fb928f97864a5c4c89ec6d5a63",
-                "reference": "692addbe741af7fb928f97864a5c4c89ec6d5a63",
+                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/2ffb41b826a0ed5075c27f37395c4fda719eada5",
+                "reference": "2ffb41b826a0ed5075c27f37395c4fda719eada5",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.1"
             },
             "require-dev": {
+                "douglasgreen/config-setup": "dev-main",
                 "phpmd/phpmd": "^2.15",
                 "phpstan/phpstan": "^1.10",
                 "phpunit/phpunit": "^10.5",
@@ -120,6 +123,12 @@
                 "lint:fix": [
                     "ecs --fix",
                     "rector"
+                ],
+                "post-install-cmd": [
+                    "vendor/douglasgreen/config-setup/bin/copy_files.php"
+                ],
+                "post-update-cmd": [
+                    "vendor/douglasgreen/config-setup/bin/copy_files.php"
                 ],
                 "test": [
                     "phpunit"
@@ -151,7 +160,7 @@
                 "source": "https://github.com/douglasgreen/utility/tree/main",
                 "issues": "https://github.com/douglasgreen/utility/issues"
             },
-            "time": "2024-06-11T12:19:49+00:00"
+            "time": "2024-06-12T12:20:50+00:00"
         }
     ],
     "packages-dev": [
@@ -298,12 +307,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/config-setup.git",
-                "reference": "e89610479ecf08686af13ac1ff0e817790fde74f"
+                "reference": "5583ea56568590d42aa424e31f16e92a259add75"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/e89610479ecf08686af13ac1ff0e817790fde74f",
-                "reference": "e89610479ecf08686af13ac1ff0e817790fde74f",
+                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/5583ea56568590d42aa424e31f16e92a259add75",
+                "reference": "5583ea56568590d42aa424e31f16e92a259add75",
                 "shasum": ""
             },
             "require": {
@@ -368,7 +377,7 @@
                 "source": "https://github.com/douglasgreen/config-setup/tree/main",
                 "issues": "https://github.com/douglasgreen/config-setup/issues"
             },
-            "time": "2024-06-11T17:17:23+00:00"
+            "time": "2024-06-12T11:59:01+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -3030,6 +3039,7 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "douglasgreen/optparser": 20,
         "douglasgreen/utility": 20,
         "douglasgreen/config-setup": 20
     },

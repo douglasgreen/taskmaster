@@ -15,7 +15,7 @@ class Task
     /**
      * @var array<int, string>
      */
-    protected const array DAYS_OF_WEEK_NAMES = [
+    protected const DAYS_OF_WEEK_NAMES = [
         1 => 'Monday',
         2 => 'Tuesday',
         3 => 'Wednesday',
