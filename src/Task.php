@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster;
 
-use DouglasGreen\Utility\Exceptions\Data\ValueException;
+use DouglasGreen\Utility\Data\ValueException;
 use DouglasGreen\Utility\Regex\Regex;
 
 /**
@@ -44,7 +44,7 @@ class Task
         public array $timesOfDay,
         public int $lastTimeReminded,
     ) {
-        $this->taskName = trim(Regex::doReplace('/\s+/', ' ', $this->taskName));
+        $this->taskName = trim(Regex::replace('/\s+/', ' ', $this->taskName));
 
         $this->taskUrl = trim($this->taskUrl);
 

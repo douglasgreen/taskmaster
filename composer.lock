@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/optparser.git",
-                "reference": "bd15c4177942941e6c7fb44b125ad2903c0efaed"
+                "reference": "d1e4de48b5a4024bd081d4b60b783af11b4d3b1a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/bd15c4177942941e6c7fb44b125ad2903c0efaed",
-                "reference": "bd15c4177942941e6c7fb44b125ad2903c0efaed",
+                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/d1e4de48b5a4024bd081d4b60b783af11b4d3b1a",
+                "reference": "d1e4de48b5a4024bd081d4b60b783af11b4d3b1a",
                 "shasum": ""
             },
             "require": {
@@ -77,7 +77,7 @@
                 "issues": "https://github.com/douglasgreen/optparser/issues",
                 "source": "https://github.com/douglasgreen/optparser/tree/main"
             },
-            "time": "2024-06-12T13:45:28+00:00"
+            "time": "2024-06-14T09:13:35+00:00"
         },
         {
             "name": "douglasgreen/utility",
@@ -85,12 +85,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/utility.git",
-                "reference": "2ffb41b826a0ed5075c27f37395c4fda719eada5"
+                "reference": "db9dff4260973256e50f590a1fb73f81b427651b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/2ffb41b826a0ed5075c27f37395c4fda719eada5",
-                "reference": "2ffb41b826a0ed5075c27f37395c4fda719eada5",
+                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/db9dff4260973256e50f590a1fb73f81b427651b",
+                "reference": "db9dff4260973256e50f590a1fb73f81b427651b",
                 "shasum": ""
             },
             "require": {
@@ -125,10 +125,10 @@
                     "rector"
                 ],
                 "post-install-cmd": [
-                    "vendor/douglasgreen/config-setup/bin/copy_files.php"
+                    "vendor/douglasgreen/config-setup/bin/copy_files.php --wrap 100"
                 ],
                 "post-update-cmd": [
-                    "vendor/douglasgreen/config-setup/bin/copy_files.php"
+                    "vendor/douglasgreen/config-setup/bin/copy_files.php --wrap 100"
                 ],
                 "test": [
                     "phpunit"
@@ -160,7 +160,7 @@
                 "source": "https://github.com/douglasgreen/utility/tree/main",
                 "issues": "https://github.com/douglasgreen/utility/issues"
             },
-            "time": "2024-06-12T12:20:50+00:00"
+            "time": "2024-06-14T08:49:23+00:00"
         }
     ],
     "packages-dev": [
@@ -307,12 +307,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/config-setup.git",
-                "reference": "f1a53adf294b9213a7147687247d64323274c221"
+                "reference": "92ce6438e4b93e1a95d0c63f2de926bc6c5225b9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/f1a53adf294b9213a7147687247d64323274c221",
-                "reference": "f1a53adf294b9213a7147687247d64323274c221",
+                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/92ce6438e4b93e1a95d0c63f2de926bc6c5225b9",
+                "reference": "92ce6438e4b93e1a95d0c63f2de926bc6c5225b9",
                 "shasum": ""
             },
             "require": {
@@ -377,20 +377,20 @@
                 "source": "https://github.com/douglasgreen/config-setup/tree/main",
                 "issues": "https://github.com/douglasgreen/config-setup/issues"
             },
-            "time": "2024-06-12T13:22:49+00:00"
+            "time": "2024-06-13T19:22:14+00:00"
         },
         {
             "name": "myclabs/deep-copy",
-            "version": "1.11.1",
+            "version": "1.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "7284c22080590fb39f2ffa3e9057f10a4ddd0e0c"
+                "reference": "3a6b9a42cd8f8771bd4295d13e1423fa7f3d942c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/7284c22080590fb39f2ffa3e9057f10a4ddd0e0c",
-                "reference": "7284c22080590fb39f2ffa3e9057f10a4ddd0e0c",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/3a6b9a42cd8f8771bd4295d13e1423fa7f3d942c",
+                "reference": "3a6b9a42cd8f8771bd4295d13e1423fa7f3d942c",
                 "shasum": ""
             },
             "require": {
@@ -398,11 +398,12 @@
             },
             "conflict": {
                 "doctrine/collections": "<1.6.8",
-                "doctrine/common": "<2.13.3 || >=3,<3.2.2"
+                "doctrine/common": "<2.13.3 || >=3 <3.2.2"
             },
             "require-dev": {
                 "doctrine/collections": "^1.6.8",
                 "doctrine/common": "^2.13.3 || ^3.2.2",
+                "phpspec/prophecy": "^1.10",
                 "phpunit/phpunit": "^7.5.20 || ^8.5.23 || ^9.5.13"
             },
             "type": "library",
@@ -428,7 +429,7 @@
             ],
             "support": {
                 "issues": "https://github.com/myclabs/DeepCopy/issues",
-                "source": "https://github.com/myclabs/DeepCopy/tree/1.11.1"
+                "source": "https://github.com/myclabs/DeepCopy/tree/1.12.0"
             },
             "funding": [
                 {
@@ -436,7 +437,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-03-08T13:26:56+00:00"
+            "time": "2024-06-12T14:39:25+00:00"
         },
         {
             "name": "nikic/php-parser",

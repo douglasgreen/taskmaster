@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster;
 
-use DouglasGreen\Utility\Exceptions\Data\ValueException;
+use DouglasGreen\Utility\Data\ValueException;
 use DouglasGreen\Utility\FileSystem\File;
 use DouglasGreen\Utility\Regex\Regex;
 
@@ -206,7 +206,7 @@ class TaskFile
      */
     protected function splitField(string $field, string $regex): array
     {
-        $parts = Regex::doSplit('/\s*\|\s*/', $field, -1, PREG_SPLIT_NO_EMPTY);
+        $parts = Regex::split('/\s*\|\s*/', $field, -1, PREG_SPLIT_NO_EMPTY);
         foreach ($parts as $part) {
             if ($part === '*') {
                 return ['*'];
