@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/optparser.git",
-                "reference": "d1e4de48b5a4024bd081d4b60b783af11b4d3b1a"
+                "reference": "02d9b1e364600b8a578a73fee4383490425e560c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/d1e4de48b5a4024bd081d4b60b783af11b4d3b1a",
-                "reference": "d1e4de48b5a4024bd081d4b60b783af11b4d3b1a",
+                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/02d9b1e364600b8a578a73fee4383490425e560c",
+                "reference": "02d9b1e364600b8a578a73fee4383490425e560c",
                 "shasum": ""
             },
             "require": {
@@ -77,7 +77,7 @@
                 "issues": "https://github.com/douglasgreen/optparser/issues",
                 "source": "https://github.com/douglasgreen/optparser/tree/main"
             },
-            "time": "2024-06-14T09:13:35+00:00"
+            "time": "2024-06-15T18:47:48+00:00"
         },
         {
             "name": "douglasgreen/utility",
@@ -85,12 +85,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/utility.git",
-                "reference": "440210aba276a28fd29dfed67b8b97198baea36c"
+                "reference": "d0f6fca85ce151b908f9580d1cc42ae3e5920cd8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/440210aba276a28fd29dfed67b8b97198baea36c",
-                "reference": "440210aba276a28fd29dfed67b8b97198baea36c",
+                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/d0f6fca85ce151b908f9580d1cc42ae3e5920cd8",
+                "reference": "d0f6fca85ce151b908f9580d1cc42ae3e5920cd8",
                 "shasum": ""
             },
             "require": {
@@ -160,7 +160,7 @@
                 "source": "https://github.com/douglasgreen/utility/tree/main",
                 "issues": "https://github.com/douglasgreen/utility/issues"
             },
-            "time": "2024-06-14T10:52:10+00:00"
+            "time": "2024-06-15T18:47:01+00:00"
         }
     ],
     "packages-dev": [
@@ -307,12 +307,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/config-setup.git",
-                "reference": "92ce6438e4b93e1a95d0c63f2de926bc6c5225b9"
+                "reference": "e9815226d8fa9d27d91f0fc292dfda36b4349add"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/92ce6438e4b93e1a95d0c63f2de926bc6c5225b9",
-                "reference": "92ce6438e4b93e1a95d0c63f2de926bc6c5225b9",
+                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/e9815226d8fa9d27d91f0fc292dfda36b4349add",
+                "reference": "e9815226d8fa9d27d91f0fc292dfda36b4349add",
                 "shasum": ""
             },
             "require": {
@@ -377,7 +377,7 @@
                 "source": "https://github.com/douglasgreen/config-setup/tree/main",
                 "issues": "https://github.com/douglasgreen/config-setup/issues"
             },
-            "time": "2024-06-13T19:22:14+00:00"
+            "time": "2024-06-15T18:50:48+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -1142,16 +1142,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "10.5.20",
+            "version": "10.5.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "547d314dc24ec1e177720d45c6263fb226cc2ae3"
+                "reference": "ac837816fa52078f7a5e17ed774f256a72a51af6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/547d314dc24ec1e177720d45c6263fb226cc2ae3",
-                "reference": "547d314dc24ec1e177720d45c6263fb226cc2ae3",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/ac837816fa52078f7a5e17ed774f256a72a51af6",
+                "reference": "ac837816fa52078f7a5e17ed774f256a72a51af6",
                 "shasum": ""
             },
             "require": {
@@ -1223,7 +1223,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.5.20"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.5.21"
             },
             "funding": [
                 {
@@ -1239,7 +1239,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-04-24T06:32:35+00:00"
+            "time": "2024-06-15T09:13:15+00:00"
         },
         {
             "name": "psr/container",
