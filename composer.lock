@@ -85,12 +85,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/utility.git",
-                "reference": "063f033235cd55adbe2bdc9bf0cb5793af9733b9"
+                "reference": "0d123859788f6d7db7745c3a7b0ecc45a4c7ee91"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/063f033235cd55adbe2bdc9bf0cb5793af9733b9",
-                "reference": "063f033235cd55adbe2bdc9bf0cb5793af9733b9",
+                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/0d123859788f6d7db7745c3a7b0ecc45a4c7ee91",
+                "reference": "0d123859788f6d7db7745c3a7b0ecc45a4c7ee91",
                 "shasum": ""
             },
             "require": {
@@ -160,7 +160,7 @@
                 "source": "https://github.com/douglasgreen/utility/tree/main",
                 "issues": "https://github.com/douglasgreen/utility/issues"
             },
-            "time": "2024-06-16T12:09:15+00:00"
+            "time": "2024-06-16T20:00:53+00:00"
         }
     ],
     "packages-dev": [
