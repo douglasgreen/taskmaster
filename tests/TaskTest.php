@@ -13,7 +13,9 @@ class TaskTest extends TestCase
     public function testInvalidDaysOfYearFormat(): void
     {
         $this->expectException(ValueException::class);
-        $this->expectExceptionMessage('Test Task: Non-recurring tasks that specify date must use full YYYY-MM-DD day of year');
+        $this->expectExceptionMessage(
+            'Test Task: Non-recurring tasks that specify date must use full YYYY-MM-DD day of year',
+        );
 
         new Task(
             'Test Task',
@@ -25,7 +27,7 @@ class TaskTest extends TestCase
             [],
             [],
             [],
-            0
+            0,
         );
     }
 
@@ -44,14 +46,16 @@ class TaskTest extends TestCase
             [],
             [],
             ['12:00'],
-            0
+            0,
         );
     }
 
     public function testNonRecurringTaskWithRecurDates(): void
     {
         $this->expectException(ValueException::class);
-        $this->expectExceptionMessage('Test Task: Non-recurring tasks must not specify a recur start or end');
+        $this->expectExceptionMessage(
+            'Test Task: Non-recurring tasks must not specify a recur start or end',
+        );
 
         new Task(
             'Test Task',
@@ -63,7 +67,7 @@ class TaskTest extends TestCase
             [],
             [],
             ['12:00'],
-            0
+            0,
         );
     }
 
@@ -79,7 +83,7 @@ class TaskTest extends TestCase
             [],
             [],
             ['12:00'],
-            0
+            0,
         );
 
         $this->assertSame('Test Task', $task->taskName);
@@ -106,7 +110,7 @@ class TaskTest extends TestCase
             [],
             [],
             ['12:00'],
-            0
+            0,
         );
 
         $this->assertSame('Test Task', $task->taskName);
