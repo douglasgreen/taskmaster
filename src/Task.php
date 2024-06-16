@@ -26,6 +26,26 @@ class Task
     ];
 
     /**
+     * @var int
+     */
+    public const IS_NUDGE = 1;
+
+    /**
+     * @var int
+     */
+    public const IS_DAILY = 2;
+
+    /**
+     * @var int
+     */
+    public const IS_WEEKLY = 4;
+
+    /**
+     * @var int
+     */
+    public const IS_MONTHLY = 8;
+
+    /**
      * @param list<string> $daysOfYear
      * @param list<string> $daysOfMonth
      * @param list<string> $daysOfWeek

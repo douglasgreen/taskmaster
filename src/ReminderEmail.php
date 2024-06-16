@@ -10,9 +10,28 @@ class ReminderEmail
         protected string $email
     ) {}
 
-    public function send(string $taskName, string $taskUrl, bool $isNudge): void
+    public function send(string $taskName, string $taskUrl, int $flags = 0): void
     {
-        $subject = $isNudge ? 'Nudge: ' : 'Reminder: ';
+        $isNudge = (bool) ($flags & Task::IS_NUDGE);
+        $isDaily = (bool) ($flags & Task::IS_DAILY);
+        $isWeekly = (bool) ($flags & Task::IS_WEEKLY);
+        $isMonthly = (bool) ($flags & Task::IS_MONTHLY);
+
+        if ($isNudge) {
+            $subject = 'Nudge: ';
+        } else {
+            $subject = '';
+            if ($isDaily) {
+                $subject = 'Daily ';
+            } elseif ($isWeekly) {
+                $subject = 'Weekly ';
+            } elseif ($isMonthly) {
+                $subject = 'Monthly ';
+            }
+
+            $subject .= 'Reminder: ';
+        }
+
         $subject .= $taskName;
 
         $body = 'Reminder sent by TaskMaster';

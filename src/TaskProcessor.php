@@ -27,6 +27,9 @@ class TaskProcessor
         $currentDate = date('Y-m-d', $currentTime);
         $daysInCurrentMonth = date('t', $currentTime);
         $reminderSent = false;
+        $isDaily = false;
+        $isWeekly = false;
+        $isMonthly = false;
 
         // Check if we have already run the program today before sending a nudge.
         $shouldNudge = true;
@@ -87,8 +90,10 @@ class TaskProcessor
                 $dates = [];
                 foreach ($task->daysOfMonth as $dayOfMonth) {
                     if ($dayOfMonth === '*') {
+                        $isDaily = true;
                         $dates[] = $currentDate;
                     } elseif ($dayOfMonth <= $daysInCurrentMonth) {
+                        $isMonthly = true;
                         $dates[] =
                             date('Y-m') . '-' . str_pad((string) $dayOfMonth, 2, '0', STR_PAD_LEFT);
                     } else {
@@ -100,7 +105,11 @@ class TaskProcessor
             } elseif (! empty($task->daysOfWeek)) {
                 $dates = [];
                 foreach ($task->daysOfWeek as $dayOfWeek) {
-                    if ($dayOfWeek === '*' || $currentDayOfWeek === $dayOfWeek) {
+                    if ($dayOfWeek === '*') {
+                        $isDaily = true;
+                        $dates[] = $currentDate;
+                    } elseif ($currentDayOfWeek === $dayOfWeek) {
+                        $isWeekly = true;
                         $dates[] = $currentDate;
                     }
                 }
@@ -118,9 +127,20 @@ class TaskProcessor
             foreach ($datetimes as $datetime) {
                 $datetimeSeconds = strtotime((string) $datetime);
 
+                $flags = 0;
+                if ($isNudge) {
+                    $flags = Task::IS_NUDGE;
+                } elseif ($isDaily) {
+                    $flags = Task::IS_DAILY;
+                } elseif ($isWeekly) {
+                    $flags = Task::IS_WEEKLY;
+                } elseif ($isMonthly) {
+                    $flags = Task::IS_MONTHLY;
+                }
+
                 // 14 minutes in seconds
                 if (abs($datetimeSeconds - $currentTime) < 840) {
-                    $this->reminderEmail->send($task->taskName, $task->taskUrl, $isNudge);
+                    $this->reminderEmail->send($task->taskName, $task->taskUrl, $flags);
                     $reminderSent = true;
                     $task->lastTimeReminded = $currentTime;
 
