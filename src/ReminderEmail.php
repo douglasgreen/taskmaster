@@ -12,20 +12,16 @@ class ReminderEmail
 
     public function send(string $taskName, string $taskUrl, int $flags = 0): void
     {
-        $isNudge = (bool) ($flags & Task::IS_NUDGE);
-        $isDaily = (bool) ($flags & Task::IS_DAILY);
-        $isWeekly = (bool) ($flags & Task::IS_WEEKLY);
-        $isMonthly = (bool) ($flags & Task::IS_MONTHLY);
-
-        if ($isNudge) {
+        $flagChecker = Task::getFlagChecker($flags);
+        if ($flagChecker->get('isNudge')) {
             $subject = 'Nudge: ';
         } else {
             $subject = '';
-            if ($isDaily) {
+            if ($flagChecker->get('isDaily')) {
                 $subject = 'Daily ';
-            } elseif ($isWeekly) {
+            } elseif ($flagChecker->get('isWeekly')) {
                 $subject = 'Weekly ';
-            } elseif ($isMonthly) {
+            } elseif ($flagChecker->get('isMonthly')) {
                 $subject = 'Monthly ';
             }
 

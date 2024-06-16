@@ -41,13 +41,13 @@ class TaskFile
         string $daysOfWeekField,
         string $timesOfDayField,
     ): void {
-        $daysOfYear = $this->splitField($daysOfYearField, '/^(\d\d\d\d-)?\d\d-\d\d$/');
+        $daysOfYear = static::splitField($daysOfYearField, '/^(\d\d\d\d-)?\d\d-\d\d$/');
 
-        $daysOfMonth = $this->splitField($daysOfMonthField, '/^([1-9]|[12]\d|3[01])$/');
+        $daysOfMonth = static::splitField($daysOfMonthField, '/^([1-9]|[12]\d|3[01])$/');
 
-        $daysOfWeek = $this->splitField($daysOfWeekField, '/^[1-7]$/');
+        $daysOfWeek = static::splitField($daysOfWeekField, '/^[1-7]$/');
 
-        $timesOfDay = $this->splitField($timesOfDayField, '/^\d\d:\d\d$/');
+        $timesOfDay = static::splitField($timesOfDayField, '/^\d\d:\d\d$/');
 
         $tasks = $this->loadTasks();
 
@@ -103,13 +103,13 @@ class TaskFile
 
             $recurring = (bool) $recurring;
 
-            $daysOfYear = $this->splitField($daysOfYearField, '/^(\d\d\d\d-)?\d\d-\d\d$/');
+            $daysOfYear = static::splitField($daysOfYearField, '/^(\d\d\d\d-)?\d\d-\d\d$/');
 
-            $daysOfMonth = $this->splitField($daysOfMonthField, '/^([1-9]|[12]\d|3[01])$/');
+            $daysOfMonth = static::splitField($daysOfMonthField, '/^([1-9]|[12]\d|3[01])$/');
 
-            $daysOfWeek = $this->splitField($daysOfWeekField, '/^[1-7]$/');
+            $daysOfWeek = static::splitField($daysOfWeekField, '/^[1-7]$/');
 
-            $timesOfDay = $this->splitField($timesOfDayField, '/^\d\d:\d\d$/');
+            $timesOfDay = static::splitField($timesOfDayField, '/^\d\d:\d\d$/');
 
             $lastTimeReminded = 0;
             if ($lastDateReminded !== '') {
@@ -204,9 +204,9 @@ class TaskFile
      * @return list<string>
      * @throws ValueException
      */
-    protected function splitField(string $field, string $regex): array
+    protected static function splitField(string $field, string $regex): array
     {
-        $parts = Regex::split('/\s*\|\s*/', $field, -1, PREG_SPLIT_NO_EMPTY);
+        $parts = Regex::split('/\s*\|\s*/', $field, -1, Regex::NO_EMPTY);
         foreach ($parts as $part) {
             if ($part === '*') {
                 return ['*'];

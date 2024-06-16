@@ -1,0 +1,11 @@
+Task name,Task URL,Recurring?,Recur start,Recur end,Days of year,Days of month,Days of week,Times of day,Last date reminded
+Call family,,1,,,,1|15,,,
+Car maintenance,,1,2017-01-01,2025-12-31,03-10,,,08:00|19:00,2024-06-08 03:00:01
+Dentist appointment,http://example.com/task1,1,,,02-28|03-31,,,,2024-06-10 03:00:02
+Grocery shopping,http://example.com/task2,1,,,,7|14,,,
+Read a book,,1,,,,,*,,2024-06-19 03:00:02
+Team meeting,,1,,,01-15,,,,2024-06-22 03:00:01
+Visit museum,,0,,,2025-11-30,,,,2024-06-19 03:00:01
+Water the garden,http://example.com/task3,1,,,,,*,,
+Workout session,,1,,,,,*,,2024-06-16 12:00:01
+Write blog post,,1,,,,1,,,

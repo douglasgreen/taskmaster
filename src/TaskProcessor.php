@@ -15,7 +15,6 @@ class TaskProcessor
     ) {}
 
     /**
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function processTasks(): void
@@ -85,7 +84,7 @@ class TaskProcessor
                     $dates[] = $dayOfYear === '*' ? $currentDate : $dayOfYear;
                 }
 
-                $datetimes = $this->addTimes($dates, $task->timesOfDay);
+                $datetimes = static::addTimes($dates, $task->timesOfDay);
             } elseif (! empty($task->daysOfMonth)) {
                 $dates = [];
                 foreach ($task->daysOfMonth as $dayOfMonth) {
@@ -101,7 +100,7 @@ class TaskProcessor
                     }
                 }
 
-                $datetimes = $this->addTimes($dates, $task->timesOfDay);
+                $datetimes = static::addTimes($dates, $task->timesOfDay);
             } elseif (! empty($task->daysOfWeek)) {
                 $dates = [];
                 foreach ($task->daysOfWeek as $dayOfWeek) {
@@ -114,7 +113,7 @@ class TaskProcessor
                     }
                 }
 
-                $datetimes = $this->addTimes($dates, $task->timesOfDay);
+                $datetimes = static::addTimes($dates, $task->timesOfDay);
             }
 
             // If reminder is not recurring and hasn't been sent, send a nudge now.
@@ -164,7 +163,7 @@ class TaskProcessor
      * @param list<string> $times
      * @return list<string>
      */
-    protected function addTimes(array $dates, array $times): array
+    protected static function addTimes(array $dates, array $times): array
     {
         $datetimes = [];
 

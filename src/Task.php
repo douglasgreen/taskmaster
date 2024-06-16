@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster;
 
+use DouglasGreen\Utility\Data\FlagChecker;
+use DouglasGreen\Utility\Data\FlagHandler;
 use DouglasGreen\Utility\Data\ValueException;
 use DouglasGreen\Utility\Regex\Regex;
 
 /**
  * Represents a task with various attributes.
  */
-class Task
+class Task implements FlagHandler
 {
     /**
      * @var array<int, string>
@@ -44,6 +46,17 @@ class Task
      * @var int
      */
     public const IS_MONTHLY = 8;
+
+    public static function getFlagChecker(int $flags): FlagChecker
+    {
+        $flagNames = [
+            'isNudge' => self::IS_NUDGE,
+            'isDaily' => self::IS_DAILY,
+            'isWeekly' => self::IS_WEEKLY,
+            'isMonthly' => self::IS_MONTHLY,
+        ];
+        return new FlagChecker($flagNames, $flags);
+    }
 
     /**
      * @param list<string> $daysOfYear
@@ -136,9 +149,6 @@ class Task
         }
     }
 
-    /**
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     */
     protected function checkRecurDates(): void
     {
         if (
