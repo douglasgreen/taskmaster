@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/optparser.git",
-                "reference": "de341f8a749b07ecbea6eb4b996916773ef4b1d0"
+                "reference": "0baf3b8a3fb3316284100467fb2020c37b95cc7f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/de341f8a749b07ecbea6eb4b996916773ef4b1d0",
-                "reference": "de341f8a749b07ecbea6eb4b996916773ef4b1d0",
+                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/0baf3b8a3fb3316284100467fb2020c37b95cc7f",
+                "reference": "0baf3b8a3fb3316284100467fb2020c37b95cc7f",
                 "shasum": ""
             },
             "require": {
@@ -77,7 +77,7 @@
                 "issues": "https://github.com/douglasgreen/optparser/issues",
                 "source": "https://github.com/douglasgreen/optparser/tree/main"
             },
-            "time": "2024-06-17T12:27:40+00:00"
+            "time": "2024-06-17T21:35:16+00:00"
         },
         {
             "name": "douglasgreen/utility",
@@ -306,12 +306,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/config-setup.git",
-                "reference": "c3b742896c17db280f6391432aaeb512d14c4930"
+                "reference": "848fd9672d1949d61b22d270c16ca5e4acd24970"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/c3b742896c17db280f6391432aaeb512d14c4930",
-                "reference": "c3b742896c17db280f6391432aaeb512d14c4930",
+                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/848fd9672d1949d61b22d270c16ca5e4acd24970",
+                "reference": "848fd9672d1949d61b22d270c16ca5e4acd24970",
                 "shasum": ""
             },
             "require": {
@@ -376,7 +376,7 @@
                 "source": "https://github.com/douglasgreen/config-setup/tree/main",
                 "issues": "https://github.com/douglasgreen/config-setup/issues"
             },
-            "time": "2024-06-17T18:16:02+00:00"
+            "time": "2024-06-17T20:54:21+00:00"
         },
         {
             "name": "myclabs/deep-copy",
