@@ -81,7 +81,12 @@ class TaskProcessor
                         $dayOfYear = $currentYear . '-' . $dayOfYear;
                     }
 
-                    $dates[] = $dayOfYear === '*' ? $currentDate : $dayOfYear;
+                    if ($dayOfYear === '*') {
+                        $dates[] = $currentDate;
+                        $isDaily = true;
+                    } else {
+                        $dates[] = $dayOfYear;
+                    }
                 }
 
                 $datetimes = static::addTimes($dates, $task->timesOfDay);
