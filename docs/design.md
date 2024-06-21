@@ -8,7 +8,7 @@ The is the design of a task reminder program. The tasks are stored in a CSV file
 -   Recur start (YYYY-MM-DD)
 -   Recur end (YYYY-MM-DD)
 -   Days of year (YYYY-MM-DD or MM-DD)
--   Days of week (1-7)
+-   Days of week (1-7) where 1 is Monday and 7 is Sunday
 -   Days of month (1-31 where anything above last day of current month is counted as last)
 -   Time of day (00:00 - 23:59)
 -   Last date reminded
