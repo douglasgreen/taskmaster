@@ -30,6 +30,25 @@
             "DouglasGreen\\TaskMaster\\Tests\\": "tests/"
         }
     },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/douglasgreen/config-setup"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/douglasgreen/php-linter"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/douglasgreen/utility"
+        }
+    ],
     "require": {
         "php": ">=8.1",
         "douglasgreen/optparser": "dev-main",
@@ -38,14 +57,15 @@
     "require-dev": {
         "douglasgreen/config-setup": "dev-main",
         "phpmd/phpmd": "^2.15",
-        "phpstan/phpstan": "^1.10",
+        "phpstan/phpstan": "^1.11",
         "phpunit/phpunit": "^10.5",
-        "rector/rector": "^1.0",
-        "symplify/easy-coding-standard": "^12.2"
+        "rector/rector": "^1.1",
+        "symplify/easy-coding-standard": "^12.3"
     },
     "scripts": {
         "lint": [
             "ecs",
+            "php-linter",
             "phpstan analyse",
             "phpmd --cache --cache-file var/cache/phpmd/cache.php . text phpmd.xml",
             "rector --dry-run"
@@ -54,18 +74,8 @@
             "ecs --fix",
             "rector"
         ],
-        "post-install-cmd": "vendor/douglasgreen/config-setup/bin/copy_files.php",
-        "post-update-cmd": "vendor/douglasgreen/config-setup/bin/copy_files.php",
+        "post-install-cmd": "config-setup",
+        "post-update-cmd": "config-setup",
         "test": "phpunit"
-    },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/douglasgreen/config-setup"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/douglasgreen/utility"
-        }
-    ]
+    }
 }

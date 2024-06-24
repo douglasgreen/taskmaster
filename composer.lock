@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "931ea12a284938912d6ac10255227f13",
+    "content-hash": "da0981f925a68d4783307bd2f10ef183",
     "packages": [
         {
             "name": "douglasgreen/optparser",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/optparser.git",
-                "reference": "888a3a5f211846194b5c3ddd1cb398499d3570ee"
+                "reference": "08d27c3191ea6f9253f81d12caeb01222dd4421d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/888a3a5f211846194b5c3ddd1cb398499d3570ee",
-                "reference": "888a3a5f211846194b5c3ddd1cb398499d3570ee",
+                "url": "https://api.github.com/repos/douglasgreen/optparser/zipball/08d27c3191ea6f9253f81d12caeb01222dd4421d",
+                "reference": "08d27c3191ea6f9253f81d12caeb01222dd4421d",
                 "shasum": ""
             },
             "require": {
@@ -25,12 +25,13 @@
             },
             "require-dev": {
                 "douglasgreen/config-setup": "dev-main",
+                "douglasgreen/php-linter": "dev-main",
                 "douglasgreen/utility": "dev-main",
                 "phpmd/phpmd": "^2.15",
-                "phpstan/phpstan": "^1.10",
+                "phpstan/phpstan": "^1.11",
                 "phpunit/phpunit": "^10.5",
-                "rector/rector": "^1.0",
-                "symplify/easy-coding-standard": "^12.2"
+                "rector/rector": "^1.1",
+                "symplify/easy-coding-standard": "^12.3"
             },
             "default-branch": true,
             "type": "library",
@@ -77,7 +78,7 @@
                 "issues": "https://github.com/douglasgreen/optparser/issues",
                 "source": "https://github.com/douglasgreen/optparser/tree/main"
             },
-            "time": "2024-06-20T19:33:39+00:00"
+            "time": "2024-06-24T20:40:52+00:00"
         },
         {
             "name": "douglasgreen/utility",
@@ -85,12 +86,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/utility.git",
-                "reference": "439ec5b6b32f6afccd3d3d029c6265829b3d63ce"
+                "reference": "60870d0930fdc4bff706dfb7cec9cdb1952c0bd6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/439ec5b6b32f6afccd3d3d029c6265829b3d63ce",
-                "reference": "439ec5b6b32f6afccd3d3d029c6265829b3d63ce",
+                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/60870d0930fdc4bff706dfb7cec9cdb1952c0bd6",
+                "reference": "60870d0930fdc4bff706dfb7cec9cdb1952c0bd6",
                 "shasum": ""
             },
             "require": {
@@ -98,11 +99,12 @@
             },
             "require-dev": {
                 "douglasgreen/config-setup": "dev-main",
+                "douglasgreen/php-linter": "dev-main",
                 "phpmd/phpmd": "^2.15",
-                "phpstan/phpstan": "^1.10",
+                "phpstan/phpstan": "^1.11",
                 "phpunit/phpunit": "^10.5",
-                "rector/rector": "^1.0",
-                "symplify/easy-coding-standard": "^12.2"
+                "rector/rector": "^1.1",
+                "symplify/easy-coding-standard": "^12.3"
             },
             "default-branch": true,
             "type": "library",
@@ -115,19 +117,20 @@
             "scripts": {
                 "lint": [
                     "ecs",
-                    "rector --dry-run",
-                    "./run_phpmd.sh",
-                    "./run_phpstan.sh"
+                    "php-linter",
+                    "phpstan analyse",
+                    "phpmd --cache --cache-file var/cache/phpmd/cache.php . text phpmd.xml",
+                    "rector --dry-run"
                 ],
                 "lint:fix": [
                     "ecs --fix",
                     "rector"
                 ],
                 "post-install-cmd": [
-                    "vendor/douglasgreen/config-setup/bin/copy_files.php"
+                    "config-setup"
                 ],
                 "post-update-cmd": [
-                    "vendor/douglasgreen/config-setup/bin/copy_files.php"
+                    "config-setup"
                 ],
                 "test": [
                     "phpunit"
@@ -159,7 +162,7 @@
                 "source": "https://github.com/douglasgreen/utility/tree/main",
                 "issues": "https://github.com/douglasgreen/utility/issues"
             },
-            "time": "2024-06-20T14:37:19+00:00"
+            "time": "2024-06-24T19:10:02+00:00"
         }
     ],
     "packages-dev": [
@@ -306,25 +309,29 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/config-setup.git",
-                "reference": "b9422bb3662b14f94aef6a5c7a20e251564a05db"
+                "reference": "79ccace6df2c39c0f49e1c5d6bfcc108a61a0ebd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/b9422bb3662b14f94aef6a5c7a20e251564a05db",
-                "reference": "b9422bb3662b14f94aef6a5c7a20e251564a05db",
+                "url": "https://api.github.com/repos/douglasgreen/config-setup/zipball/79ccace6df2c39c0f49e1c5d6bfcc108a61a0ebd",
+                "reference": "79ccace6df2c39c0f49e1c5d6bfcc108a61a0ebd",
                 "shasum": ""
             },
             "require": {
+                "douglasgreen/php-linter": "dev-main",
                 "nette/neon": "^3.4",
                 "php": ">=8.1"
             },
             "require-dev": {
                 "phpmd/phpmd": "^2.15",
-                "phpstan/phpstan": "^1.10",
-                "rector/rector": "^1.0",
+                "phpstan/phpstan": "^1.11",
+                "rector/rector": "^1.1",
                 "symplify/easy-coding-standard": "^12.3"
             },
             "default-branch": true,
+            "bin": [
+                "bin/config-setup"
+            ],
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -334,8 +341,9 @@
             "scripts": {
                 "lint": [
                     "ecs",
-                    "phpstan analyse",
+                    "php-linter",
                     "phpmd --cache --cache-file var/cache/phpmd/cache.php . text phpmd.xml",
+                    "phpstan analyse",
                     "rector --dry-run"
                 ],
                 "lint:fix": [
@@ -376,7 +384,104 @@
                 "source": "https://github.com/douglasgreen/config-setup/tree/main",
                 "issues": "https://github.com/douglasgreen/config-setup/issues"
             },
-            "time": "2024-06-20T19:20:43+00:00"
+            "time": "2024-06-24T17:51:14+00:00"
+        },
+        {
+            "name": "douglasgreen/php-linter",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/douglasgreen/php-linter.git",
+                "reference": "07ca40b32272afbb34d5cbd5293a4de3ab4216fb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/douglasgreen/php-linter/zipball/07ca40b32272afbb34d5cbd5293a4de3ab4216fb",
+                "reference": "07ca40b32272afbb34d5cbd5293a4de3ab4216fb",
+                "shasum": ""
+            },
+            "require": {
+                "douglasgreen/optparser": "dev-main",
+                "douglasgreen/utility": "dev-main",
+                "nikic/php-parser": "^4.19",
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "douglasgreen/config-setup": "dev-main",
+                "pdepend/pdepend": "^2.16",
+                "phpmd/phpmd": "^2.15",
+                "phpstan/phpstan": "^1.11",
+                "phpunit/phpunit": "^10.5",
+                "rector/rector": "^1.1",
+                "symplify/easy-coding-standard": "^12.3"
+            },
+            "default-branch": true,
+            "bin": [
+                "bin/check-metrics",
+                "bin/check-style",
+                "bin/php-linter",
+                "bin/run-pdepend"
+            ],
+            "type": "project",
+            "autoload": {
+                "psr-4": {
+                    "DouglasGreen\\PhpLinter\\": "src/",
+                    "DouglasGreen\\PhpLinter\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "lint": [
+                    "php-linter",
+                    "ecs",
+                    "phpstan analyse",
+                    "phpmd --cache --cache-file var/cache/phpmd/cache.php . text phpmd.xml",
+                    "rector --dry-run"
+                ],
+                "lint:fix": [
+                    "ecs --fix",
+                    "rector"
+                ],
+                "post-install-cmd": [
+                    "config-setup"
+                ],
+                "post-update-cmd": [
+                    "config-setup"
+                ],
+                "test": [
+                    "phpunit"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Douglas Green",
+                    "email": "douglas@nurd.site",
+                    "homepage": "https://nurd.site/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Linter for PHP",
+            "homepage": "https://github.com/douglasgreen/php-linter",
+            "keywords": [
+                "ast",
+                "code quality",
+                "code standards",
+                "code validation",
+                "linter",
+                "php",
+                "php parser",
+                "php-fig",
+                "psr",
+                "static analysis",
+                "syntax check"
+            ],
+            "support": {
+                "source": "https://github.com/douglasgreen/php-linter/tree/main",
+                "issues": "https://github.com/douglasgreen/php-linter/issues"
+            },
+            "time": "2024-06-24T17:52:43+00:00"
         },
         {
             "name": "myclabs/deep-copy",
@@ -508,27 +613,25 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v5.0.2",
+            "version": "v4.19.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "139676794dc1e9231bf7bcd123cfc0c99182cb13"
+                "reference": "4e1b88d21c69391150ace211e9eaf05810858d0b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/139676794dc1e9231bf7bcd123cfc0c99182cb13",
-                "reference": "139676794dc1e9231bf7bcd123cfc0c99182cb13",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/4e1b88d21c69391150ace211e9eaf05810858d0b",
+                "reference": "4e1b88d21c69391150ace211e9eaf05810858d0b",
                 "shasum": ""
             },
             "require": {
-                "ext-ctype": "*",
-                "ext-json": "*",
                 "ext-tokenizer": "*",
-                "php": ">=7.4"
+                "php": ">=7.1"
             },
             "require-dev": {
                 "ircmaxell/php-yacc": "^0.0.7",
-                "phpunit/phpunit": "^7.0 || ^8.0 || ^9.0"
+                "phpunit/phpunit": "^6.5 || ^7.0 || ^8.0 || ^9.0"
             },
             "bin": [
                 "bin/php-parse"
@@ -536,7 +639,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "5.0-dev"
+                    "dev-master": "4.9-dev"
                 }
             },
             "autoload": {
@@ -560,9 +663,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v5.0.2"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v4.19.1"
             },
-            "time": "2024-03-05T20:51:40+00:00"
+            "time": "2024-03-17T08:10:35+00:00"
         },
         {
             "name": "pdepend/pdepend",
@@ -1413,16 +1516,16 @@
         },
         {
             "name": "rector/rector",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "556509e2dcf527369892b7d411379c4a02f31859"
+                "reference": "c930cdb21294f10955ddfc31b720971e8333943d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/556509e2dcf527369892b7d411379c4a02f31859",
-                "reference": "556509e2dcf527369892b7d411379c4a02f31859",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/c930cdb21294f10955ddfc31b720971e8333943d",
+                "reference": "c930cdb21294f10955ddfc31b720971e8333943d",
                 "shasum": ""
             },
             "require": {
@@ -1460,7 +1563,7 @@
             ],
             "support": {
                 "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/1.1.0"
+                "source": "https://github.com/rectorphp/rector/tree/1.1.1"
             },
             "funding": [
                 {
@@ -1468,7 +1571,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-05-18T09:40:27+00:00"
+            "time": "2024-06-21T07:51:17+00:00"
         },
         {
             "name": "sebastian/cli-parser",
@@ -3105,13 +3208,13 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": {
         "douglasgreen/optparser": 20,
         "douglasgreen/utility": 20,
         "douglasgreen/config-setup": 20
     },
-    "prefer-stable": false,
+    "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.1"
