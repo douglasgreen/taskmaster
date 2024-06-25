@@ -39,14 +39,6 @@
         {
             "type": "vcs",
             "url": "https://github.com/douglasgreen/config-setup"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/douglasgreen/php-linter"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/douglasgreen/utility"
         }
     ],
     "require": {
