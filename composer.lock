@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/douglasgreen/utility.git",
-                "reference": "96ffc7e5f2492dc1d4f7f74b6062b72b9e4a2712"
+                "reference": "36830893c25bdc00380a0e7962783f5cd8215075"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/96ffc7e5f2492dc1d4f7f74b6062b72b9e4a2712",
-                "reference": "96ffc7e5f2492dc1d4f7f74b6062b72b9e4a2712",
+                "url": "https://api.github.com/repos/douglasgreen/utility/zipball/36830893c25bdc00380a0e7962783f5cd8215075",
+                "reference": "36830893c25bdc00380a0e7962783f5cd8215075",
                 "shasum": ""
             },
             "require": {
@@ -112,7 +112,7 @@
                 "issues": "https://github.com/douglasgreen/utility/issues",
                 "source": "https://github.com/douglasgreen/utility/tree/main"
             },
-            "time": "2024-07-02T17:56:09+00:00"
+            "time": "2024-07-04T22:34:05+00:00"
         },
         {
             "name": "nette/neon",
@@ -1523,16 +1523,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "10.5.24",
+            "version": "10.5.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "5f124e3e3e561006047b532fd0431bf5bb6b9015"
+                "reference": "831bf82312be6037e811833ddbea0b8de60ea314"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/5f124e3e3e561006047b532fd0431bf5bb6b9015",
-                "reference": "5f124e3e3e561006047b532fd0431bf5bb6b9015",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/831bf82312be6037e811833ddbea0b8de60ea314",
+                "reference": "831bf82312be6037e811833ddbea0b8de60ea314",
                 "shasum": ""
             },
             "require": {
@@ -1604,7 +1604,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.5.24"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/10.5.25"
             },
             "funding": [
                 {
@@ -1620,7 +1620,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-06-20T13:09:54+00:00"
+            "time": "2024-07-03T05:49:17+00:00"
         },
         {
             "name": "rector/rector",
