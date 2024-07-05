@@ -19,6 +19,10 @@ class ReminderEmail
             $subject = '';
             if ($flagChecker->get('isDaily')) {
                 $subject = 'Daily ';
+            } elseif ($flagChecker->get('isWeekdays')) {
+                $subject = 'Weekday ';
+            } elseif ($flagChecker->get('isWeekends')) {
+                $subject = 'Weekend ';
             } elseif ($flagChecker->get('isWeekly')) {
                 $subject = 'Weekly ';
             } elseif ($flagChecker->get('isMonthly')) {

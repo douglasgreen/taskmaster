@@ -11,23 +11,23 @@ class TaskProcessor
 {
     protected readonly string $currentDate;
 
-    protected readonly string $currentDayOfWeek;
-
-    protected readonly string $currentYear;
-
-    protected readonly string $daysInCurrentMonth;
+    protected readonly int $currentDayOfWeek;
 
     protected readonly int $currentTime;
+
+    protected readonly int $currentYear;
+
+    protected readonly int $daysInCurrentMonth;
 
     public function __construct(
         protected readonly ReminderEmail $reminderEmail,
         protected readonly TaskFile $taskFile,
     ) {
         $this->currentTime = time();
-        $this->currentYear = date('Y', $this->currentTime);
-        $this->currentDayOfWeek = date('N', $this->currentTime);
         $this->currentDate = date('Y-m-d', $this->currentTime);
-        $this->daysInCurrentMonth = date('t', $this->currentTime);
+        $this->currentYear = (int) date('Y', $this->currentTime);
+        $this->currentDayOfWeek = (int) date('N', $this->currentTime);
+        $this->daysInCurrentMonth = (int) date('t', $this->currentTime);
     }
 
     public function processTasks(): void
@@ -68,6 +68,10 @@ class TaskProcessor
                     $flags = Task::IS_NUDGE;
                 } elseif ($frequency === 'daily') {
                     $flags = Task::IS_DAILY;
+                } elseif ($frequency === 'weekdays') {
+                    $flags = Task::IS_WEEKDAYS;
+                } elseif ($frequency === 'weekends') {
+                    $flags = Task::IS_WEEKENDS;
                 } elseif ($frequency === 'weekly') {
                     $flags = Task::IS_WEEKLY;
                 } elseif ($frequency === 'monthly') {
@@ -120,6 +124,21 @@ class TaskProcessor
     }
 
     /**
+     * Convert a day range expression into an array of a day or days.
+     *
+     * @return list<int>
+     */
+    protected static function getRange(string $dayOrRange, int $maxDay): array
+    {
+        $days = Regex::split('/-/', $dayOrRange, 2, Regex::NO_EMPTY);
+        if (count($days) === 1) {
+            $days = [$days[0], $days[0]];
+        }
+
+        return range((int) $days[0], max((int) $days[1], $maxDay));
+    }
+
+    /**
      * Process dates for a task.
      *
      * @return array{frequency: ?string, datetimes: list<string>}
@@ -152,12 +171,12 @@ class TaskProcessor
                 if ($dayOfMonth === '*') {
                     $frequency = 'daily';
                     $dates[] = $this->currentDate;
-                } elseif ($dayOfMonth <= $this->daysInCurrentMonth) {
-                    $frequency = 'monthly';
-                    $dates[] =
-                        date('Y-m') . '-' . str_pad((string) $dayOfMonth, 2, '0', STR_PAD_LEFT);
                 } else {
-                    $dates[] = date('Y-m') . '-' . $this->daysInCurrentMonth;
+                    $range = self::getRange($dayOfMonth, $this->daysInCurrentMonth);
+                    $frequency = 'monthly';
+                    foreach ($range as $day) {
+                        $dates[] = date('Y-m') . sprintf('-%02d', $day);
+                    }
                 }
             }
 
@@ -168,9 +187,19 @@ class TaskProcessor
                 if ($dayOfWeek === '*') {
                     $frequency = 'daily';
                     $dates[] = $this->currentDate;
-                } elseif ($this->currentDayOfWeek === $dayOfWeek) {
-                    $frequency = 'weekly';
-                    $dates[] = $this->currentDate;
+                } else {
+                    $range = self::getRange($dayOfWeek, 7);
+                    if ($range === [1, 2, 3, 4, 5]) {
+                        $frequency = 'weekdays';
+                    } elseif ($range === [6, 7]) {
+                        $frequency = 'weekends';
+                    } else {
+                        $frequency = 'weekly';
+                    }
+
+                    if (in_array($this->currentDayOfWeek, $range, true)) {
+                        $dates[] = $this->currentDate;
+                    }
                 }
             }
 

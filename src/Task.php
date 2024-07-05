@@ -40,18 +40,30 @@ class Task implements FlagHandler
     /**
      * @var int
      */
-    public const IS_WEEKLY = 4;
+    public const IS_WEEKDAYS = 4;
 
     /**
      * @var int
      */
-    public const IS_MONTHLY = 8;
+    public const IS_WEEKENDS = 8;
+
+    /**
+     * @var int
+     */
+    public const IS_WEEKLY = 16;
+
+    /**
+     * @var int
+     */
+    public const IS_MONTHLY = 32;
 
     public static function getFlagChecker(int $flags): FlagChecker
     {
         $flagNames = [
             'isNudge' => self::IS_NUDGE,
             'isDaily' => self::IS_DAILY,
+            'isWeekdays' => self::IS_WEEKDAYS,
+            'isWeekends' => self::IS_WEEKENDS,
             'isWeekly' => self::IS_WEEKLY,
             'isMonthly' => self::IS_MONTHLY,
         ];

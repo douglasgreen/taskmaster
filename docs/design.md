@@ -15,11 +15,15 @@ The is the design of a task reminder program. The tasks are stored in a CSV file
 
 Tasks are one-time or recurring.
 
-Only one of the days columns is set, so check Days of year, Days of week, and Days of month for the
+Only one of the days columns is set, so check days of year, days of week, and days of month for the
 first non-empty column. An asterisk can be used in any of the day fields to mean every day or the
 time field to mean every time.
 
-Multiple values can occur in the days or times columns separated with a pipe character |.
+Multiple values can occur in the days or times columns separated with a pipe character |, for
+example, weekdays would be 1|2|3|4|5.
+
+Ranges can occur in the days of week and days of month columns separated with a hyphen character,
+for example, a range of weekdays would be 1-5.
 
 Days of year can be specified as YYYY-MM-DD for non-recurring or MM-DD for recurring.
 

@@ -43,9 +43,9 @@ class TaskFile
     ): void {
         $daysOfYear = static::splitField($daysOfYearField, '/^(\d\d\d\d-)?\d\d-\d\d$/');
 
-        $daysOfMonth = static::splitField($daysOfMonthField, '/^([1-9]|[12]\d|3[01])$/');
+        $daysOfMonth = static::splitField($daysOfMonthField, '/^([1-9]|[12]\d|3[01])$/', true);
 
-        $daysOfWeek = static::splitField($daysOfWeekField, '/^[1-7]$/');
+        $daysOfWeek = static::splitField($daysOfWeekField, '/^[1-7]$/', true);
 
         $timesOfDay = static::splitField($timesOfDayField, '/^\d\d:\d\d$/');
 
@@ -87,7 +87,7 @@ class TaskFile
             }
 
             // Split these fields on load so we can check for error before taking any action.
-            $data = array_map('trim', $data);
+            $data = array_map(trim(...), $data);
             [
                 $taskName,
                 $taskUrl,
@@ -105,9 +105,9 @@ class TaskFile
 
             $daysOfYear = static::splitField($daysOfYearField, '/^(\d\d\d\d-)?\d\d-\d\d$/');
 
-            $daysOfMonth = static::splitField($daysOfMonthField, '/^([1-9]|[12]\d|3[01])$/');
+            $daysOfMonth = static::splitField($daysOfMonthField, '/^([1-9]|[12]\d|3[01])$/', true);
 
-            $daysOfWeek = static::splitField($daysOfWeekField, '/^[1-7]$/');
+            $daysOfWeek = static::splitField($daysOfWeekField, '/^[1-7]$/', true);
 
             $timesOfDay = static::splitField($timesOfDayField, '/^\d\d:\d\d$/');
 
@@ -201,23 +201,61 @@ class TaskFile
     }
 
     /**
+     * Check a value against a regexp.
+     *
+     * @throws ValueException
+     */
+    protected static function checkValue(string $value, string $regex): void
+    {
+        if (! Regex::hasMatch($regex, $value)) {
+            $error = sprintf('Value "%s" doesn\'t match regex "%s"', $value, $regex);
+            throw new ValueException($error);
+        }
+    }
+
+    /**
      * @return list<string>
      * @throws ValueException
      */
-    protected static function splitField(string $field, string $regex): array
-    {
+    protected static function splitField(
+        string $field,
+        string $regex,
+        bool $allowRange = false
+    ): array {
         $parts = Regex::split('/\s*\|\s*/', $field, -1, Regex::NO_EMPTY);
+        $values = [];
         foreach ($parts as $part) {
-            if ($part === '*') {
+            $value = trim($part);
+
+            if ($value === '*') {
                 return ['*'];
             }
 
-            if (! Regex::hasMatch($regex, $part)) {
-                $error = sprintf('Field "%s" doesn\'t match regex "%s"', $field, $regex);
-                throw new ValueException($error);
+            if ($allowRange) {
+                $rangeValues = Regex::split('/\s*-\s*/', $value, 2, Regex::NO_EMPTY);
+                $count = count($rangeValues);
+                if ($count === 1) {
+                    self::checkValue($value, $regex);
+                } else {
+                    self::checkValue($rangeValues[0], $regex);
+                    self::checkValue($rangeValues[1], $regex);
+                    if ($rangeValues[0] < $rangeValues[1]) {
+                        $value = $rangeValues[0] . '-' . $rangeValues[1];
+                    } elseif ($rangeValues[0] === $rangeValues[1]) {
+                        $value = $rangeValues[0];
+                    } else {
+                        throw new ValueException('Invalid range: ' . $value);
+                    }
+                }
+            } else {
+                self::checkValue($value, $regex);
             }
+
+            $values[] = $value;
         }
 
-        return $parts;
+        natsort($values);
+
+        return $values;
     }
 }
