@@ -135,7 +135,7 @@ class TaskProcessor
             $days = [$days[0], $days[0]];
         }
 
-        return range((int) $days[0], max((int) $days[1], $maxDay));
+        return range((int) $days[0], min((int) $days[1], $maxDay));
     }
 
     /**
