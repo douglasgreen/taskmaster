@@ -75,7 +75,6 @@ class Task implements FlagHandler
      * @param list<string> $daysOfMonth
      * @param list<string> $daysOfWeek
      * @param list<string> $timesOfDay
-     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         public string $taskName,

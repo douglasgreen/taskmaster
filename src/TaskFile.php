@@ -27,9 +27,6 @@ class TaskFile
         protected string $filename
     ) {}
 
-    /**
-     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
-     */
     public function addTask(
         string $taskName,
         string $taskUrl,
