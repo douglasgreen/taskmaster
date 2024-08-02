@@ -6,6 +6,7 @@ namespace DouglasGreen\TaskMaster;
 
 use DouglasGreen\Utility\Data\ValueException;
 use DouglasGreen\Utility\FileSystem\File;
+use DouglasGreen\Utility\Regex\Matcher;
 use DouglasGreen\Utility\Regex\Regex;
 
 class TaskFile
@@ -219,7 +220,7 @@ class TaskFile
         string $regex,
         bool $allowRange = false
     ): array {
-        $parts = Regex::split('/\s*\|\s*/', $field, -1, Regex::NO_EMPTY);
+        $parts = Regex::split('/\s*\|\s*/', $field, -1, Matcher::NO_EMPTY);
         $values = [];
         foreach ($parts as $part) {
             $value = trim($part);
@@ -229,7 +230,7 @@ class TaskFile
             }
 
             if ($allowRange) {
-                $rangeValues = Regex::split('/\s*-\s*/', $value, 2, Regex::NO_EMPTY);
+                $rangeValues = Regex::split('/\s*-\s*/', $value, 2, Matcher::NO_EMPTY);
                 $count = count($rangeValues);
                 if ($count === 1) {
                     self::checkValue($value, $regex);

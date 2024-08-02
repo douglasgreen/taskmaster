@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster;
 
+use DouglasGreen\Utility\Regex\Matcher;
 use DouglasGreen\Utility\Regex\Regex;
 
 class TaskProcessor
@@ -130,7 +131,7 @@ class TaskProcessor
      */
     protected static function getRange(string $dayOrRange, int $maxDay): array
     {
-        $days = Regex::split('/-/', $dayOrRange, 2, Regex::NO_EMPTY);
+        $days = Regex::split('/-/', $dayOrRange, 2, Matcher::NO_EMPTY);
         if (count($days) === 1) {
             $days = [$days[0], $days[0]];
         }

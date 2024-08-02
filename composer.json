@@ -1,17 +1,7 @@
 {
     "name": "douglasgreen/taskmaster",
     "description": "A to-do list manager",
-    "license": "MIT",
     "type": "library",
-    "homepage": "https://github.com/douglasgreen/taskmaster",
-    "authors": [
-        {
-            "name": "Douglas Green",
-            "email": "douglas@nurd.site",
-            "homepage": "https://nurd.site/",
-            "role": "Developer"
-        }
-    ],
     "keywords": [
         "mysql",
         "php",
@@ -24,31 +14,48 @@
         "todo",
         "todo list"
     ],
+    "homepage": "https://github.com/douglasgreen/taskmaster",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Douglas Green",
+            "email": "douglas@nurd.site",
+            "homepage": "https://nurd.site/",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=8.1",
+        "douglasgreen/opt-parser": "^0.5",
+        "douglasgreen/utility": "^0.5"
+    },
+    "require-dev": {
+        "douglasgreen/config-setup": "dev-main",
+        "phpstan/phpstan": "^1.11.9",
+        "phpunit/phpunit": "^10.5.29",
+        "rector/rector": "^1.2.2",
+        "symplify/easy-coding-standard": "^12.3.4"
+    },
     "autoload": {
         "psr-4": {
             "DouglasGreen\\TaskMaster\\": "src/",
             "DouglasGreen\\TaskMaster\\Tests\\": "tests/"
         }
     },
-    "config": {
-        "sort-packages": true
-    },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "require": {
-        "php": ">=8.1",
-        "douglasgreen/utility": "dev-main"
-    },
-    "require-dev": {
-        "phpstan/phpstan": "^1.11",
-        "phpunit/phpunit": "^10.5",
-        "rector/rector": "^1.2",
-        "symplify/easy-coding-standard": "^12.3"
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/douglasgreen/config-setup"
+        }
+    ],
+    "config": {
+        "sort-packages": true
     },
     "scripts": {
         "lint": [
             "ecs",
-            "php-linter",
             "phpstan analyse",
             "rector --dry-run"
         ],
@@ -56,8 +63,8 @@
             "ecs --fix",
             "rector"
         ],
-        "post-install-cmd": "config-setup --pre-commit",
-        "post-update-cmd": "config-setup --pre-commit",
+        "post-install-cmd": "config-setup",
+        "post-update-cmd": "config-setup",
         "test": "phpunit"
     }
 }
