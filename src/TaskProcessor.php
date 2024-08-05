@@ -5,7 +5,6 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster;
 
-use DouglasGreen\Utility\Regex\Matcher;
 use DouglasGreen\Utility\Regex\Regex;
 
 class TaskProcessor
@@ -125,21 +124,6 @@ class TaskProcessor
     }
 
     /**
-     * Convert a day range expression into an array of a day or days.
-     *
-     * @return list<int>
-     */
-    protected static function getRange(string $dayOrRange, int $maxDay): array
-    {
-        $days = Regex::split('/-/', $dayOrRange, 2, Matcher::NO_EMPTY);
-        if (count($days) === 1) {
-            $days = [$days[0], $days[0]];
-        }
-
-        return range((int) $days[0], min((int) $days[1], $maxDay));
-    }
-
-    /**
      * Process dates for a task.
      *
      * @return array{frequency: ?string, datetimes: list<string>}
@@ -168,39 +152,35 @@ class TaskProcessor
             $datetimes = static::addTimes($dates, $task->timesOfDay);
         } elseif ($task->daysOfMonth !== []) {
             $dates = [];
-            foreach ($task->daysOfMonth as $dayOfMonth) {
-                if ($dayOfMonth === '*') {
-                    $frequency = 'daily';
-                    $dates[] = $this->currentDate;
-                } else {
-                    $range = self::getRange($dayOfMonth, $this->daysInCurrentMonth);
-                    $frequency = 'monthly';
-                    foreach ($range as $day) {
-                        $dates[] = date('Y-m') . sprintf('-%02d', $day);
-                    }
+            $daysOfMonth = Task::getDayList($task->daysOfMonth, $this->daysInCurrentMonth);
+            if ($daysOfMonth === '*') {
+                $frequency = 'daily';
+                $dates[] = $this->currentDate;
+            } elseif (is_array($daysOfMonth)) {
+                $frequency = 'monthly';
+                foreach ($daysOfMonth as $dayOfMonth) {
+                    $dates[] = date('Y-m') . sprintf('-%02d', $dayOfMonth);
                 }
             }
 
             $datetimes = static::addTimes($dates, $task->timesOfDay);
         } elseif ($task->daysOfWeek !== []) {
             $dates = [];
-            foreach ($task->daysOfWeek as $dayOfWeek) {
-                if ($dayOfWeek === '*') {
-                    $frequency = 'daily';
-                    $dates[] = $this->currentDate;
+            $daysOfWeek = Task::getDayList($task->daysOfWeek, 7);
+            if ($daysOfWeek === '*') {
+                $frequency = 'daily';
+                $dates[] = $this->currentDate;
+            } elseif (is_array($daysOfWeek)) {
+                if ($daysOfWeek === [1, 2, 3, 4, 5]) {
+                    $frequency = 'weekdays';
+                } elseif ($daysOfWeek === [6, 7]) {
+                    $frequency = 'weekends';
                 } else {
-                    $range = self::getRange($dayOfWeek, 7);
-                    if ($range === [1, 2, 3, 4, 5]) {
-                        $frequency = 'weekdays';
-                    } elseif ($range === [6, 7]) {
-                        $frequency = 'weekends';
-                    } else {
-                        $frequency = 'weekly';
-                    }
+                    $frequency = 'weekly';
+                }
 
-                    if (in_array($this->currentDayOfWeek, $range, true)) {
-                        $dates[] = $this->currentDate;
-                    }
+                if (in_array($this->currentDayOfWeek, $daysOfWeek, true)) {
+                    $dates[] = $this->currentDate;
                 }
             }
 

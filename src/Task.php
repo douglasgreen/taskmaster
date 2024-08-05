@@ -7,6 +7,7 @@ namespace DouglasGreen\TaskMaster;
 use DouglasGreen\Utility\Data\FlagChecker;
 use DouglasGreen\Utility\Data\FlagHandler;
 use DouglasGreen\Utility\Data\ValueException;
+use DouglasGreen\Utility\Regex\Matcher;
 use DouglasGreen\Utility\Regex\Regex;
 
 /**
@@ -68,6 +69,36 @@ class Task implements FlagHandler
             'isMonthly' => self::IS_MONTHLY,
         ];
         return new FlagChecker($flagNames, $flags);
+    }
+
+    /**
+     * Convert a list of day range expressions into an array of a day or days.
+     *
+     * @param list<string> $dayExpressions
+     * @return list<int>|string
+     */
+    public static function getDayList(array $dayExpressions, int $maxDay): array|string
+    {
+        $allDays = [];
+        foreach ($dayExpressions as $dayOrRange) {
+            if ($dayOrRange === '*') {
+                return '*';
+            }
+
+            $days = Regex::split('/-/', $dayOrRange, 2, Matcher::NO_EMPTY);
+            if (count($days) === 1) {
+                $allDays[] = (int) $dayOrRange;
+            } else {
+                $allDays = array_merge(
+                    $allDays,
+                    range((int) $days[0], min((int) $days[1], $maxDay))
+                );
+            }
+        }
+
+        $allDays = array_unique($allDays);
+        sort($allDays);
+        return $allDays;
     }
 
     /**
@@ -137,9 +168,20 @@ class Task implements FlagHandler
         $names = [];
         foreach ($this->daysOfWeek as $dayOfWeek) {
             if ($dayOfWeek === '*') {
-                $names[] = '*';
-            } elseif (isset(self::DAYS_OF_WEEK_NAMES[$dayOfWeek])) {
+                return ['*'];
+            }
+
+            if (isset(self::DAYS_OF_WEEK_NAMES[$dayOfWeek])) {
                 $names[] = self::DAYS_OF_WEEK_NAMES[$dayOfWeek];
+            } else {
+                [$minDay, $maxDay] = Regex::split('/-/', $dayOfWeek, 2, Matcher::NO_EMPTY);
+                if (isset(self::DAYS_OF_WEEK_NAMES[$minDay]) && isset(self::DAYS_OF_WEEK_NAMES[$maxDay])) {
+                    $names[] = sprintf(
+                        '%s to %s',
+                        self::DAYS_OF_WEEK_NAMES[$minDay],
+                        self::DAYS_OF_WEEK_NAMES[$maxDay]
+                    );
+                }
             }
         }
 
