@@ -74,7 +74,7 @@ class Task implements FlagHandler
     /**
      * Convert a list of day range expressions into an array of a day or days.
      *
-     * @param list<string> $dayExpressions
+     * @param array<int, string> $dayExpressions
      * @return list<int>|string
      */
     public static function getDayList(array $dayExpressions, int $maxDay): array|string
@@ -102,10 +102,10 @@ class Task implements FlagHandler
     }
 
     /**
-     * @param list<string> $daysOfYear
-     * @param list<string> $daysOfMonth
-     * @param list<string> $daysOfWeek
-     * @param list<string> $timesOfDay
+     * @param array<int, string> $daysOfYear
+     * @param array<int, string> $daysOfMonth
+     * @param array<int, string> $daysOfWeek
+     * @param array<int, string> $timesOfDay
      */
     public function __construct(
         public string $taskName,
@@ -161,7 +161,7 @@ class Task implements FlagHandler
     /**
      * Represent $daysOfWeek as a list of names (Monday, etc.)
      *
-     * @return list<string>
+     * @return array<int, string>
      */
     public function getWeekdayNames(): array
     {

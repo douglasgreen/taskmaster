@@ -5,7 +5,6 @@ declare(strict_types=1);
 
 use DouglasGreen\OptParser\OptParser;
 use DouglasGreen\TaskMaster\ReminderEmail;
-use DouglasGreen\TaskMaster\Task;
 use DouglasGreen\TaskMaster\TaskFile;
 use DouglasGreen\TaskMaster\TaskProcessor;
 
@@ -101,49 +100,47 @@ switch ($command) {
         $term = (string) $input->get('term');
         $tasks = $taskFile->search($term);
         foreach ($tasks as $task) {
-            if ($task instanceof Task) {
-                echo sprintf('Task Name: %s%s', $task->taskName, PHP_EOL);
+            echo sprintf('Task Name: %s%s', $task->taskName, PHP_EOL);
 
-                if ($task->taskUrl !== '') {
-                    echo sprintf('Task URL: %s%s', $task->taskUrl, PHP_EOL);
-                }
-
-                echo 'Recurring: ' . ($task->recurring ? 'Yes' : 'No') . PHP_EOL;
-
-                if ($task->recurring) {
-                    if ($task->recurStart !== null) {
-                        echo sprintf('Recur Start: %s%s', $task->recurStart, PHP_EOL);
-                    }
-
-                    if ($task->recurEnd !== null) {
-                        echo sprintf('Recur End: %s%s', $task->recurEnd, PHP_EOL);
-                    }
-                }
-
-                if ($task->daysOfYear !== []) {
-                    echo 'Days of Year: ' . implode(', ', $task->daysOfYear) . PHP_EOL;
-                }
-
-                if ($task->daysOfMonth !== []) {
-                    echo 'Days of Month: ' . implode(', ', $task->daysOfMonth) . PHP_EOL;
-                }
-
-                if ($task->daysOfWeek !== []) {
-                    echo 'Days of Week: ' . implode(', ', $task->getWeekdayNames()) . PHP_EOL;
-                }
-
-                if ($task->timesOfDay !== []) {
-                    echo 'Times of Day: ' . implode(', ', $task->timesOfDay) . PHP_EOL;
-                }
-
-                if ($task->lastTimeReminded !== 0) {
-                    echo 'Last Date Reminded: ' .
-                        date('Y-m-d H:i:s', $task->lastTimeReminded) .
-                        PHP_EOL;
-                }
-
-                echo '---------------------------------------' . PHP_EOL;
+            if ($task->taskUrl !== '') {
+                echo sprintf('Task URL: %s%s', $task->taskUrl, PHP_EOL);
             }
+
+            echo 'Recurring: ' . ($task->recurring ? 'Yes' : 'No') . PHP_EOL;
+
+            if ($task->recurring) {
+                if ($task->recurStart !== null) {
+                    echo sprintf('Recur Start: %s%s', $task->recurStart, PHP_EOL);
+                }
+
+                if ($task->recurEnd !== null) {
+                    echo sprintf('Recur End: %s%s', $task->recurEnd, PHP_EOL);
+                }
+            }
+
+            if ($task->daysOfYear !== []) {
+                echo 'Days of Year: ' . implode(', ', $task->daysOfYear) . PHP_EOL;
+            }
+
+            if ($task->daysOfMonth !== []) {
+                echo 'Days of Month: ' . implode(', ', $task->daysOfMonth) . PHP_EOL;
+            }
+
+            if ($task->daysOfWeek !== []) {
+                echo 'Days of Week: ' . implode(', ', $task->getWeekdayNames()) . PHP_EOL;
+            }
+
+            if ($task->timesOfDay !== []) {
+                echo 'Times of Day: ' . implode(', ', $task->timesOfDay) . PHP_EOL;
+            }
+
+            if ($task->lastTimeReminded !== 0) {
+                echo 'Last Date Reminded: ' .
+                    date('Y-m-d H:i:s', $task->lastTimeReminded) .
+                    PHP_EOL;
+            }
+
+            echo '---------------------------------------' . PHP_EOL;
         }
 
         break;

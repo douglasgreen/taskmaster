@@ -34,6 +34,7 @@
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^11.5",
         "rector/rector": "^2.0",
+        "shipmonk/name-collision-detector": "^2.1",
         "symplify/easy-coding-standard": "^12.5"
     },
     "autoload": {
@@ -55,6 +56,7 @@
     },
     "scripts": {
         "lint": [
+            "detect-collisions",
             "ecs",
             "phpstan analyse",
             "rector --dry-run"
@@ -63,8 +65,8 @@
             "ecs --fix",
             "rector"
         ],
-        "post-install-cmd": "config-setup",
-        "post-update-cmd": "config-setup",
+        "post-install-cmd": "config_setup.php",
+        "post-update-cmd": "config_setup.php",
         "test": "phpunit"
     }
 }

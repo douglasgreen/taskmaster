@@ -150,10 +150,6 @@ class TaskFile
         $file = new File($this->filename, 'w');
         $file->putFields(self::HEADERS);
         foreach ($tasks as $task) {
-            if (! $task instanceof Task) {
-                throw new ValueException('Invalid task provided');
-            }
-
             $recurring = (int) $task->recurring;
             $daysOfYearField = implode('|', $task->daysOfYear);
             $daysOfMonthField = implode('|', $task->daysOfMonth);
@@ -212,7 +208,7 @@ class TaskFile
     }
 
     /**
-     * @return list<string>
+     * @return array<int, string>
      * @throws ValueException
      */
     protected static function splitField(

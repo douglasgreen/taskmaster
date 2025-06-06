@@ -100,9 +100,9 @@ class TaskProcessor
     }
 
     /**
-     * @param list<string> $dates
-     * @param list<string> $times
-     * @return list<string>
+     * @param array<int, string> $dates
+     * @param array<int, string> $times
+     * @return array<int, string>
      */
     protected static function addTimes(array $dates, array $times): array
     {
@@ -126,7 +126,7 @@ class TaskProcessor
     /**
      * Process dates for a task.
      *
-     * @return array{frequency: ?string, datetimes: list<string>}
+     * @return array{frequency: ?string, datetimes: array<int, string>}
      */
     protected function processDates(Task $task): array
     {
