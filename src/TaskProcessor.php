@@ -1,8 +1,6 @@
 #!/usr/bin/env php
 <?php
 
-declare(strict_types=1);
-
 namespace DouglasGreen\TaskMaster;
 
 use DouglasGreen\Utility\Regex\Regex;
@@ -20,7 +18,7 @@ class TaskProcessor
     protected readonly int $daysInCurrentMonth;
 
     public function __construct(
-        protected readonly ReminderEmail $reminderEmail,
+        protected readonly TaskStorage $taskStorage,
         protected readonly TaskFile $taskFile,
     ) {
         $this->currentTime = time();
@@ -80,7 +78,7 @@ class TaskProcessor
 
                 // 14 minutes in seconds
                 if (abs($datetimeSeconds - $this->currentTime) < 840) {
-                    $this->reminderEmail->send($task->taskName, $task->taskUrl, $flags);
+                    $this->taskStorage->store($task->taskName, $task->taskUrl, $flags);
                     $reminderSent = true;
                     $task->lastTimeReminded = $this->currentTime;
 

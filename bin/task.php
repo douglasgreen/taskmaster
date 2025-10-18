@@ -1,12 +1,10 @@
 #!/usr/bin/env php
 <?php
 
-declare(strict_types=1);
-
 use DouglasGreen\OptParser\OptParser;
-use DouglasGreen\TaskMaster\ReminderEmail;
 use DouglasGreen\TaskMaster\TaskFile;
 use DouglasGreen\TaskMaster\TaskProcessor;
+use DouglasGreen\TaskMaster\TaskStorage;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -20,8 +18,11 @@ $optParser
 
 // Add params for process command.
 $optParser
-    ->addTerm('email', 'EMAIL', 'Your email address')
-    ->addParam(['timezone', 't'], 'STRING', 'Your timezone');
+    ->addParam(['host'], 'STRING', 'Your database host')
+    ->addParam(['port'], 'INT', 'Your database port')
+    ->addParam(['database'], 'STRING', 'Your database name')
+    ->addParam(['user'], 'STRING', 'Your database user')
+    ->addParam(['password'], 'STRING', 'Your database password');
 
 // Add params for add command.
 $optParser
@@ -39,7 +40,7 @@ $optParser
 $optParser->addTerm('term', 'STRING', 'Term to search form');
 
 // Add usage for process command.
-$optParser->addUsage('process', ['email', 'timezone']);
+$optParser->addUsage('process', ['host', 'port', 'database', 'user', 'password']);
 
 // Add usage for add command.
 $optParser->addUsage('add', [
@@ -65,19 +66,30 @@ $filename = __DIR__ . '/../assets/data/tasks.csv';
 
 switch ($command) {
     case 'process':
-        $timezone = $input->get('timezone');
-        if ($timezone !== null) {
-            date_default_timezone_set((string) $timezone);
+        $host = $input->get('host');
+        $port = $input->get('port');
+        $database = $input->get('database');
+        $user = $input->get('user');
+        $password = $input->get('password');
+
+        if ($port === null) {
+            $port = 3306;
         }
 
-        $email = $input->get('email');
-        if ($email === null) {
-            die('Email is required' . PHP_EOL);
+        if ($host === null || $database === null || $user === null || $password === null) {
+            die("Missing arguments\n");
         }
 
-        $reminderEmail = new ReminderEmail((string) $email);
+
+        $taskStorage = new TaskStorage(
+            (string) $host,
+            (int) $port,
+            (string) $database,
+            (string) $user,
+            (string) $password
+        );
         $taskFile = new TaskFile($filename);
-        $taskProcessor = new TaskProcessor($reminderEmail, $taskFile);
+        $taskProcessor = new TaskProcessor($taskStorage, $taskFile);
         $taskProcessor->processTasks();
         break;
 

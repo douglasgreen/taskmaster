@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace DouglasGreen\TaskMaster\Task\Tests;
 
 use DouglasGreen\TaskMaster\Task;

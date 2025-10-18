@@ -1,0 +1,81 @@
+<?php
+
+namespace DouglasGreen\TaskMaster;
+
+use PDO;
+use PDOException;
+
+class TaskStorage
+{
+    protected PDO $pdo;
+
+    public function __construct(
+        protected string $host,
+        protected int $port,
+        protected string $database,
+        protected string $user,
+        protected string $password,
+    ) {
+        $dsn = "mysql:host={$this->host};port={$this->port};dbname={$this->database}";
+        try {
+            $this->pdo = new PDO($dsn, $this->user, $this->password);
+            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (PDOException $pdoException) {
+            // In production, log error instead of echo
+            echo 'Connection failed: ' . $pdoException->getMessage() . PHP_EOL;
+            throw $pdoException;
+        }
+    }
+
+    public function store(string $taskName, string $taskUrl, int $flags = 0): void
+    {
+        $flagChecker = Task::getFlagChecker($flags);
+        if ($flagChecker->get('isNudge')) {
+            $title = 'Nudge: ';
+        } else {
+            $title = '';
+            if ($flagChecker->get('isDaily')) {
+                $title = 'Daily ';
+            } elseif ($flagChecker->get('isWeekdays')) {
+                $title = 'Weekday ';
+            } elseif ($flagChecker->get('isWeekends')) {
+                $title = 'Weekend ';
+            } elseif ($flagChecker->get('isWeekly')) {
+                $title = 'Weekly ';
+            } elseif ($flagChecker->get('isMonthly')) {
+                $title = 'Monthly ';
+            }
+
+            $title .= 'Reminder: ';
+        }
+
+        $title .= $taskName;
+
+        $details = 'Reminder sent by TaskMaster';
+        if ($taskUrl !== '') {
+            $details .= PHP_EOL . PHP_EOL . 'See ' . $taskUrl;
+        }
+
+        $today = date('Y-m-d');
+
+        // Ensure "Recurring" group exists
+        $stmt = $this->pdo->prepare('SELECT id FROM task_groups WHERE name = ?');
+        $stmt->execute(['Recurring']);
+
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (! $row) {
+            $stmt = $this->pdo->prepare('INSERT INTO task_groups (name) VALUES (?)');
+            $stmt->execute(['Recurring']);
+            $groupId = $this->pdo->lastInsertId();
+        } else {
+            $groupId = $row['id'];
+        }
+
+        // Insert the reminder as a task
+        $stmt = $this->pdo->prepare(
+            'INSERT INTO tasks (group_id, title, details, due_date) VALUES (?, ?, ?, ?)'
+        );
+        $stmt->execute([$groupId, $title, $details, $today]);
+    }
+}

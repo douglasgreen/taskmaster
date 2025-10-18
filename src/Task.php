@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace DouglasGreen\TaskMaster;
 
 use DouglasGreen\Utility\Data\FlagChecker;
