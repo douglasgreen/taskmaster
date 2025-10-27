@@ -33,15 +33,6 @@ class TaskProcessor
         $tasks = $this->taskDatabase->loadTasks();
         $reminderSent = false;
 
-        // Check if we have already run the program today before sending a nudge.
-        $shouldNudge = true;
-        foreach ($tasks as $task) {
-            if (date('Y-m-d', $task->lastTimeReminded) === $this->currentDate) {
-                $shouldNudge = false;
-                break;
-            }
-        }
-
         foreach ($tasks as $task) {
             if (! $this->shouldSendReminder($task)) {
                 continue;
@@ -51,20 +42,11 @@ class TaskProcessor
             $frequency = $result['frequency'];
             $datetimes = $result['datetimes'];
 
-            // If reminder is not recurring and hasn't been sent, send a nudge now.
-            $isNudge = false;
-            if ($datetimes === [] && ! $task->recurring && $shouldNudge) {
-                $isNudge = true;
-                $datetimes[] = date('Y-m-d H:i:s', $this->currentTime);
-            }
-
             foreach ($datetimes as $datetime) {
                 $datetimeSeconds = strtotime((string) $datetime);
 
                 $flags = 0;
-                if ($isNudge) {
-                    $flags = Task::IS_NUDGE;
-                } elseif ($frequency === 'daily') {
+                if ($frequency === 'daily') {
                     $flags = Task::IS_DAILY;
                 } elseif ($frequency === 'weekdays') {
                     $flags = Task::IS_WEEKDAYS;
@@ -81,12 +63,6 @@ class TaskProcessor
                     $this->taskStorage->store($task->taskName, $task->taskUrl, $flags);
                     $reminderSent = true;
                     $task->lastTimeReminded = $this->currentTime;
-
-                    // Only send one nudge a day.
-                    if ($isNudge) {
-                        $shouldNudge = false;
-                    }
-
                     break;
                 }
             }
@@ -209,17 +185,15 @@ class TaskProcessor
         }
 
         // Check if recurring dates are out of range.
-        if ($task->recurring) {
-            $recurStartTime = $task->recurStart === null ? null : strtotime($task->recurStart);
-            $recurEndTime = $task->recurEnd === null ? null : strtotime($task->recurEnd);
+        $recurStartTime = $task->recurStart === null ? null : strtotime($task->recurStart);
+        $recurEndTime = $task->recurEnd === null ? null : strtotime($task->recurEnd);
 
-            if ($recurStartTime && $this->currentTime < $recurStartTime) {
-                return false;
-            }
+        if ($recurStartTime && $this->currentTime < $recurStartTime) {
+            return false;
+        }
 
-            if ($recurEndTime && $this->currentTime > $recurEndTime) {
-                return false;
-            }
+        if ($recurEndTime && $this->currentTime > $recurEndTime) {
+            return false;
         }
 
         return true;

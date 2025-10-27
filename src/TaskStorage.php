@@ -16,24 +16,19 @@ class TaskStorage
     public function store(string $taskName, string $taskUrl, int $flags = 0): void
     {
         $flagChecker = Task::getFlagChecker($flags);
-        if ($flagChecker->get('isNudge')) {
-            $title = 'Nudge: ';
-        } else {
-            $title = '';
-            if ($flagChecker->get('isDaily')) {
-                $title = 'Daily ';
-            } elseif ($flagChecker->get('isWeekdays')) {
-                $title = 'Weekday ';
-            } elseif ($flagChecker->get('isWeekends')) {
-                $title = 'Weekend ';
-            } elseif ($flagChecker->get('isWeekly')) {
-                $title = 'Weekly ';
-            } elseif ($flagChecker->get('isMonthly')) {
-                $title = 'Monthly ';
-            }
+        if ($flagChecker->get('isDaily')) {
+            $title = 'Daily ';
+        } elseif ($flagChecker->get('isWeekdays')) {
+            $title = 'Weekday ';
+        } elseif ($flagChecker->get('isWeekends')) {
+            $title = 'Weekend ';
+        } elseif ($flagChecker->get('isWeekly')) {
+            $title = 'Weekly ';
+        } elseif ($flagChecker->get('isMonthly')) {
+            $title = 'Monthly ';
+        }
 
             $title .= 'Reminder: ';
-        }
 
         $title .= $taskName;
 

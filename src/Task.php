@@ -29,32 +29,27 @@ class Task implements FlagHandler
     /**
      * @var int
      */
-    public const IS_NUDGE = 1;
+    public const IS_DAILY = 1;
 
     /**
      * @var int
      */
-    public const IS_DAILY = 2;
+    public const IS_WEEKDAYS = 2;
 
     /**
      * @var int
      */
-    public const IS_WEEKDAYS = 4;
+    public const IS_WEEKENDS = 4;
 
     /**
      * @var int
      */
-    public const IS_WEEKENDS = 8;
+    public const IS_WEEKLY = 8;
 
     /**
      * @var int
      */
-    public const IS_WEEKLY = 16;
-
-    /**
-     * @var int
-     */
-    public const IS_MONTHLY = 32;
+    public const IS_MONTHLY = 16;
 
     /**
      * Database ID for this task (set when loaded from database)
@@ -64,7 +59,6 @@ class Task implements FlagHandler
     public static function getFlagChecker(int $flags): FlagChecker
     {
         $flagNames = [
-            'isNudge' => self::IS_NUDGE,
             'isDaily' => self::IS_DAILY,
             'isWeekdays' => self::IS_WEEKDAYS,
             'isWeekends' => self::IS_WEEKENDS,
