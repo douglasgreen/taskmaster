@@ -56,6 +56,11 @@ class Task implements FlagHandler
      */
     public const IS_MONTHLY = 32;
 
+    /**
+     * Database ID for this task (set when loaded from database)
+     */
+    public ?int $dbId = null;
+
     public static function getFlagChecker(int $flags): FlagChecker
     {
         $flagNames = [

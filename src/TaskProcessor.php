@@ -19,7 +19,7 @@ class TaskProcessor
 
     public function __construct(
         protected readonly TaskStorage $taskStorage,
-        protected readonly TaskFile $taskFile,
+        protected readonly TaskDatabase $taskDatabase,
     ) {
         $this->currentTime = time();
         $this->currentDate = date('Y-m-d', $this->currentTime);
@@ -30,7 +30,7 @@ class TaskProcessor
 
     public function processTasks(): void
     {
-        $tasks = $this->taskFile->loadTasks();
+        $tasks = $this->taskDatabase->loadTasks();
         $reminderSent = false;
 
         // Check if we have already run the program today before sending a nudge.
@@ -93,7 +93,7 @@ class TaskProcessor
         }
 
         if ($reminderSent) {
-            $this->taskFile->saveTasks($tasks);
+            $this->taskDatabase->saveTasks($tasks);
         }
     }
 

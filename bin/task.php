@@ -2,7 +2,7 @@
 <?php
 
 use DouglasGreen\OptParser\OptParser;
-use DouglasGreen\TaskMaster\TaskFile;
+use DouglasGreen\TaskMaster\TaskDatabase;
 use DouglasGreen\TaskMaster\TaskProcessor;
 use DouglasGreen\TaskMaster\TaskStorage;
 
@@ -12,7 +12,7 @@ $optParser = new OptParser('Task Manager', 'Command-line version of task manager
 
 // Add commands.
 $optParser
-    ->addCommand(['process'], 'Process tasks and send emails')
+    ->addCommand(['process'], 'Process recurring tasks and insert into task list')
     ->addCommand(['add'], 'Add a new task')
     ->addCommand(['search'], 'Search for tasks');
 
@@ -20,7 +20,6 @@ $optParser
 $optParser
     ->addTerm('name', 'STRING', 'Task name')
     ->addParam(['url'], 'URL', 'URL for documentation or action')
-    ->addParam(['recur'], 'BOOL', 'Recurring?')
     ->addParam(['start'], 'DATE', 'Recur start date')
     ->addParam(['end'], 'DATE', 'Recur end date')
     ->addParam(['year'], 'STRING', 'Days of year')
@@ -35,7 +34,6 @@ $optParser->addTerm('term', 'STRING', 'Term to search form');
 $optParser->addUsage('add', [
     'name',
     'url',
-    'recur',
     'start',
     'end',
     'year',
@@ -53,8 +51,6 @@ $optParser->addUsage('process', []);
 $input = $optParser->parse();
 
 $command = $input->getCommand();
-
-$filename = __DIR__ . '/../assets/data/tasks.csv';
 
 $configFile = __DIR__ . '/../config/config.ini';
 if (!file_exists($configFile)) {
@@ -77,14 +73,14 @@ $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 switch ($command) {
     case 'process':
         $taskStorage = new TaskStorage($pdo);
-        $taskFile = new TaskFile($filename);
-        $taskProcessor = new TaskProcessor($taskStorage, $taskFile);
+        $taskDatabase = new TaskDatabase($pdo);
+        $taskProcessor = new TaskProcessor($taskStorage, $taskDatabase);
         $taskProcessor->processTasks();
         break;
 
     case 'add':
-        $taskFile = new TaskFile($filename);
-        $taskFile->addTask(
+        $taskDatabase = new TaskDatabase($pdo);
+        $taskDatabase->addTask(
             (string) $input->get('name'),
             (string) $input->get('url'),
             (bool) $input->get('recur'),
@@ -95,12 +91,13 @@ switch ($command) {
             (string) $input->get('week'),
             (string) $input->get('time'),
         );
+        echo "Task added successfully.\n";
         break;
 
     case 'search':
-        $taskFile = new TaskFile($filename);
+        $taskDatabase = new TaskDatabase($pdo);
         $term = (string) $input->get('term');
-        $tasks = $taskFile->search($term);
+        $tasks = $taskDatabase->search($term);
         foreach ($tasks as $task) {
             echo sprintf('Task Name: %s%s', $task->taskName, PHP_EOL);
 
@@ -108,16 +105,12 @@ switch ($command) {
                 echo sprintf('Task URL: %s%s', $task->taskUrl, PHP_EOL);
             }
 
-            echo 'Recurring: ' . ($task->recurring ? 'Yes' : 'No') . PHP_EOL;
+            if ($task->recurStart !== null) {
+                echo sprintf('Recur Start: %s%s', $task->recurStart, PHP_EOL);
+            }
 
-            if ($task->recurring) {
-                if ($task->recurStart !== null) {
-                    echo sprintf('Recur Start: %s%s', $task->recurStart, PHP_EOL);
-                }
-
-                if ($task->recurEnd !== null) {
-                    echo sprintf('Recur End: %s%s', $task->recurEnd, PHP_EOL);
-                }
+            if ($task->recurEnd !== null) {
+                echo sprintf('Recur End: %s%s', $task->recurEnd, PHP_EOL);
             }
 
             if ($task->daysOfYear !== []) {
