@@ -113,7 +113,6 @@ class Task implements FlagHandler
     public function __construct(
         public string $taskName,
         public string $taskUrl,
-        public bool $recurring,
         public ?string $recurStart,
         public ?string $recurEnd,
         public array $daysOfYear,
@@ -146,14 +145,6 @@ class Task implements FlagHandler
         if ($this->timesOfDay && ! $hasDayType) {
             $this->daysOfYear = [date('Y-m-d')];
             $hasDayType = true;
-        }
-
-        if (! $this->recurring) {
-            if ($hasDayType) {
-                $this->checkNonRecurDates();
-            }
-
-            return;
         }
 
         if (! $hasDayType) {
@@ -191,20 +182,6 @@ class Task implements FlagHandler
         return $names;
     }
 
-    protected function checkNonRecurDates(): void
-    {
-        $error = 'Non-recurring tasks that specify date must use full YYYY-MM-DD day of year';
-        if ($this->daysOfYear === []) {
-            $this->error($error);
-        }
-
-        foreach ($this->daysOfYear as $dayOfYear) {
-            if (! Regex::hasMatch('/^\d\d\d\d-\d\d-\d\d$/', $dayOfYear)) {
-                $this->error($error);
-            }
-        }
-    }
-
     protected function checkRecurDates(): void
     {
         if (
@@ -228,16 +205,6 @@ class Task implements FlagHandler
         ) {
             $this->error('Bad recur date range: ' . $this->recurStart . ' to ' . $this->recurEnd);
         }
-
-        if ($this->recurring) {
-            return;
-        }
-
-        if ($this->recurEnd === null && $this->recurStart === null) {
-            return;
-        }
-
-        $this->error('Non-recurring tasks must not specify a recur start or end');
     }
 
     /**

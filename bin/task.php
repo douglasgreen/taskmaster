@@ -83,7 +83,6 @@ switch ($command) {
         $taskDatabase->addTask(
             (string) $input->get('name'),
             (string) $input->get('url'),
-            (bool) $input->get('recur'),
             (string) $input->get('start'),
             (string) $input->get('end'),
             (string) $input->get('year'),

@@ -19,7 +19,6 @@ class TaskDatabase
     public function addTask(
         string $taskName,
         string $taskUrl,
-        bool $recurring,
         string $recurStart,
         string $recurEnd,
         string $daysOfYearField,
@@ -35,7 +34,6 @@ class TaskDatabase
         $task = new Task(
             $taskName,
             $taskUrl,
-            $recurring,
             $recurStart,
             $recurEnd,
             $daysOfYear,
@@ -45,10 +43,10 @@ class TaskDatabase
             0,
         );
 
-        $daysOfYearStr = implode('|', $task->daysOfYear);
-        $daysOfMonthStr = implode('|', $task->daysOfMonth);
-        $daysOfWeekStr = implode('|', $task->daysOfWeek);
-        $timesOfDayStr = implode('|', $task->timesOfDay);
+        $daysOfYearStr = $task->daysOfYear ? implode('|', $task->daysOfYear) : null;
+        $daysOfMonthStr = $task->daysOfMonth ? implode('|', $task->daysOfMonth) : null;
+        $daysOfWeekStr = $task->daysOfWeek ? implode('|', $task->daysOfWeek) : null;
+        $timesOfDayStr = $task->timesOfDay ? implode('|', $task->timesOfDay) : null;
 
         $stmt = $this->pdo->prepare(
             'INSERT INTO recurring_tasks (title, details, recur_start, recur_end, days_of_year, days_of_month, days_of_week, time_of_day, last_reminded_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, NOW())'
@@ -96,7 +94,6 @@ class TaskDatabase
             $task = new Task(
                 $row['title'],
                 $row['details'] ?? '',
-                true, // All tasks in this table are recurring
                 $row['recur_start'],
                 $row['recur_end'],
                 $daysOfYear,
@@ -169,7 +166,6 @@ class TaskDatabase
             $task = new Task(
                 $row['title'],
                 $row['details'] ?? '',
-                true,
                 $row['recur_start'],
                 $row['recur_end'],
                 $daysOfYear,
