@@ -1,6 +1,7 @@
 # This file ignores build directories and project tool directories.
 
 # Project-specific settings (put your files here)
+config.ini
 
 # Bower
 bower_components/

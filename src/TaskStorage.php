@@ -9,22 +9,8 @@ class TaskStorage
 {
     protected PDO $pdo;
 
-    public function __construct(
-        protected string $host,
-        protected int $port,
-        protected string $database,
-        protected string $user,
-        protected string $password,
-    ) {
-        $dsn = "mysql:host={$this->host};port={$this->port};dbname={$this->database}";
-        try {
-            $this->pdo = new PDO($dsn, $this->user, $this->password);
-            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $pdoException) {
-            // In production, log error instead of echo
-            echo 'Connection failed: ' . $pdoException->getMessage() . PHP_EOL;
-            throw $pdoException;
-        }
+    public function __construct(PDO $pdo) {
+        $this->pdo = $pdo;
     }
 
     public function store(string $taskName, string $taskUrl, int $flags = 0): void

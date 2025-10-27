@@ -1,0 +1,6 @@
+[connection]
+db = "TaskManager"
+host = ~
+pass = ~
+user = ~
+port = 3306

@@ -16,14 +16,6 @@ $optParser
     ->addCommand(['add'], 'Add a new task')
     ->addCommand(['search'], 'Search for tasks');
 
-// Add params for process command.
-$optParser
-    ->addParam(['host'], 'STRING', 'Your database host')
-    ->addParam(['port'], 'INT', 'Your database port')
-    ->addParam(['database'], 'STRING', 'Your database name')
-    ->addParam(['user'], 'STRING', 'Your database user')
-    ->addParam(['password'], 'STRING', 'Your database password');
-
 // Add params for add command.
 $optParser
     ->addTerm('name', 'STRING', 'Task name')
@@ -38,9 +30,6 @@ $optParser
 
 // Add params for search command.
 $optParser->addTerm('term', 'STRING', 'Term to search form');
-
-// Add usage for process command.
-$optParser->addUsage('process', ['host', 'port', 'database', 'user', 'password']);
 
 // Add usage for add command.
 $optParser->addUsage('add', [
@@ -58,36 +47,36 @@ $optParser->addUsage('add', [
 // Add usage for search command.
 $optParser->addUsage('search', ['term']);
 
+// Add usage with no arguments.
+$optParser->addUsage('process', []);
+
 $input = $optParser->parse();
 
 $command = $input->getCommand();
 
 $filename = __DIR__ . '/../assets/data/tasks.csv';
 
+$configFile = __DIR__ . '/../config/config.ini';
+if (!file_exists($configFile)) {
+    die("Config file not found. Please create config/config.ini from config.ini.sample\n");
+}
+$config = parse_ini_file($configFile, true);
+$connection = $config['connection'];
+$host = $connection['host'];
+$port = $connection['port'];
+$database = $connection['db'];
+$user = $connection['user'];
+$password = $connection['pass'];
+if ($host === '~' || $database === '~' || $user === '~' || $password === '~') {
+    die("Config not set up. Please update config.ini\n");
+}
+$dsn = "mysql:host={$host};port={$port};dbname={$database}";
+$pdo = new PDO($dsn, $user, $password);
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
 switch ($command) {
     case 'process':
-        $host = $input->get('host');
-        $port = $input->get('port');
-        $database = $input->get('database');
-        $user = $input->get('user');
-        $password = $input->get('password');
-
-        if ($port === null) {
-            $port = 3306;
-        }
-
-        if ($host === null || $database === null || $user === null || $password === null) {
-            die("Missing arguments\n");
-        }
-
-
-        $taskStorage = new TaskStorage(
-            (string) $host,
-            (int) $port,
-            (string) $database,
-            (string) $user,
-            (string) $password
-        );
+        $taskStorage = new TaskStorage($pdo);
         $taskFile = new TaskFile($filename);
         $taskProcessor = new TaskProcessor($taskStorage, $taskFile);
         $taskProcessor->processTasks();
@@ -107,6 +96,7 @@ switch ($command) {
             (string) $input->get('time'),
         );
         break;
+
     case 'search':
         $taskFile = new TaskFile($filename);
         $term = (string) $input->get('term');
