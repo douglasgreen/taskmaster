@@ -191,11 +191,6 @@ class TaskProcessor
         if ($recurStartTime && $this->currentTime < $recurStartTime) {
             return false;
         }
-
-        if ($recurEndTime && $this->currentTime > $recurEndTime) {
-            return false;
-        }
-
-        return true;
+        return ! ($recurEndTime && $this->currentTime > $recurEndTime);
     }
 }

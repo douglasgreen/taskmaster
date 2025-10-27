@@ -31,16 +31,7 @@ $optParser
 $optParser->addTerm('term', 'STRING', 'Term to search form');
 
 // Add usage for add command.
-$optParser->addUsage('add', [
-    'name',
-    'url',
-    'start',
-    'end',
-    'year',
-    'month',
-    'week',
-    'time',
-]);
+$optParser->addUsage('add', ['name', 'url', 'start', 'end', 'year', 'month', 'week', 'time']);
 
 // Add usage for search command.
 $optParser->addUsage('search', ['term']);
@@ -53,7 +44,7 @@ $input = $optParser->parse();
 $command = $input->getCommand();
 
 $configFile = __DIR__ . '/../config/config.ini';
-if (!file_exists($configFile)) {
+if (! file_exists($configFile)) {
     die("Config file not found. Please create config/config.ini from config.ini.sample\n");
 }
 $config = parse_ini_file($configFile, true);

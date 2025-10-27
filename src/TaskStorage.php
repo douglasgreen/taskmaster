@@ -3,15 +3,12 @@
 namespace DouglasGreen\TaskMaster;
 
 use PDO;
-use PDOException;
 
 class TaskStorage
 {
-    protected PDO $pdo;
-
-    public function __construct(PDO $pdo) {
-        $this->pdo = $pdo;
-    }
+    public function __construct(
+        protected PDO $pdo
+    ) {}
 
     public function store(string $taskName, string $taskUrl, int $flags = 0): void
     {
@@ -28,7 +25,7 @@ class TaskStorage
             $title = 'Monthly ';
         }
 
-            $title .= 'Reminder: ';
+        $title .= 'Reminder: ';
 
         $title .= $taskName;
 

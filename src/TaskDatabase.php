@@ -78,8 +78,15 @@ class TaskDatabase
 
         $tasks = [];
         foreach ($rows as $row) {
-            $daysOfYear = static::splitField($row['days_of_year'] ?? '', '/^(\d\d\d\d-)?\d\d-\d\d$/');
-            $daysOfMonth = static::splitField($row['days_of_month'] ?? '', '/^([1-9]|[12]\d|3[01])$/', true);
+            $daysOfYear = static::splitField(
+                $row['days_of_year'] ?? '',
+                '/^(\d\d\d\d-)?\d\d-\d\d$/'
+            );
+            $daysOfMonth = static::splitField(
+                $row['days_of_month'] ?? '',
+                '/^([1-9]|[12]\d|3[01])$/',
+                true
+            );
             $daysOfWeek = static::splitField($row['days_of_week'] ?? '', '/^[1-7]$/', true);
             $timesOfDay = static::splitField($row['time_of_day'] ?? '', '/^\d\d:\d\d$/');
 
@@ -120,7 +127,7 @@ class TaskDatabase
     public function saveTasks(array $tasks): void
     {
         foreach ($tasks as $task) {
-            if (!isset($task->dbId)) {
+            if ($task->dbId === null) {
                 continue;
             }
 
@@ -146,12 +153,20 @@ class TaskDatabase
             'SELECT id, title, details, recur_start, recur_end, days_of_year, days_of_month, days_of_week, time_of_day, last_reminded_at FROM recurring_tasks WHERE title LIKE ? ORDER BY title ASC'
         );
         $stmt->execute(['%' . $term . '%']);
+
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $tasks = [];
         foreach ($rows as $row) {
-            $daysOfYear = static::splitField($row['days_of_year'] ?? '', '/^(\d\d\d\d-)?\d\d-\d\d$/');
-            $daysOfMonth = static::splitField($row['days_of_month'] ?? '', '/^([1-9]|[12]\d|3[01])$/', true);
+            $daysOfYear = static::splitField(
+                $row['days_of_year'] ?? '',
+                '/^(\d\d\d\d-)?\d\d-\d\d$/'
+            );
+            $daysOfMonth = static::splitField(
+                $row['days_of_month'] ?? '',
+                '/^([1-9]|[12]\d|3[01])$/',
+                true
+            );
             $daysOfWeek = static::splitField($row['days_of_week'] ?? '', '/^[1-7]$/', true);
             $timesOfDay = static::splitField($row['time_of_day'] ?? '', '/^\d\d:\d\d$/');
 
@@ -236,7 +251,7 @@ class TaskDatabase
      */
     protected static function checkValue(string $value, string $regex): void
     {
-        if (!Regex::hasMatch($regex, $value)) {
+        if (! Regex::hasMatch($regex, $value)) {
             $error = sprintf('Value "%s" doesn\'t match regex "%s"', $value, $regex);
             throw new ValueException($error);
         }
