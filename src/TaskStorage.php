@@ -13,6 +13,7 @@ class TaskStorage
     public function store(string $taskName, string $taskUrl, int $flags = 0): void
     {
         $flagChecker = Task::getFlagChecker($flags);
+        $title = '';
         if ($flagChecker->get('isDaily')) {
             $title = 'Daily ';
         } elseif ($flagChecker->get('isWeekdays')) {
