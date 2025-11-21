@@ -1,16 +1,22 @@
 <?php
-// Database configuration
-$host = 'eos.teamgleim.com';
-$dbname = 'TaskManager';
-$username = 'root';
-$password = '';
 
-try {
-    $pdo = new PDO("mysql:host=$host;port=23979;dbname=$dbname;charset=utf8mb4", $username, $password);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
+$configFile = __DIR__ . '/config/config.ini';
+if (! file_exists($configFile)) {
+    die("Config file not found. Please create config/config.ini from config.ini.sample\n");
 }
+$config = parse_ini_file($configFile, true);
+$connection = $config['connection'];
+$host = $connection['host'];
+$port = $connection['port'];
+$database = $connection['db'];
+$user = $connection['user'];
+$password = $connection['pass'];
+if ($host === '~' || $database === '~' || $user === '~' || $password === '~') {
+    die("Config not set up. Please update config.ini\n");
+}
+$dsn = "mysql:host={$host};port={$port};dbname={$database}";
+$pdo = new PDO($dsn, $user, $password);
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 // Helper Functions
 function formatDueDate($due_date_str) {
