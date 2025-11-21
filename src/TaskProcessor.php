@@ -43,7 +43,7 @@ class TaskProcessor
             $datetimes = $result['datetimes'];
 
             foreach ($datetimes as $datetime) {
-                $datetimeSeconds = strtotime((string) $datetime);
+                $scheduledTime = strtotime((string) $datetime);
 
                 $flags = 0;
                 if ($frequency === 'daily') {
@@ -58,10 +58,12 @@ class TaskProcessor
                     $flags = Task::IS_MONTHLY;
                 }
 
-                // 14 minutes in seconds
-                if (abs($datetimeSeconds - $this->currentTime) < 840) {
+                // Check that scheduled time is past and no reminder has been sent since scheduled time.
+                if ($scheduledTime < $this->currentTime && $task->lastTimeReminded < $scheduledTime) {
                     $this->taskStorage->store($task->taskName, $task->taskUrl, $flags);
                     $reminderSent = true;
+
+                    // Set reminder time to current time so it is after scheduled time, marking it as done.
                     $task->lastTimeReminded = $this->currentTime;
                     break;
                 }
@@ -83,9 +85,9 @@ class TaskProcessor
         $datetimes = [];
 
         // There are always dates but there aren't always times. If not specified
-        // or specified as '*', time means "right now".
+        // or specified as '*', time means "start of day".
         if ($times === [] || $times === ['*']) {
-            $times[] = date('H:i');
+            $times[] = '00:00';
         }
 
         foreach ($dates as $date) {
@@ -169,21 +171,6 @@ class TaskProcessor
 
     protected function shouldSendReminder(Task $task): bool
     {
-        // Don't send more than one reminder per 59 minutes to allow margin for error.
-        if ($task->lastTimeReminded > 0 && $this->currentTime - $task->lastTimeReminded < 3540) {
-            return false;
-        }
-
-        // Don't send more than one reminder on the same date if the time is
-        // unspecified otherwise you'd get emails every hour.
-        if (
-            $task->lastTimeReminded > 0 &&
-            $task->timesOfDay === [] &&
-            date('Y-m-d', $task->lastTimeReminded) === $this->currentDate
-        ) {
-            return false;
-        }
-
         // Check if recurring dates are out of range.
         $recurStartTime = $task->recurStart === null ? null : strtotime($task->recurStart);
         $recurEndTime = $task->recurEnd === null ? null : strtotime($task->recurEnd);
