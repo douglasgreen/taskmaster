@@ -653,7 +653,7 @@ if ($selected_group) {
         }
 
         .table td {
-            vertical-align: middle;
+            vertical-align: top;
             padding: 12px 15px;
         }
 
