@@ -1,0 +1,12 @@
+{
+    "scanPaths": [
+        "bin",
+        "index.php",
+        "recurring.php",
+        "src"
+    ],
+    "fileExtensions": [
+        "php"
+    ],
+    "ignoreParseFailures": true
+}

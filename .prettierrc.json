@@ -1,0 +1,84 @@
+{
+  "printWidth": 100,
+  "tabWidth": 4,
+  "useTabs": false,
+  "semi": true,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "bracketSpacing": true,
+  "bracketSameLine": false,
+  "arrowParens": "always",
+  "endOfLine": "lf",
+  "htmlWhitespaceSensitivity": "css",
+  "vueIndentScriptAndStyle": false,
+  "overrides": [
+    {
+      "files": "*.html",
+      "options": {
+        "tabWidth": 2,
+        "printWidth": 120
+      }
+    },
+    {
+      "files": "*.css",
+      "options": {
+        "singleQuote": false
+      }
+    },
+    {
+      "files": "*.md",
+      "options": {
+        "tabWidth": 2,
+        "printWidth": 80,
+        "proseWrap": "always"
+      }
+    },
+    {
+      "files": "*.json",
+      "options": {
+        "tabWidth": 2
+      }
+    },
+    {
+      "files": "*.yml",
+      "options": {
+        "tabWidth": 2,
+        "singleQuote": false
+      }
+    },
+    {
+      "files": "*.php",
+      "options": {
+        "tabWidth": 4,
+        "braceStyle": "psr-2"
+      }
+    },
+    {
+      "files": "*.py",
+      "options": {
+        "tabWidth": 4
+      }
+    },
+    {
+      "files": "*.go",
+      "options": {
+        "useTabs": true,
+        "tabWidth": 8
+      }
+    },
+    {
+      "files": "*.java",
+      "options": {
+        "tabWidth": 4
+      }
+    },
+    {
+      "files": "*.sql",
+      "options": {
+        "tabWidth": 4,
+        "keywordCase": "upper",
+        "expressionWidth": 100
+      }
+    }
+  ]
+}

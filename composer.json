@@ -25,17 +25,15 @@
         }
     ],
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.3",
         "douglasgreen/opt-parser": "^0.5",
         "douglasgreen/utility": "^0.5"
     },
     "require-dev": {
-        "douglasgreen/config-setup": "dev-main",
         "phpstan/phpstan": "^2.1",
         "phpunit/phpunit": "^11.5",
         "rector/rector": "^2.0",
-        "shipmonk/name-collision-detector": "^2.1",
-        "symplify/easy-coding-standard": "^12.5"
+        "shipmonk/name-collision-detector": "^2.1"
     },
     "autoload": {
         "psr-4": {
@@ -43,30 +41,18 @@
             "DouglasGreen\\TaskMaster\\Tests\\": "tests/"
         }
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/douglasgreen/config-setup"
-        }
-    ],
     "config": {
         "sort-packages": true
     },
     "scripts": {
         "lint": [
             "detect-collisions",
-            "ecs",
             "phpstan analyse",
             "rector --dry-run"
         ],
         "lint:fix": [
-            "ecs --fix",
             "rector"
         ],
-        "post-install-cmd": "config_setup.php",
-        "post-update-cmd": "config_setup.php",
         "test": "phpunit"
     }
 }
