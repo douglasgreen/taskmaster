@@ -3,6 +3,9 @@
 # Project-specific settings (put your files here)
 config.ini
 
+# AI
+.aider*
+
 # Bower
 bower_components/
 
