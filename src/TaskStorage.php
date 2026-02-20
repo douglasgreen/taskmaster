@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DouglasGreen\TaskMaster;
 
 use PDO;
@@ -13,7 +15,7 @@ class TaskStorage
     public function store(string $taskName, string $taskUrl, ?Frequency $frequency = null): void
     {
         $title = '';
-        if ($frequency !== null) {
+        if ($frequency instanceof Frequency) {
             $title = $frequency->value . ' ';
         }
 

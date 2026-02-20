@@ -18,7 +18,7 @@ $password = $connection['pass'];
 if ($host === '~' || $database === '~' || $user === '~' || $password === '~') {
     die("Config not set up. Please update config.ini\n");
 }
-$dsn = "mysql:host={$host};port={$port};dbname={$database}";
+$dsn = sprintf('mysql:host=%s;port=%s;dbname=%s', $host, $port, $database);
 $pdo = new PDO($dsn, $user, $password);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -26,7 +26,7 @@ $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 $taskDatabase = new TaskDatabase($pdo);
 
 // Helper to format the schedule string for display
-function formatSchedule($task) {
+function formatSchedule(array $task): string {
     $parts = [];
     
     // Dates
@@ -36,12 +36,14 @@ function formatSchedule($task) {
             5 => 'Fri', 6 => 'Sat', 7 => 'Sun'
         ];
         // Simple parser for display purposes
-        if ($task['days_of_week'] === '*') return 'Daily';
+        if ($task['days_of_week'] === '*') {
+            return 'Daily';
+        }
         
         $days = [];
-        $tokens = explode('|', $task['days_of_week']);
+        $tokens = explode('|', (string) $task['days_of_week']);
         foreach ($tokens as $token) {
-            if (strpos($token, '-') !== false) {
+            if (str_contains($token, '-')) {
                 [$s, $e] = explode('-', $token);
                 $days[] = ($map[$s] ?? $s) . '-' . ($map[$e] ?? $e);
             } else {
@@ -80,11 +82,11 @@ if (isset($_GET['ajax'])) {
     try {
         if ($_GET['ajax'] === 'add_task' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             // Extract raw inputs
-            $name = trim($_POST['name']);
-            $url = trim($_POST['url']); // Mapped to details in DB via TaskDatabase
+            $name = trim((string) $_POST['name']);
+            $url = trim((string) $_POST['url']); // Mapped to details in DB via TaskDatabase
             $start = $_POST['recur_start'] ?: '';
             $end = $_POST['recur_end'] ?: '';
-            $time = trim($_POST['time_of_day']); // e.g. "09:00|14:00"
+            $time = trim((string) $_POST['time_of_day']); // e.g. "09:00|14:00"
 
             // Frequency Handling
             $freq = $_POST['frequency_type'];
@@ -98,9 +100,9 @@ if (isset($_GET['ajax'])) {
                     $daysOfWeek = implode('|', $_POST['days_of_week']);
                 }
             } elseif ($freq === 'monthly') {
-                $daysOfMonth = trim($_POST['days_of_month']);
+                $daysOfMonth = trim((string) $_POST['days_of_month']);
             } elseif ($freq === 'yearly') {
-                $daysOfYear = trim($_POST['days_of_year']);
+                $daysOfYear = trim((string) $_POST['days_of_year']);
             }
             // 'daily' implies empty day fields, which Task class handles as daily if times exist
 
@@ -126,11 +128,11 @@ if (isset($_GET['ajax'])) {
 
         if ($_GET['ajax'] === 'edit_task' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = (int)$_POST['task_id'];
-            $name = trim($_POST['name']);
-            $details = trim($_POST['url']); 
+            $name = trim((string) $_POST['name']);
+            $details = trim((string) $_POST['url']); 
             $start = $_POST['recur_start'] ?: null;
             $end = $_POST['recur_end'] ?: null;
-            $time = trim($_POST['time_of_day']);
+            $time = trim((string) $_POST['time_of_day']);
 
             $freq = $_POST['frequency_type'];
             $daysOfWeek = null;
@@ -142,12 +144,14 @@ if (isset($_GET['ajax'])) {
                     $daysOfWeek = implode('|', $_POST['days_of_week']);
                 }
             } elseif ($freq === 'monthly') {
-                $daysOfMonth = trim($_POST['days_of_month']) ?: null;
+                $daysOfMonth = trim((string) $_POST['days_of_month']) ?: null;
             } elseif ($freq === 'yearly') {
-                $daysOfYear = trim($_POST['days_of_year']) ?: null;
+                $daysOfYear = trim((string) $_POST['days_of_year']) ?: null;
             }
 
-            if (empty($name)) throw new Exception('Name is required');
+            if (empty($name)) {
+                throw new Exception('Name is required');
+            }
 
             // Manual update since TaskDatabase doesn't support full updates
             $sql = "UPDATE recurring_tasks SET 
@@ -189,16 +193,22 @@ if (isset($_GET['ajax'])) {
             if ($task) {
                 // Determine frequency for UI
                 $freq = 'daily';
-                if (!empty($task['days_of_week'])) $freq = 'weekly';
-                if (!empty($task['days_of_month'])) $freq = 'monthly';
-                if (!empty($task['days_of_year'])) $freq = 'yearly';
+                if (!empty($task['days_of_week'])) {
+                    $freq = 'weekly';
+                }
+                if (!empty($task['days_of_month'])) {
+                    $freq = 'monthly';
+                }
+                if (!empty($task['days_of_year'])) {
+                    $freq = 'yearly';
+                }
 
                 // Explode weeks for checkboxes
                 $weekArr = [];
                 if ($task['days_of_week']) {
-                    $parts = explode('|', $task['days_of_week']);
+                    $parts = explode('|', (string) $task['days_of_week']);
                     foreach ($parts as $p) {
-                        if (strpos($p, '-') !== false) {
+                        if (str_contains($p, '-')) {
                             [$s, $e] = explode('-', $p);
                             for ($i=$s; $i<=$e; $i++) $weekArr[] = $i;
                         } else {
@@ -459,7 +469,7 @@ if ($is_searching) {
                                 <form method="get" class="d-flex gap-2">
                                     <input type="text" name="search" class="form-control" 
                                            placeholder="Search recurring..." 
-                                           value="<?php echo htmlspecialchars($search_query); ?>">
+                                           value="<?php echo htmlspecialchars((string) $search_query); ?>">
                                     <button type="submit" class="btn btn-gradient"><i class="bi bi-search"></i></button>
                                     <?php if($is_searching): ?>
                                         <a href="recurring.php" class="btn btn-secondary">Clear</a>
@@ -497,7 +507,7 @@ if ($is_searching) {
                                                 <td>
                                                     <button class="btn btn-sm btn-danger delete-task-btn" 
                                                             data-task-id="<?php echo $task['id']; ?>"
-                                                            data-task-name="<?php echo htmlspecialchars($task['title']); ?>">
+                                                            data-task-name="<?php echo htmlspecialchars((string) $task['title']); ?>">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </td>
@@ -507,7 +517,7 @@ if ($is_searching) {
                                                         <i class="bi bi-pencil"></i>
                                                     </button>
                                                 </td>
-                                                <td class="fw-bold"><?php echo htmlspecialchars($task['title']); ?></td>
+                                                <td class="fw-bold"><?php echo htmlspecialchars((string) $task['title']); ?></td>
                                                 <td>
                                                     <?php 
                                                         $details = $task['details'];
@@ -520,7 +530,7 @@ if ($is_searching) {
                                                 </td>
                                                 <td><?php echo htmlspecialchars(formatSchedule($task)); ?></td>
                                                 <td class="text-muted small">
-                                                    <?php echo $task['last_reminded_at'] ? $task['last_reminded_at'] : 'Never'; ?>
+                                                    <?php echo $task['last_reminded_at'] ?: 'Never'; ?>
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>

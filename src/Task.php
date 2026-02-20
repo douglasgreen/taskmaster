@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DouglasGreen\TaskMaster;
 
 use Exception;
@@ -74,7 +76,7 @@ class Task
         public array $timesOfDay,
         public int $lastTimeReminded,
     ) {
-        $this->taskName = trim(preg_replace('/\s+/', ' ', $this->taskName));
+        $this->taskName = trim((string) preg_replace('/\s+/', ' ', $this->taskName));
 
         $this->taskUrl = trim($this->taskUrl);
 

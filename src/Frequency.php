@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DouglasGreen\TaskMaster;
 
 enum Frequency: string

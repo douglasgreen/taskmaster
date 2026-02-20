@@ -57,7 +57,7 @@ $password = $connection['pass'];
 if ($host === '~' || $database === '~' || $user === '~' || $password === '~') {
     die("Config not set up. Please update config.ini\n");
 }
-$dsn = "mysql:host={$host};port={$port};dbname={$database}";
+$dsn = sprintf('mysql:host=%s;port=%s;dbname=%s', $host, $port, $database);
 $pdo = new PDO($dsn, $user, $password);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 

@@ -14,7 +14,7 @@ $password = $connection['pass'];
 if ($host === '~' || $database === '~' || $user === '~' || $password === '~') {
     die("Config not set up. Please update config.ini\n");
 }
-$dsn = "mysql:host={$host};port={$port};dbname={$database}";
+$dsn = sprintf('mysql:host=%s;port=%s;dbname=%s', $host, $port, $database);
 $pdo = new PDO($dsn, $user, $password);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -37,22 +37,22 @@ function formatDueDate($due_date_str) {
     if ($days_from_now < 0) {
         if ($abs_days == 1) {
             return 'yesterday';
-        } else {
-            return $abs_days . ' days ago';
         }
-    } else {
-        if ($days_from_now == 0) {
-            return 'today';
-        } elseif ($days_from_now == 1) {
-            return 'tomorrow';
-        } else {
-            return 'in ' . $days_from_now . ' days';
-        }
+        return $abs_days . ' days ago';
     }
+    if ($days_from_now == 0) {
+        return 'today';
+    }
+    if ($days_from_now == 1) {
+        return 'tomorrow';
+    }
+    return 'in ' . $days_from_now . ' days';
 }
 
-function formatDetails($details) {
-    if (empty($details)) return '';
+function formatDetails($details): string|array {
+    if (empty($details)) {
+        return '';
+    }
     preg_match_all('/(https?:\/\/\S+)/', $details, $matches, PREG_SET_ORDER);
     $placeholders = [];
     $counter = 0;
@@ -64,7 +64,7 @@ function formatDetails($details) {
         $processed = str_replace($url, $placeholder, $processed);
         $counter++;
     }
-    $escaped = nl2br(htmlspecialchars($processed, ENT_QUOTES, 'UTF-8'));
+    $escaped = nl2br(htmlspecialchars((string) $processed, ENT_QUOTES, 'UTF-8'));
     foreach ($placeholders as $ph => $url) {
         $parsed = parse_url($url);
         $domain = $parsed['host'] ?? '';
@@ -89,7 +89,7 @@ function isTaskDue($due_date_str) {
     return $due <= $now;
 }
 
-function getDueCount($pdo, $group_id) {
+function getDueCount($pdo, $group_id): int {
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM tasks WHERE group_id = ? AND due_date IS NOT NULL AND due_date != '0000-00-00' AND due_date <= CURDATE()");
     $stmt->execute([$group_id]);
     return (int)$stmt->fetchColumn();
@@ -101,7 +101,7 @@ if (isset($_GET['ajax'])) {
 
     if ($_GET['ajax'] === 'add_task' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $group_id = (int)$_POST['group_id'];
-        $title = trim($_POST['title']);
+        $title = trim((string) $_POST['title']);
         $details = trim($_POST['details'] ?? '');
         $due_date = $_POST['due_date'] ?: null;
 
@@ -119,7 +119,7 @@ if (isset($_GET['ajax'])) {
 
     if ($_GET['ajax'] === 'edit_task' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $task_id = (int)$_POST['task_id'];
-        $title = trim($_POST['title']);
+        $title = trim((string) $_POST['title']);
         $details = trim($_POST['details'] ?? '');
         $due_date = $_POST['due_date'] ?: null;
 
@@ -164,7 +164,7 @@ if (isset($_GET['ajax'])) {
 
     if ($_GET['ajax'] === 'rename_group' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         $group_id = (int)$_POST['group_id'];
-        $name = trim($_POST['name']);
+        $name = trim((string) $_POST['name']);
 
         if (!empty($name)) {
             $stmt = $pdo->prepare("UPDATE task_groups SET name = ? WHERE id = ?");
@@ -223,19 +223,17 @@ if (isset($_GET['ajax'])) {
 }
 
 // Handle traditional POST requests
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_GET['ajax'])) {
-    if (isset($_POST['add_group'])) {
-        $name = trim($_POST['group_name']);
-        if (!empty($name)) {
-            try {
-                $stmt = $pdo->prepare("INSERT INTO task_groups (name, created_at) VALUES (?, NOW())");
-                $stmt->execute([$name]);
-                $new_group_id = $pdo->lastInsertId();
-                header("Location: ?group=$new_group_id&msg=group_added");
-                exit;
-            } catch (PDOException $e) {
-                $error_message = 'Error adding group: ' . $e->getMessage();
-            }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_GET['ajax']) && isset($_POST['add_group'])) {
+    $name = trim((string) $_POST['group_name']);
+    if (!empty($name)) {
+        try {
+            $stmt = $pdo->prepare("INSERT INTO task_groups (name, created_at) VALUES (?, NOW())");
+            $stmt->execute([$name]);
+            $new_group_id = $pdo->lastInsertId();
+            header(sprintf('Location: ?group=%s&msg=group_added', $new_group_id));
+            exit;
+        } catch (PDOException $e) {
+            $error_message = 'Error adding group: ' . $e->getMessage();
         }
     }
 }
@@ -244,12 +242,8 @@ $selected_group = $_GET['group'] ?? null;
 $search_query = $_GET['search'] ?? '';
 $message = '';
 
-if (isset($_GET['msg'])) {
-    switch ($_GET['msg']) {
-        case 'group_added':
-            $message = 'Group added successfully.';
-            break;
-    }
+if (isset($_GET['msg']) && $_GET['msg'] === 'group_added') {
+    $message = 'Group added successfully.';
 }
 
 // Validate selected group exists
@@ -961,7 +955,7 @@ if ($selected_group) {
                                 <a href="?group=<?php echo $group['id']; ?>"
                                    class="list-group-item list-group-item-action <?php echo $selected_group == $group['id'] ? 'active' : ''; ?>"
                                    aria-current="<?php echo $selected_group == $group['id'] ? 'page' : 'false'; ?>">
-                                    <span class="group-name"><?php echo htmlspecialchars($group['name']); ?></span>
+                                    <span class="group-name"><?php echo htmlspecialchars((string) $group['name']); ?></span>
                                     <?php if ($group['due_count'] > 0): ?>
                                         <span class="due-badge" title="<?php echo $group['due_count']; ?> due task<?php echo $group['due_count'] > 1 ? 's' : ''; ?>">
                                             <?php echo $group['due_count']; ?>
@@ -970,9 +964,9 @@ if ($selected_group) {
                                     <span class="group-actions">
                                         <button class="group-rename-btn"
                                                 data-group-id="<?php echo $group['id']; ?>"
-                                                data-group-name="<?php echo htmlspecialchars($group['name']); ?>"
+                                                data-group-name="<?php echo htmlspecialchars((string) $group['name']); ?>"
                                                 title="Rename group"
-                                                aria-label="Rename group <?php echo htmlspecialchars($group['name']); ?>">
+                                                aria-label="Rename group <?php echo htmlspecialchars((string) $group['name']); ?>">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                     </span>
@@ -1068,19 +1062,19 @@ if ($selected_group) {
                                                         <td>
                                                             <button class="btn btn-sm btn-danger delete-task-btn"
                                                                     data-task-id="<?php echo $task['id']; ?>"
-                                                                    data-task-title="<?php echo htmlspecialchars($task['title']); ?>"
-                                                                    aria-label="Delete task: <?php echo htmlspecialchars($task['title']); ?>">
+                                                                    data-task-title="<?php echo htmlspecialchars((string) $task['title']); ?>"
+                                                                    aria-label="Delete task: <?php echo htmlspecialchars((string) $task['title']); ?>">
                                                                 <i class="bi bi-trash"></i>
                                                             </button>
                                                         </td>
                                                         <td>
                                                             <button class="btn btn-sm btn-outline-primary edit-task-btn"
                                                                     data-task-id="<?php echo $task['id']; ?>"
-                                                                    aria-label="Edit task: <?php echo htmlspecialchars($task['title']); ?>">
+                                                                    aria-label="Edit task: <?php echo htmlspecialchars((string) $task['title']); ?>">
                                                                 <i class="bi bi-pencil"></i>
                                                             </button>
                                                         </td>
-                                                        <td><?php echo htmlspecialchars($task['title']); ?></td>
+                                                        <td><?php echo htmlspecialchars((string) $task['title']); ?></td>
                                                         <td><?php echo formatDetails($task['details']); ?></td>
                                                         <td>
                                                             <?php if ($is_due): ?>
@@ -1097,7 +1091,7 @@ if ($selected_group) {
                                                                 <?php foreach ($groups as $group): ?>
                                                                     <?php if ($group['id'] != $selected_group): ?>
                                                                         <option value="<?php echo $group['id']; ?>">
-                                                                            <?php echo htmlspecialchars($group['name']); ?>
+                                                                            <?php echo htmlspecialchars((string) $group['name']); ?>
                                                                         </option>
                                                                     <?php endif; ?>
                                                                 <?php endforeach; ?>
@@ -1119,7 +1113,7 @@ if ($selected_group) {
                                         $is_due = isTaskDue($due_date);
                                         ?>
                                         <div class="task-card" data-task-id="<?php echo $task['id']; ?>">
-                                            <div class="task-card-title"><?php echo htmlspecialchars($task['title']); ?></div>
+                                            <div class="task-card-title"><?php echo htmlspecialchars((string) $task['title']); ?></div>
                                             <?php if (!empty($task['details'])): ?>
                                                 <div class="task-card-details"><?php echo formatDetails($task['details']); ?></div>
                                             <?php endif; ?>
@@ -1156,7 +1150,7 @@ if ($selected_group) {
                                                                            href="#"
                                                                            data-task-id="<?php echo $task['id']; ?>"
                                                                            data-group-id="<?php echo $group['id']; ?>">
-                                                                            Move to <?php echo htmlspecialchars($group['name']); ?>
+                                                                            Move to <?php echo htmlspecialchars((string) $group['name']); ?>
                                                                         </a>
                                                                     </li>
                                                                 <?php endif; ?>
@@ -1166,7 +1160,7 @@ if ($selected_group) {
                                                                 <a class="dropdown-item text-danger delete-task-btn"
                                                                    href="#"
                                                                    data-task-id="<?php echo $task['id']; ?>"
-                                                                   data-task-title="<?php echo htmlspecialchars($task['title']); ?>">
+                                                                   data-task-title="<?php echo htmlspecialchars((string) $task['title']); ?>">
                                                                     <i class="bi bi-trash"></i> Delete
                                                                 </a>
                                                             </li>
@@ -1220,14 +1214,14 @@ if ($selected_group) {
 
                         <div class="card">
                             <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-3">
-                                <h2 class="mb-0">Search: "<?php echo htmlspecialchars($search_query); ?>"</h2>
+                                <h2 class="mb-0">Search: "<?php echo htmlspecialchars((string) $search_query); ?>"</h2>
                                 <div class="d-flex gap-2">
                                     <form method="get" class="search-form d-flex gap-2">
                                         <input type="text"
                                                name="search"
                                                class="form-control"
                                                placeholder="Search tasks..."
-                                               value="<?php echo htmlspecialchars($search_query); ?>"
+                                               value="<?php echo htmlspecialchars((string) $search_query); ?>"
                                                aria-label="Search tasks">
                                         <button type="submit" class="btn btn-gradient" aria-label="Search">
                                             <i class="bi bi-search"></i>
@@ -1238,7 +1232,7 @@ if ($selected_group) {
                             </div>
                         </div>
 
-                        <?php if (empty($search_results_by_group)): ?>
+                        <?php if ($search_results_by_group === []): ?>
                             <div class="empty-state">
                                 <div class="empty-state-icon">
                                     <i class="bi bi-search"></i>
@@ -1248,10 +1242,10 @@ if ($selected_group) {
                                 <a href="?" class="btn btn-gradient">Back to Home</a>
                             </div>
                         <?php else: ?>
-                            <?php foreach ($search_results_by_group as $group_id => $group_data): ?>
+                            <?php foreach ($search_results_by_group as $group_data): ?>
                                 <div class="mb-4">
                                     <div class="search-group-header">
-                                        <?php echo htmlspecialchars($group_data['group_name']); ?>
+                                        <?php echo htmlspecialchars((string) $group_data['group_name']); ?>
                                     </div>
                                     <div class="card" style="border-radius: 0 0 12px 12px;">
                                         <!-- Table View -->
@@ -1278,7 +1272,7 @@ if ($selected_group) {
                                                             <td>
                                                                 <button class="btn btn-sm btn-danger delete-task-btn"
                                                                         data-task-id="<?php echo $task['id']; ?>"
-                                                                        data-task-title="<?php echo htmlspecialchars($task['title']); ?>"
+                                                                        data-task-title="<?php echo htmlspecialchars((string) $task['title']); ?>"
                                                                         aria-label="Delete task">
                                                                     <i class="bi bi-trash"></i>
                                                                 </button>
@@ -1290,7 +1284,7 @@ if ($selected_group) {
                                                                     <i class="bi bi-pencil"></i>
                                                                 </button>
                                                             </td>
-                                                            <td><?php echo htmlspecialchars($task['title']); ?></td>
+                                                            <td><?php echo htmlspecialchars((string) $task['title']); ?></td>
                                                             <td><?php echo formatDetails($task['details']); ?></td>
                                                             <td>
                                                                 <?php if ($is_due): ?>
@@ -1307,7 +1301,7 @@ if ($selected_group) {
                                                                     <?php foreach ($groups as $group): ?>
                                                                         <?php if ($group['id'] != $task['group_id']): ?>
                                                                             <option value="<?php echo $group['id']; ?>">
-                                                                                <?php echo htmlspecialchars($group['name']); ?>
+                                                                                <?php echo htmlspecialchars((string) $group['name']); ?>
                                                                             </option>
                                                                         <?php endif; ?>
                                                                     <?php endforeach; ?>
@@ -1328,7 +1322,7 @@ if ($selected_group) {
                                                 $is_due = isTaskDue($due_date);
                                                 ?>
                                                 <div class="task-card" data-task-id="<?php echo $task['id']; ?>">
-                                                    <div class="task-card-title"><?php echo htmlspecialchars($task['title']); ?></div>
+                                                    <div class="task-card-title"><?php echo htmlspecialchars((string) $task['title']); ?></div>
                                                     <?php if (!empty($task['details'])): ?>
                                                         <div class="task-card-details"><?php echo formatDetails($task['details']); ?></div>
                                                     <?php endif; ?>
@@ -1351,7 +1345,7 @@ if ($selected_group) {
                                                             </button>
                                                             <button class="btn btn-sm btn-danger delete-task-btn"
                                                                     data-task-id="<?php echo $task['id']; ?>"
-                                                                    data-task-title="<?php echo htmlspecialchars($task['title']); ?>"
+                                                                    data-task-title="<?php echo htmlspecialchars((string) $task['title']); ?>"
                                                                     aria-label="Delete task">
                                                                 <i class="bi bi-trash"></i>
                                                             </button>
@@ -1988,7 +1982,7 @@ if ($selected_group) {
         });
 
         // Announce messages to screen readers
-        <?php if ($message): ?>
+        <?php if ($message !== '' && $message !== '0'): ?>
         showToast(<?php echo json_encode($message); ?>, 'success');
         <?php endif; ?>
 
