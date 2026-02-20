@@ -75,10 +75,6 @@ class TaskDatabase
             'SELECT id, title, details, recur_start, recur_end, days_of_year, days_of_month, days_of_week, time_of_day, last_reminded_at FROM recurring_tasks ORDER BY last_reminded_at ASC, id ASC'
         );
         $rows = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
-        if ($rows === false) {
-            $rows = [];
-        }
-
         $tasks = [];
         foreach ($rows as $row) {
             $daysOfYear = static::splitField(
@@ -217,6 +213,7 @@ class TaskDatabase
         if ($parts === false) {
             return [];
         }
+
         $values = [];
         foreach ($parts as $part) {
             $value = trim($part);
@@ -230,6 +227,7 @@ class TaskDatabase
                 if ($rangeValues === false) {
                     $rangeValues = [];
                 }
+
                 $count = count($rangeValues);
                 if ($count === 1) {
                     self::checkValue($value, $regex);

@@ -43,10 +43,10 @@ function formatDueDate(?string $due_date_str): string {
         }
         return $abs_days . ' days ago';
     }
-    if ($days_from_now == 0) {
+    if ($days_from_now === 0) {
         return 'today';
     }
-    if ($days_from_now == 1) {
+    if ($days_from_now === 1) {
         return 'tomorrow';
     }
     return 'in ' . $days_from_now . ' days';
@@ -261,10 +261,6 @@ if ($selected_group) {
 // Fetch groups with due counts
 $stmt = $pdo->query("SELECT * FROM task_groups ORDER BY name");
 $groups = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
-if ($groups === false) {
-    $groups = [];
-}
-
 foreach ($groups as &$group) {
     $group['due_count'] = getDueCount($pdo, $group['id']);
 }
@@ -1009,14 +1005,14 @@ if ($selected_group) {
                             <nav aria-label="Breadcrumb" class="breadcrumb-nav">
                                 <ol class="breadcrumb mb-0">
                                     <li class="breadcrumb-item"><a href="?">Home</a></li>
-                                    <li class="breadcrumb-item active" aria-current="page"><?php echo htmlspecialchars($selected_group_name); ?></li>
+                                    <li class="breadcrumb-item active" aria-current="page"><?php echo htmlspecialchars((string) $selected_group_name); ?></li>
                                 </ol>
                             </nav>
 
                             <!-- Group Header -->
                             <div class="card">
                                 <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-3">
-                                    <h2 class="mb-0"><?php echo htmlspecialchars($selected_group_name); ?></h2>
+                                    <h2 class="mb-0"><?php echo htmlspecialchars((string) $selected_group_name); ?></h2>
                                     <form method="get" class="search-form d-flex gap-2">
                                         <input type="text"
                                                name="search"

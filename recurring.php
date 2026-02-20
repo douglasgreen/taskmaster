@@ -34,18 +34,18 @@ $taskDatabase = new TaskDatabase($pdo);
  */
 function formatSchedule(array $task): string {
     $parts = [];
-    
+
     // Dates
     if (!empty($task['days_of_week'])) {
         $map = [
-            1 => 'Mon', 2 => 'Tue', 3 => 'Wed', 4 => 'Thu', 
+            1 => 'Mon', 2 => 'Tue', 3 => 'Wed', 4 => 'Thu',
             5 => 'Fri', 6 => 'Sat', 7 => 'Sun'
         ];
         // Simple parser for display purposes
         if ($task['days_of_week'] === '*') {
             return 'Daily';
         }
-        
+
         $days = [];
         $tokens = explode('|', (string) $task['days_of_week']);
         foreach ($tokens as $token) {
@@ -135,7 +135,7 @@ if (isset($_GET['ajax'])) {
         if ($_GET['ajax'] === 'edit_task' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             $id = (int)$_POST['task_id'];
             $name = trim((string) $_POST['name']);
-            $details = trim((string) $_POST['url']); 
+            $details = trim((string) $_POST['url']);
             $start = $_POST['recur_start'] ?: null;
             $end = $_POST['recur_end'] ?: null;
             $time = trim((string) $_POST['time_of_day']);
@@ -160,21 +160,21 @@ if (isset($_GET['ajax'])) {
             }
 
             // Manual update since TaskDatabase doesn't support full updates
-            $sql = "UPDATE recurring_tasks SET 
-                    title = ?, 
-                    details = ?, 
-                    recur_start = ?, 
-                    recur_end = ?, 
-                    days_of_week = ?, 
-                    days_of_month = ?, 
-                    days_of_year = ?, 
-                    time_of_day = ? 
+            $sql = "UPDATE recurring_tasks SET
+                    title = ?,
+                    details = ?,
+                    recur_start = ?,
+                    recur_end = ?,
+                    days_of_week = ?,
+                    days_of_month = ?,
+                    days_of_year = ?,
+                    time_of_day = ?
                     WHERE id = ?";
-            
+
             $stmt = $pdo->prepare($sql);
             $stmt->execute([
-                $name, $details, $start, $end, 
-                $daysOfWeek, $daysOfMonth, $daysOfYear, $time, 
+                $name, $details, $start, $end,
+                $daysOfWeek, $daysOfMonth, $daysOfYear, $time,
                 $id
             ]);
 
@@ -266,9 +266,6 @@ if ($is_searching) {
     // (or we could use $taskDatabase->loadTasks())
     $stmt = $pdo->query("SELECT * FROM recurring_tasks ORDER BY title ASC");
     $viewTasks = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
-    if ($viewTasks === false) {
-        $viewTasks = [];
-    }
 }
 
 ?>
@@ -469,15 +466,15 @@ if ($is_searching) {
             <!-- Main Content -->
             <main class="right-panel" id="main-content">
                 <div class="right-panel-content">
-                    
+
                     <!-- Breadcrumbs / Search Header -->
                     <div class="card">
                         <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-3">
                             <h2 class="mb-0">Recurring Tasks</h2>
                             <div class="d-flex gap-2">
                                 <form method="get" class="d-flex gap-2">
-                                    <input type="text" name="search" class="form-control" 
-                                           placeholder="Search recurring..." 
+                                    <input type="text" name="search" class="form-control"
+                                           placeholder="Search recurring..."
                                            value="<?php echo htmlspecialchars((string) $search_query); ?>">
                                     <button type="submit" class="btn btn-gradient"><i class="bi bi-search"></i></button>
                                     <?php if($is_searching): ?>
@@ -514,21 +511,21 @@ if ($is_searching) {
                                         <?php foreach ($viewTasks as $task): ?>
                                             <tr data-task-id="<?php echo $task['id']; ?>">
                                                 <td>
-                                                    <button class="btn btn-sm btn-danger delete-task-btn" 
+                                                    <button class="btn btn-sm btn-danger delete-task-btn"
                                                             data-task-id="<?php echo $task['id']; ?>"
                                                             data-task-name="<?php echo htmlspecialchars((string) $task['title']); ?>">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
                                                 </td>
                                                 <td>
-                                                    <button class="btn btn-sm btn-outline-primary edit-task-btn" 
+                                                    <button class="btn btn-sm btn-outline-primary edit-task-btn"
                                                             data-task-id="<?php echo $task['id']; ?>">
                                                         <i class="bi bi-pencil"></i>
                                                     </button>
                                                 </td>
                                                 <td class="fw-bold"><?php echo htmlspecialchars((string) $task['title']); ?></td>
                                                 <td>
-                                                    <?php 
+                                                    <?php
                                                         $details = $task['details'];
                                                         if (filter_var($details, FILTER_VALIDATE_URL)) {
                                                             echo '<a href="'.htmlspecialchars($details).'" target="_blank">Link <i class="bi bi-box-arrow-up-right small"></i></a>';
@@ -564,7 +561,7 @@ if ($is_searching) {
                 <form id="taskForm">
                     <div class="modal-body">
                         <input type="hidden" id="taskId" name="task_id">
-                        
+
                         <div class="row mb-3">
                             <div class="col-md-6">
                                 <label class="form-label">Task Name <span class="text-danger">*</span></label>
@@ -600,7 +597,7 @@ if ($is_searching) {
                         <div id="weeklyOptions" class="mb-3 p-3 bg-light rounded d-none">
                             <label class="form-label d-block">Days of Week</label>
                             <div class="d-flex flex-wrap gap-2">
-                                <?php 
+                                <?php
                                 $days = [1=>'Mon', 2=>'Tue', 3=>'Wed', 4=>'Thu', 5=>'Fri', 6=>'Sat', 7=>'Sun'];
                                 foreach($days as $num => $name): ?>
                                     <div class="form-check form-check-inline">
@@ -680,7 +677,7 @@ if ($is_searching) {
             const container = document.getElementById('toastContainer');
             const id = 'toast-' + Date.now();
             const bg = type === 'success' ? 'bg-success' : 'bg-danger';
-            
+
             const html = `
                 <div class="toast align-items-center text-white ${bg} border-0" id="${id}" role="alert" aria-live="assertive" aria-atomic="true">
                     <div class="d-flex">
@@ -688,7 +685,7 @@ if ($is_searching) {
                         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
                     </div>
                 </div>`;
-            
+
             container.insertAdjacentHTML('beforeend', html);
             const el = document.getElementById(id);
             const toast = new bootstrap.Toast(el, { autohide: true, delay: 4000 });
@@ -703,7 +700,7 @@ if ($is_searching) {
         const taskModal = new bootstrap.Modal(document.getElementById('taskModal'));
         const form = document.getElementById('taskForm');
         const freqRadios = document.getElementsByName('frequency_type');
-        
+
         // Toggle Frequency Panels
         function updateFrequencyView() {
             const val = document.querySelector('input[name="frequency_type"]:checked').value;
@@ -822,7 +819,7 @@ if ($is_searching) {
             if (!deleteId) return;
             const fd = new FormData();
             fd.append('task_id', deleteId);
-            
+
             showLoading();
             fetch('?ajax=delete_task', { method: 'POST', body: fd })
                 .then(r => r.json())
