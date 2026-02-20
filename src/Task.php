@@ -2,16 +2,12 @@
 
 namespace DouglasGreen\TaskMaster;
 
-use DouglasGreen\Utility\Data\FlagChecker;
-use DouglasGreen\Utility\Data\FlagHandler;
-use DouglasGreen\Utility\Data\ValueException;
-use DouglasGreen\Utility\Regex\Matcher;
-use DouglasGreen\Utility\Regex\Regex;
+use Exception;
 
 /**
  * Represents a task with various attributes.
  */
-class Task implements FlagHandler
+class Task
 {
     /**
      * @var array<int, string>
@@ -27,46 +23,9 @@ class Task implements FlagHandler
     ];
 
     /**
-     * @var int
-     */
-    public const IS_DAILY = 1;
-
-    /**
-     * @var int
-     */
-    public const IS_WEEKDAYS = 2;
-
-    /**
-     * @var int
-     */
-    public const IS_WEEKENDS = 4;
-
-    /**
-     * @var int
-     */
-    public const IS_WEEKLY = 8;
-
-    /**
-     * @var int
-     */
-    public const IS_MONTHLY = 16;
-
-    /**
      * Database ID for this task (set when loaded from database)
      */
     public ?int $dbId = null;
-
-    public static function getFlagChecker(int $flags): FlagChecker
-    {
-        $flagNames = [
-            'isDaily' => self::IS_DAILY,
-            'isWeekdays' => self::IS_WEEKDAYS,
-            'isWeekends' => self::IS_WEEKENDS,
-            'isWeekly' => self::IS_WEEKLY,
-            'isMonthly' => self::IS_MONTHLY,
-        ];
-        return new FlagChecker($flagNames, $flags);
-    }
 
     /**
      * Convert a list of day range expressions into an array of a day or days.
@@ -82,7 +41,7 @@ class Task implements FlagHandler
                 return '*';
             }
 
-            $days = Regex::split('/-/', $dayOrRange, 2, Matcher::NO_EMPTY);
+            $days = explode('-', $dayOrRange);
             if (count($days) === 1) {
                 $allDays[] = (int) $dayOrRange;
             } else {
@@ -115,7 +74,7 @@ class Task implements FlagHandler
         public array $timesOfDay,
         public int $lastTimeReminded,
     ) {
-        $this->taskName = trim(Regex::replace('/\s+/', ' ', $this->taskName));
+        $this->taskName = trim(preg_replace('/\s+/', ' ', $this->taskName));
 
         $this->taskUrl = trim($this->taskUrl);
 
@@ -162,7 +121,9 @@ class Task implements FlagHandler
             if (isset(self::DAYS_OF_WEEK_NAMES[$dayOfWeek])) {
                 $names[] = self::DAYS_OF_WEEK_NAMES[$dayOfWeek];
             } else {
-                [$minDay, $maxDay] = Regex::split('/-/', $dayOfWeek, 2, Matcher::NO_EMPTY);
+                $parts = explode('-', $dayOfWeek);
+                $minDay = $parts[0] ?? '';
+                $maxDay = $parts[1] ?? '';
                 if (isset(self::DAYS_OF_WEEK_NAMES[$minDay]) && isset(self::DAYS_OF_WEEK_NAMES[$maxDay])) {
                     $names[] = sprintf(
                         '%s to %s',
@@ -180,14 +141,14 @@ class Task implements FlagHandler
     {
         if (
             $this->recurStart !== null &&
-            ! Regex::hasMatch('/^\d\d\d\d-\d\d-\d\d$/', $this->recurStart)
+            ! preg_match('/^\d\d\d\d-\d\d-\d\d$/', $this->recurStart)
         ) {
             $this->error('Bad recur start date');
         }
 
         if (
             $this->recurEnd !== null &&
-            ! Regex::hasMatch('/^\d\d\d\d-\d\d-\d\d$/', $this->recurEnd)
+            ! preg_match('/^\d\d\d\d-\d\d-\d\d$/', $this->recurEnd)
         ) {
             $this->error('Bad recur end date');
         }
@@ -202,12 +163,12 @@ class Task implements FlagHandler
     }
 
     /**
-     * @throws ValueException
+     * @throws Exception
      */
     protected function error(string $message): void
     {
         $fullMessage = $this->taskName . ': ' . $message;
-        throw new ValueException($fullMessage);
+        throw new Exception($fullMessage);
     }
 
     protected function getDayTypeCount(): int

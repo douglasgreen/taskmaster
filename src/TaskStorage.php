@@ -10,20 +10,11 @@ class TaskStorage
         protected PDO $pdo
     ) {}
 
-    public function store(string $taskName, string $taskUrl, int $flags = 0): void
+    public function store(string $taskName, string $taskUrl, ?Frequency $frequency = null): void
     {
-        $flagChecker = Task::getFlagChecker($flags);
         $title = '';
-        if ($flagChecker->get('isDaily')) {
-            $title = 'Daily ';
-        } elseif ($flagChecker->get('isWeekdays')) {
-            $title = 'Weekday ';
-        } elseif ($flagChecker->get('isWeekends')) {
-            $title = 'Weekend ';
-        } elseif ($flagChecker->get('isWeekly')) {
-            $title = 'Weekly ';
-        } elseif ($flagChecker->get('isMonthly')) {
-            $title = 'Monthly ';
+        if ($frequency !== null) {
+            $title = $frequency->value . ' ';
         }
 
         $title .= 'Reminder: ';

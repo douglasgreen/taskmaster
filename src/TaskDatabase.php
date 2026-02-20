@@ -2,9 +2,7 @@
 
 namespace DouglasGreen\TaskMaster;
 
-use DouglasGreen\Utility\Data\ValueException;
-use DouglasGreen\Utility\Regex\Matcher;
-use DouglasGreen\Utility\Regex\Regex;
+use Exception;
 use PDO;
 
 class TaskDatabase
@@ -94,7 +92,7 @@ class TaskDatabase
             if ($row['last_reminded_at'] !== null) {
                 $lastTimeReminded = strtotime($row['last_reminded_at']);
                 if ($lastTimeReminded === false) {
-                    throw new ValueException('Bad last reminded at: ' . $row['last_reminded_at']);
+                    throw new Exception('Bad last reminded at: ' . $row['last_reminded_at']);
                 }
             }
 
@@ -174,7 +172,7 @@ class TaskDatabase
             if ($row['last_reminded_at'] !== null) {
                 $lastTimeReminded = strtotime($row['last_reminded_at']);
                 if ($lastTimeReminded === false) {
-                    throw new ValueException('Bad last reminded at: ' . $row['last_reminded_at']);
+                    throw new Exception('Bad last reminded at: ' . $row['last_reminded_at']);
                 }
             }
 
@@ -199,7 +197,7 @@ class TaskDatabase
 
     /**
      * @return array<int, string>
-     * @throws ValueException
+     * @throws Exception
      */
     protected static function splitField(
         string $field,
@@ -210,7 +208,7 @@ class TaskDatabase
             return [];
         }
 
-        $parts = Regex::split('/\s*\|\s*/', $field, -1, Matcher::NO_EMPTY);
+        $parts = preg_split('/\s*\|\s*/', $field, -1, PREG_SPLIT_NO_EMPTY);
         $values = [];
         foreach ($parts as $part) {
             $value = trim($part);
@@ -220,7 +218,7 @@ class TaskDatabase
             }
 
             if ($allowRange) {
-                $rangeValues = Regex::split('/\s*-\s*/', $value, 2, Matcher::NO_EMPTY);
+                $rangeValues = preg_split('/\s*-\s*/', $value, 2, PREG_SPLIT_NO_EMPTY);
                 $count = count($rangeValues);
                 if ($count === 1) {
                     self::checkValue($value, $regex);
@@ -232,7 +230,7 @@ class TaskDatabase
                     } elseif ($rangeValues[0] === $rangeValues[1]) {
                         $value = $rangeValues[0];
                     } else {
-                        throw new ValueException('Invalid range: ' . $value);
+                        throw new Exception('Invalid range: ' . $value);
                     }
                 }
             } else {
@@ -247,13 +245,13 @@ class TaskDatabase
     }
 
     /**
-     * @throws ValueException
+     * @throws Exception
      */
     protected static function checkValue(string $value, string $regex): void
     {
-        if (! Regex::hasMatch($regex, $value)) {
+        if (! preg_match($regex, $value)) {
             $error = sprintf('Value "%s" doesn\'t match regex "%s"', $value, $regex);
-            throw new ValueException($error);
+            throw new Exception($error);
         }
     }
 }

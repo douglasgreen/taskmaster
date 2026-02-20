@@ -3,7 +3,6 @@
 require_once __DIR__ . '/vendor/autoload.php';
 
 use DouglasGreen\TaskMaster\TaskDatabase;
-use DouglasGreen\Utility\Regex\Regex;
 
 $configFile = __DIR__ . '/config/config.ini';
 if (! file_exists($configFile)) {

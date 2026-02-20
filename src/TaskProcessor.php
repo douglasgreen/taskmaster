@@ -3,8 +3,6 @@
 
 namespace DouglasGreen\TaskMaster;
 
-use DouglasGreen\Utility\Regex\Regex;
-
 class TaskProcessor
 {
     protected readonly string $currentDate;
@@ -45,22 +43,9 @@ class TaskProcessor
             foreach ($datetimes as $datetime) {
                 $scheduledTime = strtotime((string) $datetime);
 
-                $flags = 0;
-                if ($frequency === 'daily') {
-                    $flags = Task::IS_DAILY;
-                } elseif ($frequency === 'weekdays') {
-                    $flags = Task::IS_WEEKDAYS;
-                } elseif ($frequency === 'weekends') {
-                    $flags = Task::IS_WEEKENDS;
-                } elseif ($frequency === 'weekly') {
-                    $flags = Task::IS_WEEKLY;
-                } elseif ($frequency === 'monthly') {
-                    $flags = Task::IS_MONTHLY;
-                }
-
                 // Check that scheduled time is past and no reminder has been sent since scheduled time.
                 if ($scheduledTime < $this->currentTime && $task->lastTimeReminded < $scheduledTime) {
-                    $this->taskStorage->store($task->taskName, $task->taskUrl, $flags);
+                    $this->taskStorage->store($task->taskName, $task->taskUrl, $frequency);
                     $reminderSent = true;
 
                     // Set reminder time to current time so it is after scheduled time, marking it as done.
@@ -102,7 +87,7 @@ class TaskProcessor
     /**
      * Process dates for a task.
      *
-     * @return array{frequency: ?string, datetimes: array<int, string>}
+     * @return array{frequency: ?Frequency, datetimes: array<int, string>}
      */
     protected function processDates(Task $task): array
     {
@@ -113,13 +98,13 @@ class TaskProcessor
         if ($task->daysOfYear !== []) {
             $dates = [];
             foreach ($task->daysOfYear as $dayOfYear) {
-                if (Regex::hasMatch('/^\d\d-\d\d$/', (string) $dayOfYear)) {
+                if (preg_match('/^\d\d-\d\d$/', (string) $dayOfYear)) {
                     $dayOfYear = $this->currentYear . '-' . $dayOfYear;
                 }
 
                 if ($dayOfYear === '*') {
                     $dates[] = $this->currentDate;
-                    $frequency = 'daily';
+                    $frequency = Frequency::Daily;
                 } else {
                     $dates[] = $dayOfYear;
                 }
@@ -130,10 +115,10 @@ class TaskProcessor
             $dates = [];
             $daysOfMonth = Task::getDayList($task->daysOfMonth, $this->daysInCurrentMonth);
             if ($daysOfMonth === '*') {
-                $frequency = 'daily';
+                $frequency = Frequency::Daily;
                 $dates[] = $this->currentDate;
             } elseif (is_array($daysOfMonth)) {
-                $frequency = 'monthly';
+                $frequency = Frequency::Monthly;
                 foreach ($daysOfMonth as $dayOfMonth) {
                     $dates[] = date('Y-m') . sprintf('-%02d', $dayOfMonth);
                 }
@@ -144,15 +129,15 @@ class TaskProcessor
             $dates = [];
             $daysOfWeek = Task::getDayList($task->daysOfWeek, 7);
             if ($daysOfWeek === '*') {
-                $frequency = 'daily';
+                $frequency = Frequency::Daily;
                 $dates[] = $this->currentDate;
             } elseif (is_array($daysOfWeek)) {
                 if ($daysOfWeek === [1, 2, 3, 4, 5]) {
-                    $frequency = 'weekdays';
+                    $frequency = Frequency::Weekdays;
                 } elseif ($daysOfWeek === [6, 7]) {
-                    $frequency = 'weekends';
+                    $frequency = Frequency::Weekends;
                 } else {
-                    $frequency = 'weekly';
+                    $frequency = Frequency::Weekly;
                 }
 
                 if (in_array($this->currentDayOfWeek, $daysOfWeek, true)) {
@@ -175,9 +160,9 @@ class TaskProcessor
         $recurStartTime = $task->recurStart === null ? null : strtotime($task->recurStart);
         $recurEndTime = $task->recurEnd === null ? null : strtotime($task->recurEnd);
 
-        if ($recurStartTime && $this->currentTime < $recurStartTime) {
+        if ($recurStartTime !== false && $this->currentTime < $recurStartTime) {
             return false;
         }
-        return ! ($recurEndTime && $this->currentTime > $recurEndTime);
+        return ! ($recurEndTime !== false && $this->currentTime > $recurEndTime);
     }
 }
