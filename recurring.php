@@ -265,7 +265,10 @@ if ($is_searching) {
     // Use raw query for initial load to match index.php style direct data handling
     // (or we could use $taskDatabase->loadTasks())
     $stmt = $pdo->query("SELECT * FROM recurring_tasks ORDER BY title ASC");
-    $viewTasks = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    $viewTasks = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+    if ($viewTasks === false) {
+        $viewTasks = [];
+    }
 }
 
 ?>

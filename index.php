@@ -260,7 +260,10 @@ if ($selected_group) {
 
 // Fetch groups with due counts
 $stmt = $pdo->query("SELECT * FROM task_groups ORDER BY name");
-$groups = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+$groups = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+if ($groups === false) {
+    $groups = [];
+}
 
 foreach ($groups as &$group) {
     $group['due_count'] = getDueCount($pdo, $group['id']);
@@ -958,7 +961,7 @@ if ($selected_group) {
                                 <a href="?group=<?php echo $group['id']; ?>"
                                    class="list-group-item list-group-item-action <?php echo $selected_group == $group['id'] ? 'active' : ''; ?>"
                                    aria-current="<?php echo $selected_group == $group['id'] ? 'page' : 'false'; ?>">
-                                    <span class="group-name"><?php echo htmlspecialchars((string) $group['name']); ?></span>
+                                    <span class="group-name"><?php echo htmlspecialchars((string) ($group['name'] ?? '')); ?></span>
                                     <?php if ($group['due_count'] > 0): ?>
                                         <span class="due-badge" title="<?php echo $group['due_count']; ?> due task<?php echo $group['due_count'] > 1 ? 's' : ''; ?>">
                                             <?php echo $group['due_count']; ?>
@@ -967,9 +970,9 @@ if ($selected_group) {
                                     <span class="group-actions">
                                         <button class="group-rename-btn"
                                                 data-group-id="<?php echo $group['id']; ?>"
-                                                data-group-name="<?php echo htmlspecialchars((string) $group['name']); ?>"
+                                                data-group-name="<?php echo htmlspecialchars((string) ($group['name'] ?? '')); ?>"
                                                 title="Rename group"
-                                                aria-label="Rename group <?php echo htmlspecialchars((string) $group['name']); ?>">
+                                                aria-label="Rename group <?php echo htmlspecialchars((string) ($group['name'] ?? '')); ?>">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                     </span>
@@ -1985,7 +1988,7 @@ if ($selected_group) {
         });
 
         // Announce messages to screen readers
-        <?php if ($message !== '' && $message !== '0'): ?>
+        <?php if ($message !== ''): ?>
         showToast(<?php echo json_encode($message); ?>, 'success');
         <?php endif; ?>
 

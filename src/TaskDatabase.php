@@ -74,7 +74,10 @@ class TaskDatabase
         $stmt = $this->pdo->query(
             'SELECT id, title, details, recur_start, recur_end, days_of_year, days_of_month, days_of_week, time_of_day, last_reminded_at FROM recurring_tasks ORDER BY last_reminded_at ASC, id ASC'
         );
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        $rows = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+        if ($rows === false) {
+            $rows = [];
+        }
 
         $tasks = [];
         foreach ($rows as $row) {
@@ -224,10 +227,13 @@ class TaskDatabase
 
             if ($allowRange) {
                 $rangeValues = preg_split('/\s*-\s*/', $value, 2, PREG_SPLIT_NO_EMPTY);
+                if ($rangeValues === false) {
+                    $rangeValues = [];
+                }
                 $count = count($rangeValues);
                 if ($count === 1) {
                     self::checkValue($value, $regex);
-                } else {
+                } elseif ($count === 2) {
                     self::checkValue($rangeValues[0], $regex);
                     self::checkValue($rangeValues[1], $regex);
                     if ($rangeValues[0] < $rangeValues[1]) {
