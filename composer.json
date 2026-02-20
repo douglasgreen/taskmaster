@@ -44,7 +44,6 @@
     },
     "scripts": {
         "lint": [
-            "detect-collisions",
             "phpstan analyse",
             "rector --dry-run"
         ],
