@@ -48,6 +48,9 @@ if (! file_exists($configFile)) {
     die("Config file not found. Please create config/config.ini from config.ini.sample\n");
 }
 $config = parse_ini_file($configFile, true);
+if ($config === false) {
+    die("Error parsing config file.\n");
+}
 $connection = $config['connection'];
 $host = $connection['host'];
 $port = $connection['port'];

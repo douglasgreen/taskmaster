@@ -5,6 +5,9 @@ if (! file_exists($configFile)) {
     die("Config file not found. Please create config/config.ini from config.ini.sample\n");
 }
 $config = parse_ini_file($configFile, true);
+if ($config === false) {
+    die("Error parsing config file.\n");
+}
 $connection = $config['connection'];
 $host = $connection['host'];
 $port = $connection['port'];
@@ -19,7 +22,7 @@ $pdo = new PDO($dsn, $user, $password);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 // Helper Functions
-function formatDueDate($due_date_str) {
+function formatDueDate(?string $due_date_str): string {
     if (empty($due_date_str) || $due_date_str === '0000-00-00') {
         return '';
     }
@@ -28,7 +31,7 @@ function formatDueDate($due_date_str) {
     $now->setTime(0, 0, 0);
     $due->setTime(0, 0, 0);
     $interval = $now->diff($due);
-    $days_from_now = $interval->invert ? -$interval->days : $interval->days;
+    $days_from_now = (int) ($interval->invert ? -$interval->days : $interval->days);
     $abs_days = abs($days_from_now);
 
     if ($abs_days > 99) {
@@ -49,7 +52,7 @@ function formatDueDate($due_date_str) {
     return 'in ' . $days_from_now . ' days';
 }
 
-function formatDetails($details): string|array {
+function formatDetails(mixed $details): string {
     if (empty($details)) {
         return '';
     }
@@ -78,7 +81,7 @@ function formatDetails($details): string|array {
     return $escaped;
 }
 
-function isTaskDue($due_date_str) {
+function isTaskDue(?string $due_date_str): bool {
     if (empty($due_date_str) || $due_date_str === '0000-00-00') {
         return false;
     }
@@ -89,7 +92,7 @@ function isTaskDue($due_date_str) {
     return $due <= $now;
 }
 
-function getDueCount($pdo, $group_id): int {
+function getDueCount(PDO $pdo, int $group_id): int {
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM tasks WHERE group_id = ? AND due_date IS NOT NULL AND due_date != '0000-00-00' AND due_date <= CURDATE()");
     $stmt->execute([$group_id]);
     return (int)$stmt->fetchColumn();
@@ -141,7 +144,7 @@ if (isset($_GET['ajax'])) {
         $stmt->execute([$task_id]);
         $group_id = $stmt->fetchColumn();
 
-        if ($group_id) {
+        if ($group_id !== false) {
             $stmt = $pdo->prepare("DELETE FROM tasks WHERE id = ?");
             $stmt->execute([$task_id]);
 
@@ -257,7 +260,7 @@ if ($selected_group) {
 
 // Fetch groups with due counts
 $stmt = $pdo->query("SELECT * FROM task_groups ORDER BY name");
-$groups = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$groups = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
 foreach ($groups as &$group) {
     $group['due_count'] = getDueCount($pdo, $group['id']);
@@ -279,7 +282,7 @@ if ($is_searching) {
         ORDER BY tg.name, t.due_date IS NULL, t.due_date, t.title
     ");
     $stmt->execute([$search_term, $search_term]);
-    $all_results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $all_results = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
     foreach ($all_results as $result) {
         if (!isset($search_results_by_group[$result['group_id']])) {
@@ -293,7 +296,7 @@ if ($is_searching) {
 } elseif ($selected_group) {
     $stmt = $pdo->prepare("SELECT * FROM tasks WHERE group_id = ? ORDER BY due_date IS NULL, due_date, title");
     $stmt->execute([$selected_group]);
-    $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 }
 
 $selected_group_name = '';

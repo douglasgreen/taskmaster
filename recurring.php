@@ -9,6 +9,9 @@ if (! file_exists($configFile)) {
     die("Config file not found. Please create config/config.ini from config.ini.sample\n");
 }
 $config = parse_ini_file($configFile, true);
+if ($config === false) {
+    die("Error parsing config file.\n");
+}
 $connection = $config['connection'];
 $host = $connection['host'];
 $port = $connection['port'];
@@ -25,7 +28,10 @@ $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 // Initialize logic helpers
 $taskDatabase = new TaskDatabase($pdo);
 
-// Helper to format the schedule string for display
+/**
+ * Helper to format the schedule string for display
+ * @param array<string, mixed> $task
+ */
 function formatSchedule(array $task): string {
     $parts = [];
     
@@ -259,7 +265,7 @@ if ($is_searching) {
     // Use raw query for initial load to match index.php style direct data handling
     // (or we could use $taskDatabase->loadTasks())
     $stmt = $pdo->query("SELECT * FROM recurring_tasks ORDER BY title ASC");
-    $viewTasks = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $viewTasks = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 }
 
 ?>

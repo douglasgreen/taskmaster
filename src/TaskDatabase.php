@@ -67,14 +67,14 @@ class TaskDatabase
      * Load all recurring tasks from the database.
      *
      * @return list<Task>
-     * @throws ValueException
+     * @throws Exception
      */
     public function loadTasks(): array
     {
         $stmt = $this->pdo->query(
             'SELECT id, title, details, recur_start, recur_end, days_of_year, days_of_month, days_of_week, time_of_day, last_reminded_at FROM recurring_tasks ORDER BY last_reminded_at ASC, id ASC'
         );
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
         $tasks = [];
         foreach ($rows as $row) {
@@ -154,7 +154,7 @@ class TaskDatabase
         );
         $stmt->execute(['%' . $term . '%']);
 
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
         $tasks = [];
         foreach ($rows as $row) {
@@ -211,6 +211,9 @@ class TaskDatabase
         }
 
         $parts = preg_split('/\s*\|\s*/', $field, -1, PREG_SPLIT_NO_EMPTY);
+        if ($parts === false) {
+            return [];
+        }
         $values = [];
         foreach ($parts as $part) {
             $value = trim($part);

@@ -124,7 +124,7 @@ class Task
                 $names[] = self::DAYS_OF_WEEK_NAMES[$dayOfWeek];
             } else {
                 $parts = explode('-', $dayOfWeek);
-                $minDay = $parts[0] ?? '';
+                $minDay = $parts[0];
                 $maxDay = $parts[1] ?? '';
                 if (isset(self::DAYS_OF_WEEK_NAMES[$minDay]) && isset(self::DAYS_OF_WEEK_NAMES[$maxDay])) {
                     $names[] = sprintf(
