@@ -1,5 +1,6 @@
 {
-  "printWidth": 100,
+  "_version": "1.1.0",
+  "_modified": "2026-02-22",
   "tabWidth": 4,
   "useTabs": false,
   "semi": true,
@@ -11,26 +12,19 @@
   "endOfLine": "lf",
   "htmlWhitespaceSensitivity": "css",
   "vueIndentScriptAndStyle": false,
+  "plugins": ["prettier-plugin-sql"],
   "overrides": [
     {
-      "files": "*.html",
+      "files": ["*.html", "*.htm"],
       "options": {
-        "tabWidth": 2,
-        "printWidth": 120
-      }
-    },
-    {
-      "files": "*.css",
-      "options": {
-        "singleQuote": false
+        "tabWidth": 2
       }
     },
     {
       "files": "*.md",
       "options": {
         "tabWidth": 2,
-        "printWidth": 80,
-        "proseWrap": "always"
+        "proseWrap": "preserve"
       }
     },
     {
@@ -40,44 +34,30 @@
       }
     },
     {
-      "files": "*.yml",
+      "files": ["*.yml", "*.yaml"],
       "options": {
         "tabWidth": 2,
         "singleQuote": false
       }
     },
     {
-      "files": "*.php",
+      "files": "*.sh",
       "options": {
-        "tabWidth": 4,
-        "braceStyle": "psr-2"
-      }
-    },
-    {
-      "files": "*.py",
-      "options": {
-        "tabWidth": 4
-      }
-    },
-    {
-      "files": "*.go",
-      "options": {
-        "useTabs": true,
-        "tabWidth": 8
-      }
-    },
-    {
-      "files": "*.java",
-      "options": {
-        "tabWidth": 4
+        "parser": "sh"
       }
     },
     {
       "files": "*.sql",
       "options": {
+        "parser": "sql",
+        "language": "mysql",
         "tabWidth": 4,
         "keywordCase": "upper",
-        "expressionWidth": 100
+        "dataTypeCase": "upper",
+        "identifierCase": "lower",
+        "printWidth": 120,
+        "expressionWidth": 120,
+        "linesBetweenQueries": 2
       }
     }
   ]

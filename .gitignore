@@ -1,3 +1,6 @@
+# version: 1.0.1
+# modified: 2026-02-22
+
 # This file ignores build directories and project tool directories.
 
 # Project-specific settings (put your files here)
@@ -6,13 +9,10 @@ config.ini
 # AI
 .aider*
 
-# Bower
-bower_components/
-
 # Build directories
 build/
 .cache/
-.next
+.next/
 
 # Composer
 vendor/
@@ -45,4 +45,5 @@ __pycache__/
 
 # Symfony
 /.env.local.php
+parameters.yml
 /var/

@@ -1,4 +1,6 @@
 <?php
+// version: 1.0.0
+// modified: 2026-02-20
 
 use Rector\Config\RectorConfig;
 use Rector\DeadCode\Rector\ClassMethod\RemoveUselessParamTagRector;
@@ -12,8 +14,6 @@ use Rector\ValueObject\PhpVersion;
 return RectorConfig::configure()
     ->withPaths([
         __DIR__ . '/bin',
-        __DIR__ . '/index.php',
-        __DIR__ . '/recurring.php',
         __DIR__ . '/src',
     ])
     ->withPhpSets(php83: true)

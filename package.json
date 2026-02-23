@@ -1,15 +1,18 @@
 {
-    "name": "douglasgreen/taskmaster",
-    "description": "A to-do list manager",
-    "license": "MIT",
-    "scripts": {
-        "lint:fix": "prettier --write ."
-    },
-    "devDependencies": {
-        "prettier": "^3.5"
-    },
-    "engines": {
-        "node": ">=18",
-        "npm": ">=9"
-    }
+  "_version": "1.1.0",
+  "_modified": "2026-02-22",
+  "name": "douglasgreen/taskmaster",
+  "version": "1.0.0",
+  "description": "A to-do list manager",
+  "type": "module",
+  "scripts": {
+    "lint": "npm run lint:md",
+    "lint:md": "markdownlint \"**/*.md\"",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "markdownlint-cli": "^0.47.0",
+    "prettier": "^3.8.1",
+    "prettier-plugin-sql": "^0.19.2"
+  }
 }

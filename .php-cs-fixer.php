@@ -1,16 +1,16 @@
 <?php
+// version: 1.0.1
+// modified: 2026-02-22
 
 use PhpCsFixer\Runner\Parallel\ParallelConfigFactory;
 use PhpCsFixer\Config;
 use PhpCsFixer\Finder;
 
 $finder = Finder::create()
-    ->in(__DIR__)
-    ->exclude('vendor')
-    ->exclude('node_modules')
-    ->exclude('var')
-    ->exclude('storage')
-    ->exclude('bootstrap/cache')
+    ->in([
+        __DIR__ . '/bin',
+        __DIR__ . '/src',
+    ])
     ->name('*.php')
     ->notName('*.blade.php')
     ->ignoreDotFiles(true)

@@ -1,9 +1,10 @@
+# version: 1.0.1
+# modified: 2026-02-21
+
 parameters:
   level: 8
   paths:
     - bin
-    - index.php
-    - recurring.php
     - src
   excludePaths:
     - var
