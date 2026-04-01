@@ -53,7 +53,7 @@ if ($config === false) {
 }
 $connection = $config['connection'];
 $host = $connection['host'];
-$port = $connection['port'];
+$port = $connection['port'] ?? 3306;
 $database = $connection['db'];
 $user = $connection['user'];
 $password = $connection['pass'];

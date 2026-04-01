@@ -35,7 +35,6 @@ class TaskProcessor
             if (! $this->shouldSendReminder($task)) {
                 continue;
             }
-
             $result = $this->processDates($task);
             $frequency = $result['frequency'];
             $datetimes = $result['datetimes'];
@@ -160,9 +159,9 @@ class TaskProcessor
         $recurStartTime = $task->recurStart === null ? null : strtotime($task->recurStart);
         $recurEndTime = $task->recurEnd === null ? null : strtotime($task->recurEnd);
 
-        if ($recurStartTime !== false && $this->currentTime < $recurStartTime) {
+        if ($recurStartTime !== null && $this->currentTime < $recurStartTime) {
             return false;
         }
-        return ! ($recurEndTime !== false && $this->currentTime > $recurEndTime);
+        return ! ($recurEndTime !== null && $this->currentTime > $recurEndTime);
     }
 }
