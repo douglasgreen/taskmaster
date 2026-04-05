@@ -4,6 +4,7 @@
 # Remove composer.lock and package-lock.json for project type, leave in library type.
 
 # Project-specific settings (put your files here)
+config.ini
 
 # AI
 .cecli*
