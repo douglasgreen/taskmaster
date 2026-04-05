@@ -1,25 +1,8 @@
 <?php
 
-$configFile = __DIR__ . '/config/config.ini';
-if (! file_exists($configFile)) {
-    die("Config file not found. Please create config/config.ini from config.ini.sample\n");
-}
-$config = parse_ini_file($configFile, true);
-if ($config === false) {
-    die("Error parsing config file.\n");
-}
-$connection = $config['connection'];
-$host = $connection['host'];
-$port = $connection['port'] ?? 3306;
-$database = $connection['db'];
-$user = $connection['user'];
-$password = $connection['pass'];
-if ($host === '~' || $database === '~' || $user === '~' || $password === '~') {
-    die("Config not set up. Please update config.ini\n");
-}
-$dsn = sprintf('mysql:host=%s;port=%s;dbname=%s', $host, $port, $database);
-$pdo = new PDO($dsn, $user, $password);
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+declare(strict_types=1);
+
+$pdo = require __DIR__ . '/../bootstrap.php';
 
 // Helper Functions
 function formatDueDate(?string $due_date_str): string {

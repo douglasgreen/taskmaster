@@ -1,12 +1,12 @@
 #!/usr/bin/env php
 <?php
 
+declare(strict_types=1);
+
 use DouglasGreen\OptParser\OptParser;
 use DouglasGreen\TaskMaster\TaskDatabase;
 use DouglasGreen\TaskMaster\TaskProcessor;
 use DouglasGreen\TaskMaster\TaskStorage;
-
-require_once __DIR__ . '/../vendor/autoload.php';
 
 $optParser = new OptParser('Task Manager', 'Command-line version of task manager');
 
@@ -43,26 +43,7 @@ $input = $optParser->parse();
 
 $command = $input->getCommand();
 
-$configFile = __DIR__ . '/../config/config.ini';
-if (! file_exists($configFile)) {
-    die("Config file not found. Please create config/config.ini from config.ini.sample\n");
-}
-$config = parse_ini_file($configFile, true);
-if ($config === false) {
-    die("Error parsing config file.\n");
-}
-$connection = $config['connection'];
-$host = $connection['host'];
-$port = $connection['port'] ?? 3306;
-$database = $connection['db'];
-$user = $connection['user'];
-$password = $connection['pass'];
-if ($host === '~' || $database === '~' || $user === '~' || $password === '~') {
-    die("Config not set up. Please update config.ini\n");
-}
-$dsn = sprintf('mysql:host=%s;port=%s;dbname=%s', $host, $port, $database);
-$pdo = new PDO($dsn, $user, $password);
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$pdo = require __DIR__ . '/../bootstrap.php';
 
 switch ($command) {
     case 'process':

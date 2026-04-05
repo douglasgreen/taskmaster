@@ -1,29 +1,10 @@
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
+declare(strict_types=1);
 
 use DouglasGreen\TaskMaster\TaskDatabase;
 
-$configFile = __DIR__ . '/config/config.ini';
-if (! file_exists($configFile)) {
-    die("Config file not found. Please create config/config.ini from config.ini.sample\n");
-}
-$config = parse_ini_file($configFile, true);
-if ($config === false) {
-    die("Error parsing config file.\n");
-}
-$connection = $config['connection'];
-$host = $connection['host'];
-$port = $connection['port'];
-$database = $connection['db'];
-$user = $connection['user'];
-$password = $connection['pass'];
-if ($host === '~' || $database === '~' || $user === '~' || $password === '~') {
-    die("Config not set up. Please update config.ini\n");
-}
-$dsn = sprintf('mysql:host=%s;port=%s;dbname=%s', $host, $port, $database);
-$pdo = new PDO($dsn, $user, $password);
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$pdo = require __DIR__ . '/../bootstrap.php';
 
 // Initialize logic helpers
 $taskDatabase = new TaskDatabase($pdo);
