@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 use DouglasGreen\TaskMaster\Controller\GroupController;
 use DouglasGreen\TaskMaster\Controller\TaskController;
+use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskGroupRepository;
+use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskRepository;
 
 ['pdo' => $pdo, 'twig' => $twig] = require __DIR__ . '/../bootstrap.php';
 
-$taskController = new TaskController($pdo);
-$groupController = new GroupController($pdo);
+$taskRepo = new TaskRepository($pdo);
+$groupRepo = new TaskGroupRepository($pdo);
+
+$taskController = new TaskController($taskRepo, $groupRepo);
+$groupController = new GroupController($groupRepo);
 
 // Handle AJAX requests
 if (isset($_GET['ajax'])) {
