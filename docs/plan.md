@@ -25,8 +25,10 @@ Here is a comprehensive, step-by-step architectural plan to bring the applicatio
    * Extract the huge `if (isset($_GET['ajax']))` blocks and POST handlers into dedicated Controller classes (e.g., `TaskController`, `RecurringTaskController`, `GroupController`).
    * Controllers **MUST** read superglobals (`$_POST`, `$_GET`), validate the input (4.2.1), and pass strictly typed scalar values or Data Transfer Objects (DTOs) to the domain layer.
 3. **Extract Views (Templates):**
-   * Move all HTML, inline CSS, and JavaScript out of PHP files into a dedicated `templates/` directory (e.g., `templates/tasks/index.php`, `templates/tasks/recurring.php`).
-   * Ensure templates only handle display logic (loops, `htmlspecialchars` output) and are completely stripped of database queries and business logic.
+   * Install Twig via Composer (`composer require twig/twig`).
+   * Move all HTML, inline CSS, and JavaScript out of PHP files into a dedicated `templates/` directory using the `.twig` extension (e.g., `templates/tasks/index.twig`, `templates/tasks/recurring.twig`).
+   * Initialize a `Twig\Environment` in `bootstrap.php` and inject it into Controllers.
+   * Ensure templates only handle display logic (loops, Twig auto-escaping) and are completely stripped of database queries and business logic.
 
 ### Phase 3: Infrastructure and Dependency Injection
 **Goal:** Decouple infrastructure via DI (1.1.3) and establish layer boundaries (1.3.1).
@@ -77,6 +79,6 @@ Here is a comprehensive, step-by-step architectural plan to bring the applicatio
 To minimize disruption, execute the plan in this order:
 1. Add `declare(strict_types=1)` and fix immediate type errors / run `php-cs-fixer`.
 2. Move `index.php` and `recurring.php` to `public/` and extract the config/PDO bootstrapping.
-3. Separate the HTML chunks from the PHP logic into a `templates/` folder.
+3. Install Twig, separate the HTML chunks from the PHP logic into a `templates/` folder, and convert them to `.twig` syntax.
 4. Extract the procedural code and AJAX handling into properly injected Controller and Repository classes.
 5. Add CSRF protection and formalize the Error Handling.
