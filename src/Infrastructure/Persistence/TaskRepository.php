@@ -11,6 +11,7 @@ final readonly class TaskRepository implements TaskRepositoryInterface
 {
     public function __construct(private PDO $pdo) {}
 
+    /** @return array<string, mixed>|null */
     public function findById(int $id): ?array
     {
         $stmt = $this->pdo->prepare('SELECT * FROM tasks WHERE id = ?');
@@ -18,6 +19,7 @@ final readonly class TaskRepository implements TaskRepositoryInterface
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
+    /** @return list<array<string, mixed>> */
     public function findByGroupId(int $groupId): array
     {
         $stmt = $this->pdo->prepare('SELECT * FROM tasks WHERE group_id = ? ORDER BY due_date IS NULL, due_date, title');

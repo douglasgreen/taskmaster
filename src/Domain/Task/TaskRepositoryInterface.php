@@ -6,10 +6,13 @@ namespace DouglasGreen\TaskMaster\Domain\Task;
 
 interface TaskRepositoryInterface
 {
+    /** @return array<string, mixed>|null */
     public function findById(int $id): ?array;
 
+    /** @return list<array<string, mixed>> */
     public function findByGroupId(int $groupId): array;
 
+    /** @return list<array<string, mixed>> */
     public function search(string $term): array;
 
     public function insert(int $groupId, string $title, string $details, ?string $dueDate): int;

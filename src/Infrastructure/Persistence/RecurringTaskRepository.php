@@ -11,6 +11,8 @@ final readonly class RecurringTaskRepository implements RecurringTaskRepositoryI
 {
     public function __construct(private PDO $pdo) {}
 
+    /** @return array<string, mixed>|null */
+    /** @return array<string, mixed>|null */
     public function findById(int $id): ?array
     {
         $stmt = $this->pdo->prepare('SELECT * FROM recurring_tasks WHERE id = ?');
@@ -18,12 +20,15 @@ final readonly class RecurringTaskRepository implements RecurringTaskRepositoryI
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
+    /** @return list<array<string, mixed>> */
     public function findAll(): array
     {
         $stmt = $this->pdo->query('SELECT * FROM recurring_tasks ORDER BY title ASC');
         return $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
     }
 
+    /** @return list<array<string, mixed>> */
+    /** @return list<array<string, mixed>> */
     public function search(string $term): array
     {
         $stmt = $this->pdo->prepare('SELECT * FROM recurring_tasks WHERE title LIKE ? ORDER BY title ASC');
