@@ -36,4 +36,31 @@ $twig = new \Twig\Environment($loader, [
 ]);
 $twig->addExtension(new \Twig\Extension\DebugExtension());
 
+$twig->addFilter(new \Twig\TwigFilter('format_details', function ($details) {
+    if (empty($details)) { return ''; }
+    preg_match_all('/(https?:\/\/\S+)/', $details, $matches, PREG_SET_ORDER);
+    $placeholders = [];
+    $counter = 0;
+    $processed = $details;
+    foreach ($matches as $match) {
+        $url = $match[1];
+        $placeholder = '__URL_' . $counter . '__';
+        $placeholders[$placeholder] = $url;
+        $processed = str_replace($url, $placeholder, $processed);
+        $counter++;
+    }
+    $escaped = nl2br(htmlspecialchars((string) $processed, ENT_QUOTES, 'UTF-8'));
+    foreach ($placeholders as $ph => $url) {
+        $parsed = parse_url($url);
+        $domain = $parsed['host'] ?? '';
+        if ($domain) {
+            $link_html = '<a target="_blank" href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($domain, ENT_QUOTES, 'UTF-8') . '</a>';
+        } else {
+            $link_html = htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
+        }
+        $escaped = str_replace($ph, $link_html, $escaped);
+    }
+    return $escaped;
+}));
+
 return ['pdo' => $pdo, 'twig' => $twig];

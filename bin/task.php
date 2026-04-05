@@ -4,19 +4,19 @@
 declare(strict_types=1);
 
 use DouglasGreen\OptParser\OptParser;
-use DouglasGreen\TaskMaster\TaskDatabase;
+use DouglasGreen\TaskMaster\Domain\RecurringTask\RecurringTaskRepositoryInterface;
+use DouglasGreen\TaskMaster\Domain\Task\TaskRepositoryInterface;
+use DouglasGreen\TaskMaster\Domain\TaskGroup\TaskGroupRepositoryInterface;
+use DouglasGreen\TaskMaster\Infrastructure\Persistence\RecurringTaskRepository;
+use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskGroupRepository;
+use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskRepository;
 use DouglasGreen\TaskMaster\TaskProcessor;
-use DouglasGreen\TaskMaster\TaskStorage;
 
 $optParser = new OptParser('Task Manager', 'Command-line version of task manager');
-
-// Add commands.
 $optParser
     ->addCommand(['process'], 'Process recurring tasks and insert into task list')
     ->addCommand(['add'], 'Add a new task')
     ->addCommand(['search'], 'Search for tasks');
-
-// Add params for add command.
 $optParser
     ->addTerm('name', 'STRING', 'Task name')
     ->addParam(['url'], 'URL', 'URL for documentation or action')
@@ -26,89 +26,68 @@ $optParser
     ->addParam(['month'], 'STRING', 'Days of month')
     ->addParam(['week'], 'STRING', 'Days of week')
     ->addParam(['time'], 'STRING', 'Times of day');
-
-// Add params for search command.
 $optParser->addTerm('term', 'STRING', 'Term to search form');
-
-// Add usage for add command.
 $optParser->addUsage('add', ['name', 'url', 'start', 'end', 'year', 'month', 'week', 'time']);
-
-// Add usage for search command.
 $optParser->addUsage('search', ['term']);
-
-// Add usage with no arguments.
 $optParser->addUsage('process', []);
 
 $input = $optParser->parse();
-
 $command = $input->getCommand();
 
-$pdo = require __DIR__ . '/../bootstrap.php';
+['pdo' => $pdo] = require __DIR__ . '/../bootstrap.php';
+
+$recurringTaskRepo = new RecurringTaskRepository($pdo);
+$taskRepo = new TaskRepository($pdo);
+$groupRepo = new TaskGroupRepository($pdo);
 
 switch ($command) {
     case 'process':
-        $taskStorage = new TaskStorage($pdo);
-        $taskDatabase = new TaskDatabase($pdo);
-        $taskProcessor = new TaskProcessor($taskStorage, $taskDatabase);
+        $taskProcessor = new TaskProcessor($recurringTaskRepo, $taskRepo, $groupRepo);
         $taskProcessor->processTasks();
         break;
     case 'add':
-        $taskDatabase = new TaskDatabase($pdo);
-        $taskDatabase->addTask(
+        $recurringTaskRepo->insert(
             (string) $input->get('name'),
             (string) $input->get('url'),
-            (string) $input->get('start'),
-            (string) $input->get('end'),
-            (string) $input->get('year'),
-            (string) $input->get('month'),
-            (string) $input->get('week'),
-            (string) $input->get('time'),
+            (string) $input->get('start') ?: null,
+            (string) $input->get('end') ?: null,
+            (string) $input->get('year') ?: null,
+            (string) $input->get('month') ?: null,
+            (string) $input->get('week') ?: null,
+            (string) $input->get('time') ?: null,
         );
         echo "Task added successfully.\n";
         break;
     case 'search':
-        $taskDatabase = new TaskDatabase($pdo);
         $term = (string) $input->get('term');
-        $tasks = $taskDatabase->search($term);
-        foreach ($tasks as $task) {
-            echo sprintf('Task Name: %s%s', $task->taskName, PHP_EOL);
-
-            if ($task->taskUrl !== '') {
-                echo sprintf('Task URL: %s%s', $task->taskUrl, PHP_EOL);
+        $rows = $recurringTaskRepo->search($term);
+        foreach ($rows as $row) {
+            echo sprintf('Task Name: %s%s', $row['title'], PHP_EOL);
+            if ($row['details'] !== '') {
+                echo sprintf('Task URL: %s%s', $row['details'], PHP_EOL);
             }
-
-            if ($task->recurStart !== null) {
-                echo sprintf('Recur Start: %s%s', $task->recurStart, PHP_EOL);
+            if ($row['recur_start'] !== null) {
+                echo sprintf('Recur Start: %s%s', $row['recur_start'], PHP_EOL);
             }
-
-            if ($task->recurEnd !== null) {
-                echo sprintf('Recur End: %s%s', $task->recurEnd, PHP_EOL);
+            if ($row['recur_end'] !== null) {
+                echo sprintf('Recur End: %s%s', $row['recur_end'], PHP_EOL);
             }
-
-            if ($task->daysOfYear !== []) {
-                echo 'Days of Year: ' . implode(', ', $task->daysOfYear) . PHP_EOL;
+            if ($row['days_of_year'] !== null) {
+                echo 'Days of Year: ' . str_replace('|', ', ', $row['days_of_year']) . PHP_EOL;
             }
-
-            if ($task->daysOfMonth !== []) {
-                echo 'Days of Month: ' . implode(', ', $task->daysOfMonth) . PHP_EOL;
+            if ($row['days_of_month'] !== null) {
+                echo 'Days of Month: ' . str_replace('|', ', ', $row['days_of_month']) . PHP_EOL;
             }
-
-            if ($task->daysOfWeek !== []) {
-                echo 'Days of Week: ' . implode(', ', $task->getWeekdayNames()) . PHP_EOL;
+            if ($row['days_of_week'] !== null) {
+                echo 'Days of Week: ' . str_replace('|', ', ', $row['days_of_week']) . PHP_EOL;
             }
-
-            if ($task->timesOfDay !== []) {
-                echo 'Times of Day: ' . implode(', ', $task->timesOfDay) . PHP_EOL;
+            if ($row['time_of_day'] !== null) {
+                echo 'Times of Day: ' . str_replace('|', ', ', $row['time_of_day']) . PHP_EOL;
             }
-
-            if ($task->lastTimeReminded !== 0) {
-                echo 'Last Date Reminded: ' .
-                    date('Y-m-d H:i:s', $task->lastTimeReminded) .
-                    PHP_EOL;
+            if ($row['last_reminded_at'] !== null) {
+                echo 'Last Date Reminded: ' . $row['last_reminded_at'] . PHP_EOL;
             }
-
             echo '---------------------------------------' . PHP_EOL;
         }
-
         break;
 }

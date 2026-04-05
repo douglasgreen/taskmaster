@@ -24,6 +24,13 @@ final readonly class TaskGroupRepository implements TaskGroupRepositoryInterface
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
+    public function findByName(string $name): ?array
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM task_groups WHERE name = ?");
+        $stmt->execute([$name]);
+        return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    }
+
     public function insert(string $name): int
     {
         $stmt = $this->pdo->prepare("INSERT INTO task_groups (name, created_at) VALUES (?, NOW())");

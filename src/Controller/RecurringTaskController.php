@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster\Controller;
 
-use PDO;
+use DouglasGreen\TaskMaster\Domain\RecurringTask\RecurringTaskRepositoryInterface;
 
 final class RecurringTaskController
 {
-    public function __construct(private readonly PDO $pdo) {}
+    public function __construct(private readonly RecurringTaskRepositoryInterface $repo) {}
 
     public function handleAjax(string $action): void
     {
@@ -32,32 +32,28 @@ final class RecurringTaskController
     {
         $name = trim((string) ($_POST['name'] ?? ''));
         $url = trim((string) ($_POST['url'] ?? ''));
-        $start = !empty($_POST['recur_start']) ? $_POST['recur_start'] : '';
-        $end = !empty($_POST['recur_end']) ? $_POST['recur_end'] : '';
-        $time = trim((string) ($_POST['time_of_day'] ?? ''));
+        $start = !empty($_POST['recur_start']) ? $_POST['recur_start'] : null;
+        $end = !empty($_POST['recur_end']) ? $_POST['recur_end'] : null;
+        $time = trim((string) ($_POST['time_of_day'] ?? '')) ?: null;
         $freq = $_POST['frequency_type'] ?? '';
 
-        $daysOfWeek = '';
-        $daysOfMonth = '';
-        $daysOfYear = '';
+        $daysOfWeek = null;
+        $daysOfMonth = null;
+        $daysOfYear = null;
 
         if ($freq === 'weekly' && isset($_POST['days_of_week']) && is_array($_POST['days_of_week'])) {
             $daysOfWeek = implode('|', $_POST['days_of_week']);
         } elseif ($freq === 'monthly') {
-            $daysOfMonth = trim((string) ($_POST['days_of_month'] ?? ''));
+            $daysOfMonth = trim((string) ($_POST['days_of_month'] ?? '')) ?: null;
         } elseif ($freq === 'yearly') {
-            $daysOfYear = trim((string) ($_POST['days_of_year'] ?? ''));
+            $daysOfYear = trim((string) ($_POST['days_of_year'] ?? '')) ?: null;
         }
 
         if ($name === '') {
             throw new \InvalidArgumentException('Task name is required');
         }
 
-        $stmt = $this->pdo->prepare(
-            "INSERT INTO recurring_tasks (title, details, recur_start, recur_end, days_of_year, days_of_month, days_of_week, time_of_day, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())"
-        );
-        $stmt->execute([$name, $url, $start, $end, $daysOfYear, $daysOfMonth, $daysOfWeek, $time]);
-
+        $this->repo->insert($name, $url, $start, $end, $daysOfYear, $daysOfMonth, $daysOfWeek, $time);
         echo json_encode(['success' => true, 'message' => 'Recurring task added successfully']);
     }
 
@@ -68,7 +64,7 @@ final class RecurringTaskController
         $details = trim((string) ($_POST['url'] ?? ''));
         $start = !empty($_POST['recur_start']) ? $_POST['recur_start'] : null;
         $end = !empty($_POST['recur_end']) ? $_POST['recur_end'] : null;
-        $time = trim((string) ($_POST['time_of_day'] ?? ''));
+        $time = trim((string) ($_POST['time_of_day'] ?? '')) ?: null;
         $freq = $_POST['frequency_type'] ?? '';
 
         $daysOfWeek = null;
@@ -87,27 +83,21 @@ final class RecurringTaskController
             throw new \InvalidArgumentException('Name is required');
         }
 
-        $stmt = $this->pdo->prepare(
-            "UPDATE recurring_tasks SET title = ?, details = ?, recur_start = ?, recur_end = ?, days_of_week = ?, days_of_month = ?, days_of_year = ?, time_of_day = ? WHERE id = ?"
-        );
-        $stmt->execute([$name, $details, $start, $end, $daysOfWeek, $daysOfMonth, $daysOfYear, $time, $id]);
-
+        $this->repo->update($id, $name, $details, $start, $end, $daysOfYear, $daysOfMonth, $daysOfWeek, $time);
         echo json_encode(['success' => true, 'message' => 'Task updated successfully']);
     }
 
     private function deleteTask(): void
     {
         $id = (int) ($_POST['task_id'] ?? 0);
-        $this->pdo->prepare("DELETE FROM recurring_tasks WHERE id = ?")->execute([$id]);
+        $this->repo->delete($id);
         echo json_encode(['success' => true, 'message' => 'Task deleted successfully']);
     }
 
     private function getTask(): void
     {
         $id = (int) ($_GET['task_id'] ?? 0);
-        $stmt = $this->pdo->prepare("SELECT * FROM recurring_tasks WHERE id = ?");
-        $stmt->execute([$id]);
-        $task = $stmt->fetch(PDO::FETCH_ASSOC);
+        $task = $this->repo->findById($id);
 
         if ($task) {
             $freq = 'daily';
