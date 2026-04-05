@@ -1136,6 +1136,12 @@ if ($selected_group) {
                                                             aria-label="Edit task">
                                                         <i class="bi bi-pencil"></i>
                                                     </button>
+                                                    <button class="btn btn-sm btn-danger delete-task-btn"
+                                                            data-task-id="<?php echo $task['id']; ?>"
+                                                            data-task-title="<?php echo htmlspecialchars((string) $task['title']); ?>"
+                                                            aria-label="Delete task">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
                                                     <div class="btn-group">
                                                         <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
                                                                 type="button"
@@ -1157,15 +1163,6 @@ if ($selected_group) {
                                                                     </li>
                                                                 <?php endif; ?>
                                                             <?php endforeach; ?>
-                                                            <li><hr class="dropdown-divider"></li>
-                                                            <li>
-                                                                <a class="dropdown-item text-danger delete-task-btn"
-                                                                   href="#"
-                                                                   data-task-id="<?php echo $task['id']; ?>"
-                                                                   data-task-title="<?php echo htmlspecialchars((string) $task['title']); ?>">
-                                                                    <i class="bi bi-trash"></i> Delete
-                                                                </a>
-                                                            </li>
                                                         </ul>
                                                     </div>
                                                 </div>
