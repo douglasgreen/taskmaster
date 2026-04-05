@@ -29,4 +29,11 @@ $dsn = sprintf('mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4', $host, $port, 
 $pdo = new PDO($dsn, $user, $password);
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-return $pdo;
+$loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/templates');
+$twig = new \Twig\Environment($loader, [
+    'cache' => false,
+    'debug' => true,
+]);
+$twig->addExtension(new \Twig\Extension\DebugExtension());
+
+return ['pdo' => $pdo, 'twig' => $twig];

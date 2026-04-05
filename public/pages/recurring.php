@@ -39,14 +39,56 @@ function formatSchedule(array $task): string {
 }
 
 // Fetch Data for View
-$search_query = $_GET['search'] ?? ''; $is_searching = !empty($search_query);
+$search_query = $_GET['search'] ?? '';
+$is_searching = !empty($search_query);
+
 if ($is_searching) {
-    $tasks = $taskDatabase->search($search_query); $viewTasks = [];
-    foreach ($tasks as $t) { $viewTasks[] = ['id' => $t->dbId, 'title' => $t->taskName, 'details' => $t->taskUrl, 'recur_start' => $t->recurStart, 'recur_end' => $t->recurEnd, 'days_of_week' => implode('|', $t->daysOfWeek), 'days_of_month' => implode('|', $t->daysOfMonth), 'days_of_year' => implode('|', $t->daysOfYear), 'time_of_day' => implode('|', $t->timesOfDay), 'last_reminded_at' => $t->lastTimeReminded ? date('Y-m-d H:i:s', $t->lastTimeReminded) : null]; }
+    $tasks = $taskDatabase->search($search_query);
+    $viewTasks = [];
+    foreach ($tasks as $t) {
+        $viewTasks[] = [
+            'id' => $t->dbId,
+            'title' => $t->taskName,
+            'details' => $t->taskUrl,
+            'recur_start' => $t->recurStart,
+            'recur_end' => $t->recurEnd,
+            'days_of_week' => implode('|', $t->daysOfWeek),
+            'days_of_month' => implode('|', $t->daysOfMonth),
+            'days_of_year' => implode('|', $t->daysOfYear),
+            'time_of_day' => implode('|', $t->timesOfDay),
+            'last_reminded_at' => $t->lastTimeReminded ? date('Y-m-d H:i:s', $t->lastTimeReminded) : null,
+            'schedule' => formatSchedule([
+                'days_of_week' => implode('|', $t->daysOfWeek),
+                'days_of_month' => implode('|', $t->daysOfMonth),
+                'days_of_year' => implode('|', $t->daysOfYear),
+                'time_of_day' => implode('|', $t->timesOfDay),
+                'recur_start' => $t->recurStart,
+                'recur_end' => $t->recurEnd,
+            ])
+        ];
+    }
 } else {
-    $stmt = $pdo->query("SELECT * FROM recurring_tasks ORDER BY title ASC"); $viewTasks = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+    $stmt = $pdo->query("SELECT * FROM recurring_tasks ORDER BY title ASC");
+    $viewTasks = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
+    foreach ($viewTasks as &$task) {
+        $task['schedule'] = formatSchedule($task);
+    }
+    unset($task);
 }
-?>
+
+// Add custom Twig filters for this template
+$twig->addFilter(new \Twig\TwigFilter('filter_url', function ($details) {
+    return filter_var($details, FILTER_VALIDATE_URL);
+}));
+$twig->addFilter(new \Twig\TwigFilter('truncate', function ($str, $len) {
+    return strlen($str) > $len ? substr($str, 0, $len) . '...' : $str;
+}));
+
+echo $twig->render('recurring.twig', [
+    'search_query' => $search_query,
+    'is_searching' => $is_searching,
+    'view_tasks' => $viewTasks,
+]);
 <!DOCTYPE html>
 <html lang="en">
 <head>
