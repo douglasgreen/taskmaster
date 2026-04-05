@@ -15,6 +15,13 @@ match ($page) {
     'recurring' => require __DIR__ . '/pages/recurring.php',
     default => require __DIR__ . '/pages/tasks.php',
 };
+
+// Helper Functions
+function formatDueDate(?string $due_date_str): string {
+    if (empty($due_date_str) || $due_date_str === '0000-00-00') {
+        return '';
+    }
+
     $due = new DateTime($due_date_str);
     $now = new DateTime();
     $now->setTime(0, 0, 0);
