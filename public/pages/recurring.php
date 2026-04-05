@@ -2,10 +2,17 @@
 
 declare(strict_types=1);
 
+use DouglasGreen\TaskMaster\Controller\RecurringTaskController;
 use DouglasGreen\TaskMaster\TaskDatabase;
 
-// Initialize logic helpers
+// Initialize controller and legacy search helper
+$recurringTaskController = new RecurringTaskController($pdo);
 $taskDatabase = new TaskDatabase($pdo);
+
+// Handle AJAX requests
+if (isset($_GET['ajax'])) {
+    $recurringTaskController->handleAjax($_GET['ajax']);
+}
 
 /**
  * Helper to format the schedule string for display
@@ -29,48 +36,6 @@ function formatSchedule(array $task): string {
     if (!empty($task['recur_start'])) { $parts[] = 'starting ' . $task['recur_start']; }
     if (!empty($task['recur_end'])) { $parts[] = 'until ' . $task['recur_end']; }
     return implode(' ', $parts);
-}
-
-// AJAX Handler
-if (isset($_GET['ajax'])) {
-    header('Content-Type: application/json');
-    try {
-        if ($_GET['ajax'] === 'add_task' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-            $name = trim((string) $_POST['name']); $url = trim((string) $_POST['url']); $start = $_POST['recur_start'] ?: ''; $end = $_POST['recur_end'] ?: ''; $time = trim((string) $_POST['time_of_day']);
-            $freq = $_POST['frequency_type']; $daysOfWeek = ''; $daysOfMonth = ''; $daysOfYear = '';
-            if ($freq === 'weekly') { if (isset($_POST['days_of_week']) && is_array($_POST['days_of_week'])) { $daysOfWeek = implode('|', $_POST['days_of_week']); } }
-            elseif ($freq === 'monthly') { $daysOfMonth = trim((string) $_POST['days_of_month']); }
-            elseif ($freq === 'yearly') { $daysOfYear = trim((string) $_POST['days_of_year']); }
-            if (empty($name)) { throw new Exception('Task name is required'); }
-            $taskDatabase->addTask($name, $url, $start, $end, $daysOfYear, $daysOfMonth, $daysOfWeek, $time);
-            echo json_encode(['success' => true, 'message' => 'Recurring task added successfully']); exit;
-        }
-        if ($_GET['ajax'] === 'edit_task' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id = (int)$_POST['task_id']; $name = trim((string) $_POST['name']); $details = trim((string) $_POST['url']); $start = $_POST['recur_start'] ?: null; $end = $_POST['recur_end'] ?: null; $time = trim((string) $_POST['time_of_day']);
-            $freq = $_POST['frequency_type']; $daysOfWeek = null; $daysOfMonth = null; $daysOfYear = null;
-            if ($freq === 'weekly') { if (isset($_POST['days_of_week']) && is_array($_POST['days_of_week'])) { $daysOfWeek = implode('|', $_POST['days_of_week']); } }
-            elseif ($freq === 'monthly') { $daysOfMonth = trim((string) $_POST['days_of_month']) ?: null; }
-            elseif ($freq === 'yearly') { $daysOfYear = trim((string) $_POST['days_of_year']) ?: null; }
-            if (empty($name)) { throw new Exception('Name is required'); }
-            $sql = "UPDATE recurring_tasks SET title = ?, details = ?, recur_start = ?, recur_end = ?, days_of_week = ?, days_of_month = ?, days_of_year = ?, time_of_day = ? WHERE id = ?";
-            $stmt = $pdo->prepare($sql); $stmt->execute([$name, $details, $start, $end, $daysOfWeek, $daysOfMonth, $daysOfYear, $time, $id]);
-            echo json_encode(['success' => true, 'message' => 'Task updated successfully']); exit;
-        }
-        if ($_GET['ajax'] === 'delete_task' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id = (int)$_POST['task_id']; $stmt = $pdo->prepare("DELETE FROM recurring_tasks WHERE id = ?"); $stmt->execute([$id]);
-            echo json_encode(['success' => true, 'message' => 'Task deleted successfully']); exit;
-        }
-        if ($_GET['ajax'] === 'get_task' && $_SERVER['REQUEST_METHOD'] === 'GET') {
-            $id = (int)$_GET['task_id']; $stmt = $pdo->prepare("SELECT * FROM recurring_tasks WHERE id = ?"); $stmt->execute([$id]); $task = $stmt->fetch(PDO::FETCH_ASSOC);
-            if ($task) {
-                $freq = 'daily'; if (!empty($task['days_of_week'])) { $freq = 'weekly'; } if (!empty($task['days_of_month'])) { $freq = 'monthly'; } if (!empty($task['days_of_year'])) { $freq = 'yearly'; }
-                $weekArr = []; if ($task['days_of_week']) { $parts = explode('|', (string) $task['days_of_week']); foreach ($parts as $p) { if (str_contains($p, '-')) { [$s, $e] = explode('-', $p); for ($i=$s; $i<=$e; $i++) $weekArr[] = $i; } else { $weekArr[] = $p; } } }
-                $task['days_of_week_arr'] = $weekArr; $task['frequency_type'] = $freq;
-                echo json_encode(['success' => true, 'task' => $task]);
-            } else { echo json_encode(['success' => false, 'message' => 'Task not found']); }
-            exit;
-        }
-    } catch (Exception $e) { http_response_code(400); echo json_encode(['success' => false, 'message' => $e->getMessage()]); exit; }
 }
 
 // Fetch Data for View

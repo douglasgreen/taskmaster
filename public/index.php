@@ -2,7 +2,39 @@
 
 declare(strict_types=1);
 
+use DouglasGreen\TaskMaster\Controller\GroupController;
+use DouglasGreen\TaskMaster\Controller\TaskController;
+
 $pdo = require __DIR__ . '/../bootstrap.php';
+
+$taskController = new TaskController($pdo);
+$groupController = new GroupController($pdo);
+
+// Handle AJAX requests
+if (isset($_GET['ajax'])) {
+    $action = $_GET['ajax'];
+    if (in_array($action, ['add_task', 'edit_task', 'delete_task', 'move_task', 'get_task'], true)) {
+        $taskController->handleAjax($action);
+    } elseif ($action === 'rename_group') {
+        $groupController->handleAjax($action);
+    } else {
+        header('Content-Type: application/json');
+        http_response_code(400);
+        echo json_encode(['success' => false, 'message' => 'Unknown action']);
+        exit;
+    }
+}
+
+// Handle traditional POST requests
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_group'])) {
+    $new_group_id = $groupController->handleAddGroup();
+    if ($new_group_id !== null) {
+        header(sprintf('Location: ?group=%s&msg=group_added', $new_group_id));
+        exit;
+    } else {
+        $error_message = 'Error adding group.';
+    }
+}
 
 // Simple Front Controller Routing
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -92,149 +124,6 @@ function getDueCount(PDO $pdo, int $group_id): int {
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM tasks WHERE group_id = ? AND due_date IS NOT NULL AND due_date != '0000-00-00' AND due_date <= CURDATE()");
     $stmt->execute([$group_id]);
     return (int)$stmt->fetchColumn();
-}
-
-// AJAX Handler
-if (isset($_GET['ajax'])) {
-    header('Content-Type: application/json');
-
-    if ($_GET['ajax'] === 'add_task' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $group_id = (int)$_POST['group_id'];
-        $title = trim((string) $_POST['title']);
-        $details = trim($_POST['details'] ?? '');
-        $due_date = $_POST['due_date'] ?: null;
-
-        if (!empty($title)) {
-            $stmt = $pdo->prepare("INSERT INTO tasks (group_id, title, details, due_date, created_at) VALUES (?, ?, ?, ?, NOW())");
-            $stmt->execute([$group_id, $title, $details, $due_date]);
-            $task_id = $pdo->lastInsertId();
-
-            echo json_encode(['success' => true, 'task_id' => $task_id, 'message' => 'Task added successfully']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Task title is required']);
-        }
-        exit;
-    }
-
-    if ($_GET['ajax'] === 'edit_task' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $task_id = (int)$_POST['task_id'];
-        $title = trim((string) $_POST['title']);
-        $details = trim($_POST['details'] ?? '');
-        $due_date = $_POST['due_date'] ?: null;
-
-        if (!empty($title)) {
-            $stmt = $pdo->prepare("UPDATE tasks SET title = ?, details = ?, due_date = ? WHERE id = ?");
-            $stmt->execute([$title, $details, $due_date, $task_id]);
-
-            echo json_encode(['success' => true, 'message' => 'Task updated successfully']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Task title is required']);
-        }
-        exit;
-    }
-
-    if ($_GET['ajax'] === 'delete_task' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $task_id = (int)$_POST['task_id'];
-
-        $stmt = $pdo->prepare("SELECT group_id FROM tasks WHERE id = ?");
-        $stmt->execute([$task_id]);
-        $group_id = $stmt->fetchColumn();
-
-        if ($group_id !== false) {
-            $stmt = $pdo->prepare("DELETE FROM tasks WHERE id = ?");
-            $stmt->execute([$task_id]);
-
-            // Check if group is now empty
-            $stmt = $pdo->prepare("SELECT COUNT(*) FROM tasks WHERE group_id = ?");
-            $stmt->execute([$group_id]);
-            $group_empty = ($stmt->fetchColumn() == 0);
-
-            if ($group_empty) {
-                $stmt = $pdo->prepare("DELETE FROM task_groups WHERE id = ?");
-                $stmt->execute([$group_id]);
-            }
-
-            echo json_encode(['success' => true, 'group_empty' => $group_empty, 'message' => 'Task deleted successfully']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Task not found']);
-        }
-        exit;
-    }
-
-    if ($_GET['ajax'] === 'rename_group' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $group_id = (int)$_POST['group_id'];
-        $name = trim((string) $_POST['name']);
-
-        if (!empty($name)) {
-            $stmt = $pdo->prepare("UPDATE task_groups SET name = ? WHERE id = ?");
-            $stmt->execute([$name, $group_id]);
-
-            echo json_encode(['success' => true, 'message' => 'Group renamed successfully']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Group name is required']);
-        }
-        exit;
-    }
-
-    if ($_GET['ajax'] === 'move_task' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-        $task_id = (int)$_POST['task_id'];
-        $new_group_id = (int)$_POST['new_group_id'];
-
-        $stmt = $pdo->prepare("SELECT group_id FROM tasks WHERE id = ?");
-        $stmt->execute([$task_id]);
-        $old_group_id = $stmt->fetchColumn();
-
-        if ($old_group_id) {
-            $stmt = $pdo->prepare("UPDATE tasks SET group_id = ? WHERE id = ?");
-            $stmt->execute([$new_group_id, $task_id]);
-
-            // Check if old group is now empty
-            $stmt = $pdo->prepare("SELECT COUNT(*) FROM tasks WHERE group_id = ?");
-            $stmt->execute([$old_group_id]);
-            $old_group_empty = ($stmt->fetchColumn() == 0);
-
-            if ($old_group_empty) {
-                $stmt = $pdo->prepare("DELETE FROM task_groups WHERE id = ?");
-                $stmt->execute([$old_group_id]);
-            }
-
-            echo json_encode(['success' => true, 'old_group_empty' => $old_group_empty, 'message' => 'Task moved successfully']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Task not found']);
-        }
-        exit;
-    }
-
-    if ($_GET['ajax'] === 'get_task' && $_SERVER['REQUEST_METHOD'] === 'GET') {
-        $task_id = (int)$_GET['task_id'];
-
-        $stmt = $pdo->prepare("SELECT * FROM tasks WHERE id = ?");
-        $stmt->execute([$task_id]);
-        $task = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($task) {
-            echo json_encode(['success' => true, 'task' => $task]);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Task not found']);
-        }
-        exit;
-    }
-}
-
-// Handle traditional POST requests
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_GET['ajax']) && isset($_POST['add_group'])) {
-    $name = trim((string) $_POST['group_name']);
-    if (!empty($name)) {
-        try {
-            $stmt = $pdo->prepare("INSERT INTO task_groups (name, created_at) VALUES (?, NOW())");
-            $stmt->execute([$name]);
-            $new_group_id = $pdo->lastInsertId();
-            header(sprintf('Location: ?group=%s&msg=group_added', $new_group_id));
-            exit;
-        } catch (PDOException $e) {
-            $error_message = 'Error adding group: ' . $e->getMessage();
-        }
-    }
 }
 
 $selected_group = $_GET['group'] ?? null;
