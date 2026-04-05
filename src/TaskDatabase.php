@@ -10,7 +10,7 @@ use PDO;
 class TaskDatabase
 {
     public function __construct(
-        protected readonly PDO $pdo
+        protected readonly PDO $pdo,
     ) {}
 
     /**
@@ -49,7 +49,7 @@ class TaskDatabase
         $timesOfDayStr = $task->timesOfDay ? implode('|', $task->timesOfDay) : null;
 
         $stmt = $this->pdo->prepare(
-            'INSERT INTO recurring_tasks (title, details, recur_start, recur_end, days_of_year, days_of_month, days_of_week, time_of_day, last_reminded_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, NOW())'
+            'INSERT INTO recurring_tasks (title, details, recur_start, recur_end, days_of_year, days_of_month, days_of_week, time_of_day, last_reminded_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL, NOW())',
         );
         $stmt->execute([
             $task->taskName,
@@ -67,24 +67,25 @@ class TaskDatabase
      * Load all recurring tasks from the database.
      *
      * @return list<Task>
+     *
      * @throws Exception
      */
     public function loadTasks(): array
     {
         $stmt = $this->pdo->query(
-            'SELECT id, title, details, recur_start, recur_end, days_of_year, days_of_month, days_of_week, time_of_day, last_reminded_at FROM recurring_tasks ORDER BY last_reminded_at ASC, id ASC'
+            'SELECT id, title, details, recur_start, recur_end, days_of_year, days_of_month, days_of_week, time_of_day, last_reminded_at FROM recurring_tasks ORDER BY last_reminded_at ASC, id ASC',
         );
         $rows = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
         $tasks = [];
         foreach ($rows as $row) {
             $daysOfYear = static::splitField(
                 $row['days_of_year'] ?? '',
-                '/^(\d\d\d\d-)?\d\d-\d\d$/'
+                '/^(\d\d\d\d-)?\d\d-\d\d$/',
             );
             $daysOfMonth = static::splitField(
                 $row['days_of_month'] ?? '',
                 '/^([1-9]|[12]\d|3[01])$/',
-                true
+                true,
             );
             $daysOfWeek = static::splitField($row['days_of_week'] ?? '', '/^[1-7]$/', true);
             $timesOfDay = static::splitField($row['time_of_day'] ?? '', '/^\d\d:\d\d$/');
@@ -135,7 +136,7 @@ class TaskDatabase
                 : null;
 
             $stmt = $this->pdo->prepare(
-                'UPDATE recurring_tasks SET last_reminded_at = ? WHERE id = ?'
+                'UPDATE recurring_tasks SET last_reminded_at = ? WHERE id = ?',
             );
             $stmt->execute([$lastRemindedAt, $task->dbId]);
         }
@@ -149,7 +150,7 @@ class TaskDatabase
     public function search(string $term): array
     {
         $stmt = $this->pdo->prepare(
-            'SELECT id, title, details, recur_start, recur_end, days_of_year, days_of_month, days_of_week, time_of_day, last_reminded_at FROM recurring_tasks WHERE title LIKE ? ORDER BY title ASC'
+            'SELECT id, title, details, recur_start, recur_end, days_of_year, days_of_month, days_of_week, time_of_day, last_reminded_at FROM recurring_tasks WHERE title LIKE ? ORDER BY title ASC',
         );
         $stmt->execute(['%' . $term . '%']);
 
@@ -159,12 +160,12 @@ class TaskDatabase
         foreach ($rows as $row) {
             $daysOfYear = static::splitField(
                 $row['days_of_year'] ?? '',
-                '/^(\d\d\d\d-)?\d\d-\d\d$/'
+                '/^(\d\d\d\d-)?\d\d-\d\d$/',
             );
             $daysOfMonth = static::splitField(
                 $row['days_of_month'] ?? '',
                 '/^([1-9]|[12]\d|3[01])$/',
-                true
+                true,
             );
             $daysOfWeek = static::splitField($row['days_of_week'] ?? '', '/^[1-7]$/', true);
             $timesOfDay = static::splitField($row['time_of_day'] ?? '', '/^\d\d:\d\d$/');
@@ -198,12 +199,13 @@ class TaskDatabase
 
     /**
      * @return array<int, string>
+     *
      * @throws Exception
      */
     protected static function splitField(
         string $field,
         string $regex,
-        bool $allowRange = false
+        bool $allowRange = false,
     ): array {
         if ($field === '') {
             return [];

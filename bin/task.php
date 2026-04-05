@@ -52,7 +52,6 @@ switch ($command) {
         $taskProcessor = new TaskProcessor($taskStorage, $taskDatabase);
         $taskProcessor->processTasks();
         break;
-
     case 'add':
         $taskDatabase = new TaskDatabase($pdo);
         $taskDatabase->addTask(
@@ -67,7 +66,6 @@ switch ($command) {
         );
         echo "Task added successfully.\n";
         break;
-
     case 'search':
         $taskDatabase = new TaskDatabase($pdo);
         $term = (string) $input->get('term');

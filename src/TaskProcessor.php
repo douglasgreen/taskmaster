@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace DouglasGreen\TaskMaster;
 
 class TaskProcessor
@@ -34,6 +36,7 @@ class TaskProcessor
             if (! $this->shouldSendReminder($task)) {
                 continue;
             }
+
             $result = $this->processDates($task);
             $frequency = $result['frequency'];
             $datetimes = $result['datetimes'];
@@ -61,6 +64,7 @@ class TaskProcessor
     /**
      * @param array<int, string> $dates
      * @param array<int, string> $times
+     *
      * @return array<int, string>
      */
     protected static function addTimes(array $dates, array $times): array
@@ -161,6 +165,7 @@ class TaskProcessor
         if ($recurStartTime !== null && $this->currentTime < $recurStartTime) {
             return false;
         }
+
         return ! ($recurEndTime !== null && $this->currentTime > $recurEndTime);
     }
 }

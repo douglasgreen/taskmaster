@@ -11,9 +11,7 @@ use Exception;
  */
 class Task
 {
-    /**
-     * @var array<int, string>
-     */
+    /** @var array<int, string> */
     protected const DAYS_OF_WEEK_NAMES = [
         1 => 'Monday',
         2 => 'Tuesday',
@@ -24,40 +22,8 @@ class Task
         7 => 'Sunday',
     ];
 
-    /**
-     * Database ID for this task (set when loaded from database)
-     */
+    /** Database ID for this task (set when loaded from database) */
     public ?int $dbId = null;
-
-    /**
-     * Convert a list of day range expressions into an array of a day or days.
-     *
-     * @param array<int, string> $dayExpressions
-     * @return list<int>|string
-     */
-    public static function getDayList(array $dayExpressions, int $maxDay): array|string
-    {
-        $allDays = [];
-        foreach ($dayExpressions as $dayOrRange) {
-            if ($dayOrRange === '*') {
-                return '*';
-            }
-
-            $days = explode('-', $dayOrRange);
-            if (count($days) === 1) {
-                $allDays[] = (int) $dayOrRange;
-            } else {
-                $allDays = array_merge(
-                    $allDays,
-                    range((int) $days[0], min((int) $days[1], $maxDay))
-                );
-            }
-        }
-
-        $allDays = array_unique($allDays);
-        sort($allDays);
-        return $allDays;
-    }
 
     /**
      * @param array<int, string> $daysOfYear
@@ -108,6 +74,37 @@ class Task
     }
 
     /**
+     * Convert a list of day range expressions into an array of a day or days.
+     *
+     * @param array<int, string> $dayExpressions
+     *
+     * @return list<int>|string
+     */
+    public static function getDayList(array $dayExpressions, int $maxDay): array|string
+    {
+        $allDays = [];
+        foreach ($dayExpressions as $dayOrRange) {
+            if ($dayOrRange === '*') {
+                return '*';
+            }
+
+            $days = explode('-', $dayOrRange);
+            if (count($days) === 1) {
+                $allDays[] = (int) $dayOrRange;
+            } else {
+                $allDays = array_merge(
+                    $allDays,
+                    range((int) $days[0], min((int) $days[1], $maxDay)),
+                );
+            }
+        }
+
+        $allDays = array_unique($allDays);
+        sort($allDays);
+        return $allDays;
+    }
+
+    /**
      * Represent $daysOfWeek as a list of names (Monday, etc.)
      *
      * @return array<int, string>
@@ -130,7 +127,7 @@ class Task
                     $names[] = sprintf(
                         '%s to %s',
                         self::DAYS_OF_WEEK_NAMES[$minDay],
-                        self::DAYS_OF_WEEK_NAMES[$maxDay]
+                        self::DAYS_OF_WEEK_NAMES[$maxDay],
                     );
                 }
             }

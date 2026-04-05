@@ -9,7 +9,7 @@ use PDO;
 class TaskStorage
 {
     public function __construct(
-        protected PDO $pdo
+        protected PDO $pdo,
     ) {}
 
     public function store(string $taskName, string $taskUrl, ?Frequency $frequency = null): void
@@ -46,7 +46,7 @@ class TaskStorage
 
         // Insert the reminder as a task
         $stmt = $this->pdo->prepare(
-            'INSERT INTO tasks (group_id, title, details, due_date, created_at) VALUES (?, ?, ?, ?, NOW())'
+            'INSERT INTO tasks (group_id, title, details, due_date, created_at) VALUES (?, ?, ?, ?, NOW())',
         );
         $stmt->execute([$groupId, $title, $details, $today]);
     }
