@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster\Controller;
 
-use PDO;
+use DouglasGreen\TaskMaster\Domain\TaskGroup\TaskGroupRepositoryInterface;
 
 final class GroupController
 {
-    public function __construct(private readonly PDO $pdo) {}
+    public function __construct(private readonly TaskGroupRepositoryInterface $groupRepo) {}
 
     public function handleAjax(string $action): void
     {
@@ -33,9 +33,7 @@ final class GroupController
         }
 
         try {
-            $stmt = $this->pdo->prepare("INSERT INTO task_groups (name, created_at) VALUES (?, NOW())");
-            $stmt->execute([$name]);
-            return (int) $this->pdo->lastInsertId();
+            return $this->groupRepo->insert($name);
         } catch (\PDOException $e) {
             return null;
         }
@@ -50,9 +48,7 @@ final class GroupController
             throw new \InvalidArgumentException('Group name is required');
         }
 
-        $stmt = $this->pdo->prepare("UPDATE task_groups SET name = ? WHERE id = ?");
-        $stmt->execute([$name, $group_id]);
-
+        $this->groupRepo->updateName($group_id, $name);
         echo json_encode(['success' => true, 'message' => 'Group renamed successfully']);
     }
 }

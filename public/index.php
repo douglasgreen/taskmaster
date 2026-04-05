@@ -120,11 +120,6 @@ function isTaskDue(?string $due_date_str): bool {
     return $due <= $now;
 }
 
-function getDueCount(PDO $pdo, int $group_id): int {
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM tasks WHERE group_id = ? AND due_date IS NOT NULL AND due_date != '0000-00-00' AND due_date <= CURDATE()");
-    $stmt->execute([$group_id]);
-    return (int)$stmt->fetchColumn();
-}
 
 $selected_group = $_GET['group'] ?? null;
 $search_query = $_GET['search'] ?? '';
@@ -144,12 +139,12 @@ if ($selected_group) {
 }
 
 // Fetch groups with due counts
-$stmt = $pdo->query("SELECT * FROM task_groups ORDER BY name");
-$groups = $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
-foreach ($groups as &$group) {
-    $group['due_count'] = getDueCount($pdo, $group['id']);
+$rawGroups = $groupRepo->findAll();
+$groups = [];
+foreach ($rawGroups as $group) {
+    $group['due_count'] = $taskRepo->countDueByGroupId($group['id']);
+    $groups[] = $group;
 }
-unset($group);
 
 // Fetch tasks for selected group or search results
 $tasks = [];
@@ -157,17 +152,7 @@ $search_results_by_group = [];
 $is_searching = !empty($search_query);
 
 if ($is_searching) {
-    $search_term = '%' . $search_query . '%';
-    $stmt = $pdo->prepare("
-        SELECT t.*, tg.name as group_name, tg.id as group_id
-        FROM tasks t
-        JOIN task_groups tg ON t.group_id = tg.id
-        WHERE t.title LIKE ? OR t.details LIKE ?
-        ORDER BY tg.name, t.due_date IS NULL, t.due_date, t.title
-    ");
-    $stmt->execute([$search_term, $search_term]);
-    $all_results = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
-
+    $all_results = $taskRepo->search($search_query);
     foreach ($all_results as $result) {
         if (!isset($search_results_by_group[$result['group_id']])) {
             $search_results_by_group[$result['group_id']] = [
@@ -178,9 +163,7 @@ if ($is_searching) {
         $search_results_by_group[$result['group_id']]['tasks'][] = $result;
     }
 } elseif ($selected_group) {
-    $stmt = $pdo->prepare("SELECT * FROM tasks WHERE group_id = ? ORDER BY due_date IS NULL, due_date, title");
-    $stmt->execute([$selected_group]);
-    $tasks = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    $tasks = $taskRepo->findByGroupId($selected_group);
 }
 
 $selected_group_name = '';
