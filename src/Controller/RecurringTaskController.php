@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace DouglasGreen\TaskMaster\Controller;
 
 use DouglasGreen\TaskMaster\Domain\RecurringTask\RecurringTaskRepositoryInterface;
+use InvalidArgumentException;
+use Throwable;
 
-final class RecurringTaskController
+final readonly class RecurringTaskController
 {
-    public function __construct(private readonly RecurringTaskRepositoryInterface $repo) {}
+    public function __construct(private RecurringTaskRepositoryInterface $repo) {}
 
     public function handleAjax(string $action): void
     {
@@ -19,12 +21,13 @@ final class RecurringTaskController
                 'edit_task' => $this->editTask(),
                 'delete_task' => $this->deleteTask(),
                 'get_task' => $this->getTask(),
-                default => throw new \InvalidArgumentException("Unknown action: $action"),
+                default => throw new InvalidArgumentException('Unknown action: ' . $action),
             };
-        } catch (\Throwable $e) {
+        } catch (Throwable $throwable) {
             http_response_code(400);
-            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+            echo json_encode(['success' => false, 'message' => $throwable->getMessage()]);
         }
+
         exit;
     }
 
@@ -32,8 +35,8 @@ final class RecurringTaskController
     {
         $name = trim((string) ($_POST['name'] ?? ''));
         $url = trim((string) ($_POST['url'] ?? ''));
-        $start = !empty($_POST['recur_start']) ? $_POST['recur_start'] : null;
-        $end = !empty($_POST['recur_end']) ? $_POST['recur_end'] : null;
+        $start = empty($_POST['recur_start']) ? null : $_POST['recur_start'];
+        $end = empty($_POST['recur_end']) ? null : $_POST['recur_end'];
         $time = trim((string) ($_POST['time_of_day'] ?? '')) ?: null;
         $freq = $_POST['frequency_type'] ?? '';
 
@@ -50,7 +53,7 @@ final class RecurringTaskController
         }
 
         if ($name === '') {
-            throw new \InvalidArgumentException('Task name is required');
+            throw new InvalidArgumentException('Task name is required');
         }
 
         $this->repo->insert($name, $url, $start, $end, $daysOfYear, $daysOfMonth, $daysOfWeek, $time);
@@ -62,8 +65,8 @@ final class RecurringTaskController
         $id = (int) ($_POST['task_id'] ?? 0);
         $name = trim((string) ($_POST['name'] ?? ''));
         $details = trim((string) ($_POST['url'] ?? ''));
-        $start = !empty($_POST['recur_start']) ? $_POST['recur_start'] : null;
-        $end = !empty($_POST['recur_end']) ? $_POST['recur_end'] : null;
+        $start = empty($_POST['recur_start']) ? null : $_POST['recur_start'];
+        $end = empty($_POST['recur_end']) ? null : $_POST['recur_end'];
         $time = trim((string) ($_POST['time_of_day'] ?? '')) ?: null;
         $freq = $_POST['frequency_type'] ?? '';
 
@@ -80,7 +83,7 @@ final class RecurringTaskController
         }
 
         if ($name === '') {
-            throw new \InvalidArgumentException('Name is required');
+            throw new InvalidArgumentException('Name is required');
         }
 
         $this->repo->update($id, $name, $details, $start, $end, $daysOfYear, $daysOfMonth, $daysOfWeek, $time);
@@ -101,9 +104,17 @@ final class RecurringTaskController
 
         if ($task) {
             $freq = 'daily';
-            if (!empty($task['days_of_week'])) { $freq = 'weekly'; }
-            if (!empty($task['days_of_month'])) { $freq = 'monthly'; }
-            if (!empty($task['days_of_year'])) { $freq = 'yearly'; }
+            if (!empty($task['days_of_week'])) {
+                $freq = 'weekly';
+            }
+
+            if (!empty($task['days_of_month'])) {
+                $freq = 'monthly';
+            }
+
+            if (!empty($task['days_of_year'])) {
+                $freq = 'yearly';
+            }
 
             $weekArr = [];
             if ($task['days_of_week']) {
@@ -111,7 +122,7 @@ final class RecurringTaskController
                 foreach ($parts as $p) {
                     if (str_contains($p, '-')) {
                         [$s, $e] = explode('-', $p);
-                        for ($i = (int)$s; $i <= (int)$e; $i++) {
+                        for ($i = (int) $s; $i <= (int) $e; $i++) {
                             $weekArr[] = $i;
                         }
                     } else {
@@ -119,6 +130,7 @@ final class RecurringTaskController
                     }
                 }
             }
+
             $task['days_of_week_arr'] = $weekArr;
             $task['frequency_type'] = $freq;
             echo json_encode(['success' => true, 'task' => $task]);

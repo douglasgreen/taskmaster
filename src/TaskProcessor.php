@@ -9,18 +9,22 @@ use DouglasGreen\TaskMaster\Domain\Task\TaskRepositoryInterface;
 use DouglasGreen\TaskMaster\Domain\TaskGroup\TaskGroupRepositoryInterface;
 use Exception;
 
-final class TaskProcessor
+final readonly class TaskProcessor
 {
-    protected readonly string $currentDate;
-    protected readonly int $currentDayOfWeek;
-    protected readonly int $currentTime;
-    protected readonly int $currentYear;
-    protected readonly int $daysInCurrentMonth;
+    protected string $currentDate;
+
+    protected int $currentDayOfWeek;
+
+    protected int $currentTime;
+
+    protected int $currentYear;
+
+    protected int $daysInCurrentMonth;
 
     public function __construct(
-        protected readonly RecurringTaskRepositoryInterface $recurringTaskRepo,
-        protected readonly TaskRepositoryInterface $taskRepo,
-        protected readonly TaskGroupRepositoryInterface $groupRepo,
+        protected RecurringTaskRepositoryInterface $recurringTaskRepo,
+        protected TaskRepositoryInterface $taskRepo,
+        protected TaskGroupRepositoryInterface $groupRepo,
     ) {
         $this->currentTime = time();
         $this->currentDate = date('Y-m-d', $this->currentTime);
@@ -32,7 +36,7 @@ final class TaskProcessor
     public function processTasks(): void
     {
         $rows = $this->recurringTaskRepo->findAll();
-        $tasks = array_map(fn($row) => $this->mapToTask($row), $rows);
+        $tasks = array_map($this->mapToTask(...), $rows);
         $reminderSent = false;
 
         foreach ($tasks as $task) {
@@ -66,12 +70,94 @@ final class TaskProcessor
         }
     }
 
+    /**
+     * @param array<int, string> $dates
+     * @param array<int, string> $times
+     *
+     * @return array<int, string>
+     */
+    protected static function addTimes(array $dates, array $times): array
+    {
+        $datetimes = [];
+        if ($times === [] || $times === ['*']) {
+            $times[] = '00:00';
+        }
+
+        foreach ($dates as $date) {
+            foreach ($times as $time) {
+                $datetimes[] = $date . ' ' . $time . ':00';
+            }
+        }
+
+        return $datetimes;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected static function splitField(string $field, string $regex, bool $allowRange = false): array
+    {
+        if ($field === '') {
+            return [];
+        }
+
+        $parts = preg_split('/\s*\|\s*/', $field, -1, PREG_SPLIT_NO_EMPTY);
+        if ($parts === false) {
+            return [];
+        }
+
+        $values = [];
+        foreach ($parts as $part) {
+            $value = trim($part);
+            if ($value === '*') {
+                return ['*'];
+            }
+
+            if ($allowRange) {
+                $rangeValues = preg_split('/\s*-\s*/', $value, 2, PREG_SPLIT_NO_EMPTY);
+                if ($rangeValues === false) {
+                    $rangeValues = [];
+                }
+
+                $count = count($rangeValues);
+                if ($count === 1) {
+                    self::checkValue($value, $regex);
+                } elseif ($count === 2) {
+                    self::checkValue($rangeValues[0], $regex);
+                    self::checkValue($rangeValues[1], $regex);
+                    if ($rangeValues[0] < $rangeValues[1]) {
+                        $value = $rangeValues[0] . '-' . $rangeValues[1];
+                    } elseif ($rangeValues[0] === $rangeValues[1]) {
+                        $value = $rangeValues[0];
+                    } else {
+                        throw new Exception('Invalid range: ' . $value);
+                    }
+                }
+            } else {
+                self::checkValue($value, $regex);
+            }
+
+            $values[] = $value;
+        }
+
+        natsort($values);
+        return $values;
+    }
+
+    protected static function checkValue(string $value, string $regex): void
+    {
+        if (! preg_match($regex, $value)) {
+            throw new Exception(sprintf('Value "%s" doesn\'t match regex "%s"', $value, $regex));
+        }
+    }
+
     protected function storeReminder(string $taskName, string $taskUrl, ?Frequency $frequency = null): void
     {
         $title = '';
         if ($frequency instanceof Frequency) {
             $title = $frequency->value . ' ';
         }
+
         $title .= 'Reminder: ' . $taskName;
 
         $details = 'Reminder sent by TaskMaster';
@@ -82,11 +168,7 @@ final class TaskProcessor
         $today = date('Y-m-d');
 
         $group = $this->groupRepo->findByName('Recurring');
-        if ($group === null) {
-            $groupId = $this->groupRepo->insert('Recurring');
-        } else {
-            $groupId = (int) $group['id'];
-        }
+        $groupId = $group === null ? $this->groupRepo->insert('Recurring') : (int) $group['id'];
 
         $this->taskRepo->insert($groupId, $title, $details, $today);
     }
@@ -122,26 +204,6 @@ final class TaskProcessor
     }
 
     /**
-     * @param array<int, string> $dates
-     * @param array<int, string> $times
-     *
-     * @return array<int, string>
-     */
-    protected static function addTimes(array $dates, array $times): array
-    {
-        $datetimes = [];
-        if ($times === [] || $times === ['*']) {
-            $times[] = '00:00';
-        }
-        foreach ($dates as $date) {
-            foreach ($times as $time) {
-                $datetimes[] = $date . ' ' . $time . ':00';
-            }
-        }
-        return $datetimes;
-    }
-
-    /**
      * Process dates for a task.
      *
      * @return array{frequency: ?Frequency, datetimes: array<int, string>}
@@ -156,6 +218,7 @@ final class TaskProcessor
                 if (preg_match('/^\d\d-\d\d$/', (string) $dayOfYear)) {
                     $dayOfYear = $this->currentYear . '-' . $dayOfYear;
                 }
+
                 if ($dayOfYear === '*') {
                     $dates[] = $this->currentDate;
                     $frequency = Frequency::Daily;
@@ -163,7 +226,8 @@ final class TaskProcessor
                     $dates[] = $dayOfYear;
                 }
             }
-            $datetimes = static::addTimes($dates, $task->timesOfDay);
+
+            $datetimes = self::addTimes($dates, $task->timesOfDay);
         } elseif ($task->daysOfMonth !== []) {
             $dates = [];
             $daysOfMonth = Task::getDayList($task->daysOfMonth, $this->daysInCurrentMonth);
@@ -176,7 +240,8 @@ final class TaskProcessor
                     $dates[] = date('Y-m') . sprintf('-%02d', $dayOfMonth);
                 }
             }
-            $datetimes = static::addTimes($dates, $task->timesOfDay);
+
+            $datetimes = self::addTimes($dates, $task->timesOfDay);
         } elseif ($task->daysOfWeek !== []) {
             $dates = [];
             $daysOfWeek = Task::getDayList($task->daysOfWeek, 7);
@@ -191,12 +256,15 @@ final class TaskProcessor
                 } else {
                     $frequency = Frequency::Weekly;
                 }
+
                 if (in_array($this->currentDayOfWeek, $daysOfWeek, true)) {
                     $dates[] = $this->currentDate;
                 }
             }
-            $datetimes = static::addTimes($dates, $task->timesOfDay);
+
+            $datetimes = self::addTimes($dates, $task->timesOfDay);
         }
+
         return ['frequency' => $frequency, 'datetimes' => $datetimes];
     }
 
@@ -207,42 +275,7 @@ final class TaskProcessor
         if ($recurStartTime !== null && $this->currentTime < $recurStartTime) {
             return false;
         }
+
         return ! ($recurEndTime !== null && $this->currentTime > $recurEndTime);
-    }
-
-    /** @return array<int, string> */
-    protected static function splitField(string $field, string $regex, bool $allowRange = false): array
-    {
-        if ($field === '') { return []; }
-        $parts = preg_split('/\s*\|\s*/', $field, -1, PREG_SPLIT_NO_EMPTY);
-        if ($parts === false) { return []; }
-        $values = [];
-        foreach ($parts as $part) {
-            $value = trim($part);
-            if ($value === '*') { return ['*']; }
-            if ($allowRange) {
-                $rangeValues = preg_split('/\s*-\s*/', $value, 2, PREG_SPLIT_NO_EMPTY);
-                if ($rangeValues === false) { $rangeValues = []; }
-                $count = count($rangeValues);
-                if ($count === 1) { self::checkValue($value, $regex); }
-                elseif ($count === 2) {
-                    self::checkValue($rangeValues[0], $regex);
-                    self::checkValue($rangeValues[1], $regex);
-                    if ($rangeValues[0] < $rangeValues[1]) { $value = $rangeValues[0] . '-' . $rangeValues[1]; }
-                    elseif ($rangeValues[0] === $rangeValues[1]) { $value = $rangeValues[0]; }
-                    else { throw new Exception('Invalid range: ' . $value); }
-                }
-            } else { self::checkValue($value, $regex); }
-            $values[] = $value;
-        }
-        natsort($values);
-        return $values;
-    }
-
-    protected static function checkValue(string $value, string $regex): void
-    {
-        if (! preg_match($regex, $value)) {
-            throw new Exception(sprintf('Value "%s" doesn\'t match regex "%s"', $value, $regex));
-        }
     }
 }

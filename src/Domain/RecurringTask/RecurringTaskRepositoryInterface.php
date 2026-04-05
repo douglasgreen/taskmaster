@@ -7,8 +7,11 @@ namespace DouglasGreen\TaskMaster\Domain\RecurringTask;
 interface RecurringTaskRepositoryInterface
 {
     public function findById(int $id): ?array;
+
     public function findAll(): array;
+
     public function search(string $term): array;
+
     public function insert(
         string $title,
         string $details,
@@ -17,8 +20,9 @@ interface RecurringTaskRepositoryInterface
         ?string $daysOfYear,
         ?string $daysOfMonth,
         ?string $daysOfWeek,
-        ?string $timeOfDay
+        ?string $timeOfDay,
     ): int;
+
     public function update(
         int $id,
         string $title,
@@ -28,8 +32,10 @@ interface RecurringTaskRepositoryInterface
         ?string $daysOfYear,
         ?string $daysOfMonth,
         ?string $daysOfWeek,
-        ?string $timeOfDay
+        ?string $timeOfDay,
     ): void;
+
     public function delete(int $id): void;
+
     public function updateLastRemindedAt(int $id, ?string $lastRemindedAt): void;
 }

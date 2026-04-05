@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace DouglasGreen\TaskMaster\Controller;
 
 use DouglasGreen\TaskMaster\Domain\TaskGroup\TaskGroupRepositoryInterface;
+use InvalidArgumentException;
+use PDOException;
+use Throwable;
 
-final class GroupController
+final readonly class GroupController
 {
-    public function __construct(private readonly TaskGroupRepositoryInterface $groupRepo) {}
+    public function __construct(private TaskGroupRepositoryInterface $groupRepo) {}
 
     public function handleAjax(string $action): void
     {
@@ -16,12 +19,13 @@ final class GroupController
         try {
             match ($action) {
                 'rename_group' => $this->renameGroup(),
-                default => throw new \InvalidArgumentException("Unknown action: $action"),
+                default => throw new InvalidArgumentException('Unknown action: ' . $action),
             };
-        } catch (\Throwable $e) {
+        } catch (Throwable $throwable) {
             http_response_code(400);
-            echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+            echo json_encode(['success' => false, 'message' => $throwable->getMessage()]);
         }
+
         exit;
     }
 
@@ -34,7 +38,7 @@ final class GroupController
 
         try {
             return $this->groupRepo->insert($name);
-        } catch (\PDOException $e) {
+        } catch (PDOException) {
             return null;
         }
     }
@@ -45,7 +49,7 @@ final class GroupController
         $name = trim((string) ($_POST['name'] ?? ''));
 
         if ($name === '') {
-            throw new \InvalidArgumentException('Group name is required');
+            throw new InvalidArgumentException('Group name is required');
         }
 
         $this->groupRepo->updateName($group_id, $name);

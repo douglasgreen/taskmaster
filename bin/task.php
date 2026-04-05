@@ -4,9 +4,6 @@
 declare(strict_types=1);
 
 use DouglasGreen\OptParser\OptParser;
-use DouglasGreen\TaskMaster\Domain\RecurringTask\RecurringTaskRepositoryInterface;
-use DouglasGreen\TaskMaster\Domain\Task\TaskRepositoryInterface;
-use DouglasGreen\TaskMaster\Domain\TaskGroup\TaskGroupRepositoryInterface;
 use DouglasGreen\TaskMaster\Infrastructure\Persistence\RecurringTaskRepository;
 use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskGroupRepository;
 use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskRepository;
