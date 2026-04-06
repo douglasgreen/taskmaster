@@ -251,7 +251,7 @@ final readonly class TaskProcessor
         } elseif ($task->daysOfMonth !== []) {
             $dates = [];
             $daysOfMonth = Task::getDayList($task->daysOfMonth, $this->daysInCurrentMonth);
-            if (is_array($daysOfMonth)) {
+            if ($daysOfMonth) {
                 $frequency = Frequency::Monthly;
                 foreach ($daysOfMonth as $dayOfMonth) {
                     $dates[] = date('Y-m') . sprintf('-%02d', $dayOfMonth);
@@ -262,7 +262,7 @@ final readonly class TaskProcessor
         } elseif ($task->daysOfWeek !== []) {
             $dates = [];
             $daysOfWeek = Task::getDayList($task->daysOfWeek, 7);
-            if (is_array($daysOfWeek)) {
+            if ($daysOfWeek) {
                 if ($daysOfWeek === [1, 2, 3, 4, 5]) {
                     $frequency = Frequency::Weekdays;
                 } elseif ($daysOfWeek === [6, 7]) {
