@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster\Controller;
 
-use DouglasGreen\TaskMaster\Persistence\TaskRepository;
 use DouglasGreen\TaskMaster\Persistence\TaskGroupRepository;
+use DouglasGreen\TaskMaster\Persistence\TaskRepository;
 use InvalidArgumentException;
 use Throwable;
 
