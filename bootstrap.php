@@ -35,6 +35,7 @@ $twig = new \Twig\Environment($loader, [
     'debug' => true,
 ]);
 $twig->addExtension(new \Twig\Extension\DebugExtension());
+$twig->addExtension(new \Twig\Extra\String\StringExtension());
 
 $twig->addFilter(new \Twig\TwigFilter('format_details', function ($details) {
     if (empty($details)) { return ''; }
