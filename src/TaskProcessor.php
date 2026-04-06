@@ -45,8 +45,7 @@ final readonly class TaskProcessor
             ];
         }
 
-        $reminderSent = false;
-        $updatedLastReminded = [];
+        $lastReminderTimes = [];
 
         foreach ($tasks as $item) {
             $task = $item['task'];
@@ -63,20 +62,19 @@ final readonly class TaskProcessor
 
                 if ($scheduledTime < $this->currentTime && $task->lastTimeReminded < $scheduledTime) {
                     $this->storeReminder($task->taskName, $task->taskUrl, $frequency);
-                    $reminderSent = true;
-                    $updatedLastReminded[$item['id']] = $this->currentTime;
+                    $lastReminderTimes[$item['id']] = $this->currentTime;
                     break;
                 }
             }
         }
 
-        if ($reminderSent) {
+        if ($lastReminderTimes) {
             foreach ($tasks as $item) {
                 $id = $item['id'];
-                $lastRemindedAt = isset($updatedLastReminded[$id])
-                    ? date('Y-m-d H:i:s', $updatedLastReminded[$id])
-                    : null;
-                $this->recurringTaskRepo->updateLastRemindedAt($id, $lastRemindedAt);
+                if (isset($lastReminderTimes[$id])) {
+                    $lastRemindedAt = date('Y-m-d H:i:s', $lastReminderTimes[$id]);
+                    $this->recurringTaskRepo->updateLastRemindedAt($id, $lastRemindedAt);
+                }
             }
         }
     }
