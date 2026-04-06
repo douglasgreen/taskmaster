@@ -62,7 +62,7 @@
                                 <td><button class="btn btn-sm btn-outline-primary edit-task-btn" data-task-id="{{ task.id }}"><i class="bi bi-pencil"></i></button></td>
                                 <td class="fw-bold">{{ task.title }}</td>
                                 <td>
-                                    {% if task.details|filter_url %}
+                                    {% if task.details is not empty and task.details matches '/^https?:\/\//' %}
                                         <a href="{{ task.details }}" target="_blank">Link <i class="bi bi-box-arrow-up-right small"></i></a>
                                     {% else %}
                                         {{ task.details|truncate(50) }}
