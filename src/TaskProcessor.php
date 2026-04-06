@@ -89,7 +89,7 @@ final readonly class TaskProcessor
     protected static function addTimes(array $dates, array $times): array
     {
         $datetimes = [];
-        if ($times === [] || $times === ['*']) {
+        if ($times === []) {
             $times[] = '00:00';
         }
 
@@ -119,10 +119,6 @@ final readonly class TaskProcessor
         $values = [];
         foreach ($parts as $part) {
             $value = trim($part);
-            if ($value === '*') {
-                return ['*'];
-            }
-
             if ($allowRange) {
                 $rangeValues = preg_split('/\s*-\s*/', $value, 2, PREG_SPLIT_NO_EMPTY);
                 if ($rangeValues === false) {
@@ -246,22 +242,14 @@ final readonly class TaskProcessor
                     $dayOfYear = $this->currentYear . '-' . $dayOfYear;
                 }
 
-                if ($dayOfYear === '*') {
-                    $dates[] = $this->currentDate;
-                    $frequency = Frequency::Daily;
-                } else {
-                    $dates[] = $dayOfYear;
-                }
+                $dates[] = $dayOfYear;
             }
 
             $datetimes = self::addTimes($dates, $task->timesOfDay);
         } elseif ($task->daysOfMonth !== []) {
             $dates = [];
             $daysOfMonth = Task::getDayList($task->daysOfMonth, $this->daysInCurrentMonth);
-            if ($daysOfMonth === '*') {
-                $frequency = Frequency::Daily;
-                $dates[] = $this->currentDate;
-            } elseif (is_array($daysOfMonth)) {
+            if (is_array($daysOfMonth)) {
                 $frequency = Frequency::Monthly;
                 foreach ($daysOfMonth as $dayOfMonth) {
                     $dates[] = date('Y-m') . sprintf('-%02d', $dayOfMonth);
@@ -272,10 +260,7 @@ final readonly class TaskProcessor
         } elseif ($task->daysOfWeek !== []) {
             $dates = [];
             $daysOfWeek = Task::getDayList($task->daysOfWeek, 7);
-            if ($daysOfWeek === '*') {
-                $frequency = Frequency::Daily;
-                $dates[] = $this->currentDate;
-            } elseif (is_array($daysOfWeek)) {
+            if (is_array($daysOfWeek)) {
                 if ($daysOfWeek === [1, 2, 3, 4, 5]) {
                     $frequency = Frequency::Weekdays;
                 } elseif ($daysOfWeek === [6, 7]) {

@@ -61,16 +61,12 @@ readonly class Task
      *
      * @param array<int, string> $dayExpressions
      *
-     * @return list<int>|string
+     * @return list<int>
      */
-    public static function getDayList(array $dayExpressions, int $maxDay): array|string
+    public static function getDayList(array $dayExpressions, int $maxDay): array
     {
         $allDays = [];
         foreach ($dayExpressions as $dayOrRange) {
-            if ($dayOrRange === '*') {
-                return '*';
-            }
-
             $days = explode('-', $dayOrRange);
             if (count($days) === 1) {
                 $allDays[] = (int) $dayOrRange;
@@ -96,10 +92,6 @@ readonly class Task
     {
         $names = [];
         foreach ($this->daysOfWeek as $dayOfWeek) {
-            if ($dayOfWeek === '*') {
-                return ['*'];
-            }
-
             if (isset(self::DAYS_OF_WEEK_NAMES[$dayOfWeek])) {
                 $names[] = self::DAYS_OF_WEEK_NAMES[$dayOfWeek];
             } else {

@@ -67,18 +67,15 @@ match ($page) {
             $schedule = '';
             if (!empty($row['days_of_week'])) {
                 $map = [1 => 'Mon', 2 => 'Tue', 3 => 'Wed', 4 => 'Thu', 5 => 'Fri', 6 => 'Sat', 7 => 'Sun'];
-                if ($row['days_of_week'] === '*') { $schedule = 'Daily'; }
-                else {
-                    $days = [];
-                    $tokens = explode('|', (string) $row['days_of_week']);
-                    foreach ($tokens as $token) {
-                        if (str_contains($token, '-')) {
-                            [$s, $e] = explode('-', $token);
-                            $days[] = ($map[$s] ?? $s) . '-' . ($map[$e] ?? $e);
-                        } else { $days[] = $map[$token] ?? $token; }
-                    }
-                    $schedule = 'Every ' . implode(', ', $days);
+                $days = [];
+                $tokens = explode('|', (string) $row['days_of_week']);
+                foreach ($tokens as $token) {
+                    if (str_contains($token, '-')) {
+                        [$s, $e] = explode('-', $token);
+                        $days[] = ($map[$s] ?? $s) . '-' . ($map[$e] ?? $e);
+                    } else { $days[] = $map[$token] ?? $token; }
                 }
+                $schedule = 'Every ' . implode(', ', $days);
             } elseif (!empty($row['days_of_month'])) { $schedule = 'Monthly on day(s): ' . str_replace('|', ', ', $row['days_of_month']); }
             elseif (!empty($row['days_of_year'])) { $schedule = 'Yearly on: ' . str_replace('|', ', ', $row['days_of_year']); }
             else { $schedule = 'Daily'; }
