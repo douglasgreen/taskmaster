@@ -2,13 +2,15 @@ Options -Indexes
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    # Redirect all requests to the public directory
-    RewriteRule ^$ public/ [L]
-    RewriteRule (.*) public/$1 [L]
+
+    # If the request is already for the public directory, don't redirect again
+    RewriteCond %{REQUEST_URI} !^/public/
+    # Rewrite everything to the public directory
+    RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>
 
-# Deny direct access to sensitive files
-<FilesMatch "\.(env|ini|log|sql|json|neon|dist|php)$">
+# Deny access to sensitive configuration/data files, NOT including php
+<FilesMatch "\.(env|ini|log|sql|json|neon|dist)$">
     Require all denied
 </FilesMatch>
 
