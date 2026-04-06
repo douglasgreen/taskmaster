@@ -1,11 +1,153 @@
-function showToast(message, type = 'success') { const container = document.getElementById('toastContainer'); const id = 'toast-' + Date.now(); const bg = type === 'success' ? 'bg-success' : 'bg-danger'; const html = `<div class="toast align-items-center text-white ${bg} border-0" id="${id}" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex"><div class="toast-body">${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div></div>`; container.insertAdjacentHTML('beforeend', html); const el = document.getElementById(id); const toast = new bootstrap.Toast(el, { autohide: true, delay: 4000 }); toast.show(); el.addEventListener('hidden.bs.toast', () => el.remove()); }
-const showLoading = () => document.getElementById('loadingSpinner').classList.add('show'); const hideLoading = () => document.getElementById('loadingSpinner').classList.remove('show');
-const taskModal = new bootstrap.Modal(document.getElementById('taskModal')); const form = document.getElementById('taskForm'); const freqRadios = document.getElementsByName('frequency_type');
-function updateFrequencyView() { const val = document.querySelector('input[name="frequency_type"]:checked').value; document.getElementById('weeklyOptions').classList.add('d-none'); document.getElementById('monthlyOptions').classList.add('d-none'); document.getElementById('yearlyOptions').classList.add('d-none'); if (val === 'weekly') document.getElementById('weeklyOptions').classList.remove('d-none'); if (val === 'monthly') document.getElementById('monthlyOptions').classList.remove('d-none'); if (val === 'yearly') document.getElementById('yearlyOptions').classList.remove('d-none'); }
-freqRadios.forEach(r => r.addEventListener('change', updateFrequencyView));
-document.getElementById('addTaskBtn').addEventListener('click', () => { form.reset(); document.getElementById('taskId').value = ''; document.getElementById('taskModalLabel').textContent = 'Add Recurring Task'; document.getElementById('saveBtn').textContent = 'Add Task'; document.getElementById('freqDaily').checked = true; updateFrequencyView(); taskModal.show(); });
-document.addEventListener('click', e => { const btn = e.target.closest('.edit-task-btn'); if (btn) { const id = btn.dataset.taskId; showLoading(); fetch(`?ajax=get_task&task_id=${id}`).then(r => r.json()).then(data => { hideLoading(); if(data.success) { const t = data.task; document.getElementById('taskId').value = t.id; document.getElementById('taskName').value = t.title; document.getElementById('taskUrl').value = t.details; document.getElementById('recurStart').value = t.recur_start; document.getElementById('recurEnd').value = t.recur_end; document.getElementById('timeOfDay').value = t.time_of_day; document.querySelector(`input[name="frequency_type"][value="${t.frequency_type}"]`).checked = true; updateFrequencyView(); if (t.frequency_type === 'weekly' && t.days_of_week_arr) { t.days_of_week_arr.forEach(d => { const cb = document.getElementById('day'+d); if(cb) cb.checked = true; }); } if (t.frequency_type === 'monthly') { document.getElementById('daysOfMonth').value = t.days_of_month; } if (t.frequency_type === 'yearly') { document.getElementById('daysOfYear').value = t.days_of_year; } document.getElementById('taskModalLabel').textContent = 'Edit Recurring Task'; document.getElementById('saveBtn').textContent = 'Update Task'; taskModal.show(); } else { showToast(data.message, 'error'); } }).catch(err => { hideLoading(); console.error(err); }); } });
-form.addEventListener('submit', e => { e.preventDefault(); if (!form.checkValidity()) { form.classList.add('was-validated'); return; } const formData = new FormData(form); const id = document.getElementById('taskId').value; const action = id ? 'edit_task' : 'add_task'; showLoading(); fetch(`?ajax=${action}`, { method: 'POST', body: formData }).then(r => r.json()).then(data => { hideLoading(); if (data.success) { taskModal.hide(); showToast(data.message); setTimeout(() => window.location.reload(), 500); } else { showToast(data.message, 'error'); } }).catch(err => { hideLoading(); console.error(err); }); });
-const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal')); let deleteId = null;
-document.addEventListener('click', e => { const btn = e.target.closest('.delete-task-btn'); if (btn) { deleteId = btn.dataset.taskId; document.getElementById('deleteTaskName').textContent = btn.dataset.taskName; deleteModal.show(); } });
-document.getElementById('confirmDeleteBtn').addEventListener('click', () => { if (!deleteId) return; const fd = new FormData(); fd.append('task_id', deleteId); showLoading(); fetch('?ajax=delete_task', { method: 'POST', body: fd }).then(r => r.json()).then(data => { hideLoading(); if (data.success) { deleteModal.hide(); showToast(data.message); setTimeout(() => window.location.reload(), 500); } else { showToast(data.message, 'error'); } }).catch(err => { hideLoading(); console.error(err); }); });
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    const id = 'toast-' + Date.now();
+    const bg = type === 'success' ? 'bg-success' : 'bg-danger';
+    const html = `<div class="toast align-items-center text-white ${bg} border-0" id="${id}" role="alert" aria-live="assertive" aria-atomic="true"><div class="d-flex"><div class="toast-body">${message}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div></div>`;
+    container.insertAdjacentHTML('beforeend', html);
+    const el = document.getElementById(id);
+    const toast = new bootstrap.Toast(el, { autohide: true, delay: 4000 });
+    toast.show();
+    el.addEventListener('hidden.bs.toast', () => el.remove());
+}
+const showLoading = () =>
+    document.getElementById('loadingSpinner').classList.add('show');
+const hideLoading = () =>
+    document.getElementById('loadingSpinner').classList.remove('show');
+const taskModal = new bootstrap.Modal(document.getElementById('taskModal'));
+const form = document.getElementById('taskForm');
+const freqRadios = document.getElementsByName('frequency_type');
+function updateFrequencyView() {
+    const val = document.querySelector(
+        'input[name="frequency_type"]:checked',
+    ).value;
+    document.getElementById('weeklyOptions').classList.add('d-none');
+    document.getElementById('monthlyOptions').classList.add('d-none');
+    document.getElementById('yearlyOptions').classList.add('d-none');
+    if (val === 'weekly')
+        document.getElementById('weeklyOptions').classList.remove('d-none');
+    if (val === 'monthly')
+        document.getElementById('monthlyOptions').classList.remove('d-none');
+    if (val === 'yearly')
+        document.getElementById('yearlyOptions').classList.remove('d-none');
+}
+freqRadios.forEach((r) => r.addEventListener('change', updateFrequencyView));
+document.getElementById('addTaskBtn').addEventListener('click', () => {
+    form.reset();
+    document.getElementById('taskId').value = '';
+    document.getElementById('taskModalLabel').textContent =
+        'Add Recurring Task';
+    document.getElementById('saveBtn').textContent = 'Add Task';
+    document.getElementById('freqDaily').checked = true;
+    updateFrequencyView();
+    taskModal.show();
+});
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.edit-task-btn');
+    if (btn) {
+        const id = btn.dataset.taskId;
+        showLoading();
+        fetch(`?ajax=get_task&task_id=${id}`)
+            .then((r) => r.json())
+            .then((data) => {
+                hideLoading();
+                if (data.success) {
+                    const t = data.task;
+                    document.getElementById('taskId').value = t.id;
+                    document.getElementById('taskName').value = t.title;
+                    document.getElementById('taskUrl').value = t.details;
+                    document.getElementById('recurStart').value = t.recur_start;
+                    document.getElementById('recurEnd').value = t.recur_end;
+                    document.getElementById('timeOfDay').value = t.time_of_day;
+                    document.querySelector(
+                        `input[name="frequency_type"][value="${t.frequency_type}"]`,
+                    ).checked = true;
+                    updateFrequencyView();
+                    if (t.frequency_type === 'weekly' && t.days_of_week_arr) {
+                        t.days_of_week_arr.forEach((d) => {
+                            const cb = document.getElementById('day' + d);
+                            if (cb) cb.checked = true;
+                        });
+                    }
+                    if (t.frequency_type === 'monthly') {
+                        document.getElementById('daysOfMonth').value =
+                            t.days_of_month;
+                    }
+                    if (t.frequency_type === 'yearly') {
+                        document.getElementById('daysOfYear').value =
+                            t.days_of_year;
+                    }
+                    document.getElementById('taskModalLabel').textContent =
+                        'Edit Recurring Task';
+                    document.getElementById('saveBtn').textContent =
+                        'Update Task';
+                    taskModal.show();
+                } else {
+                    showToast(data.message, 'error');
+                }
+            })
+            .catch((err) => {
+                hideLoading();
+                console.error(err);
+            });
+    }
+});
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+        form.classList.add('was-validated');
+        return;
+    }
+    const formData = new FormData(form);
+    const id = document.getElementById('taskId').value;
+    const action = id ? 'edit_task' : 'add_task';
+    showLoading();
+    fetch(`?ajax=${action}`, { method: 'POST', body: formData })
+        .then((r) => r.json())
+        .then((data) => {
+            hideLoading();
+            if (data.success) {
+                taskModal.hide();
+                showToast(data.message);
+                setTimeout(() => window.location.reload(), 500);
+            } else {
+                showToast(data.message, 'error');
+            }
+        })
+        .catch((err) => {
+            hideLoading();
+            console.error(err);
+        });
+});
+const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+let deleteId = null;
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.delete-task-btn');
+    if (btn) {
+        deleteId = btn.dataset.taskId;
+        document.getElementById('deleteTaskName').textContent =
+            btn.dataset.taskName;
+        deleteModal.show();
+    }
+});
+document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
+    if (!deleteId) return;
+    const fd = new FormData();
+    fd.append('task_id', deleteId);
+    showLoading();
+    fetch('?ajax=delete_task', { method: 'POST', body: fd })
+        .then((r) => r.json())
+        .then((data) => {
+            hideLoading();
+            if (data.success) {
+                deleteModal.hide();
+                showToast(data.message);
+                setTimeout(() => window.location.reload(), 500);
+            } else {
+                showToast(data.message, 'error');
+            }
+        })
+        .catch((err) => {
+            hideLoading();
+            console.error(err);
+        });
+});
