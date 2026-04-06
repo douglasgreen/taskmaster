@@ -7,6 +7,7 @@ use DouglasGreen\TaskMaster\Controller\RecurringTaskController;
 use DouglasGreen\TaskMaster\Controller\TaskController;
 use DouglasGreen\TaskMaster\Infrastructure\Persistence\RecurringTaskRepository;
 use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskGroupRepository;
+use DouglasGreen\TaskMaster\Helper\DateHelper;
 use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskRepository;
 
 ['pdo' => $pdo, 'twig' => $twig] = require __DIR__ . '/../bootstrap.php';
@@ -157,15 +158,15 @@ match ($page) {
         ];
 
         foreach ($context['tasks'] as &$task) {
-            $task['display_date'] = formatDueDate($task['due_date']);
-            $task['is_due'] = isTaskDue($task['due_date']);
+            $task['display_date'] = DateHelper::formatDueDate($task['due_date']);
+            $task['is_due'] = DateHelper::isTaskDue($task['due_date']);
         }
         unset($task);
 
         foreach ($context['search_results_by_group'] as &$groupData) {
             foreach ($groupData['tasks'] as &$task) {
-                $task['display_date'] = formatDueDate($task['due_date']);
-                $task['is_due'] = isTaskDue($task['due_date']);
+                $task['display_date'] = DateHelper::formatDueDate($task['due_date']);
+                $task['is_due'] = DateHelper::isTaskDue($task['due_date']);
             }
             unset($task);
         }
@@ -175,27 +176,3 @@ match ($page) {
     })(),
 };
 
-function formatDueDate(?string $due_date_str): string {
-    if (empty($due_date_str) || $due_date_str === '0000-00-00') { return ''; }
-    $due = new DateTime($due_date_str);
-    $now = new DateTime();
-    $now->setTime(0, 0, 0);
-    $due->setTime(0, 0, 0);
-    $interval = $now->diff($due);
-    $days_from_now = (int) ($interval->invert ? -$interval->days : $interval->days);
-    $abs_days = abs($days_from_now);
-    if ($abs_days > 99) { return $due_date_str; }
-    if ($days_from_now < 0) { return $abs_days == 1 ? 'yesterday' : $abs_days . ' days ago'; }
-    if ($days_from_now === 0) { return 'today'; }
-    if ($days_from_now === 1) { return 'tomorrow'; }
-    return 'in ' . $days_from_now . ' days';
-}
-
-function isTaskDue(?string $due_date_str): bool {
-    if (empty($due_date_str) || $due_date_str === '0000-00-00') { return false; }
-    $due = new DateTime($due_date_str);
-    $now = new DateTime();
-    $due->setTime(0, 0, 0);
-    $now->setTime(0, 0, 0);
-    return $due <= $now;
-}
