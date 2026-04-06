@@ -121,18 +121,18 @@ readonly class Task
 
     protected function validateRecurDates(): void
     {
-        if (
-            $this->recurStart !== null &&
-            ! preg_match('/^\d\d\d\d-\d\d-\d\d$/', $this->recurStart)
-        ) {
-            $this->error('Bad recur start date');
+        if ($this->recurStart !== null) {
+            $dt = \DateTime::createFromFormat('Y-m-d', $this->recurStart);
+            if ($dt === false || $dt->format('Y-m-d') !== $this->recurStart) {
+                $this->error('Bad recur start date');
+            }
         }
 
-        if (
-            $this->recurEnd !== null &&
-            ! preg_match('/^\d\d\d\d-\d\d-\d\d$/', $this->recurEnd)
-        ) {
-            $this->error('Bad recur end date');
+        if ($this->recurEnd !== null) {
+            $dt = \DateTime::createFromFormat('Y-m-d', $this->recurEnd);
+            if ($dt === false || $dt->format('Y-m-d') !== $this->recurEnd) {
+                $this->error('Bad recur end date');
+            }
         }
 
         if (

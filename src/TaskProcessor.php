@@ -189,9 +189,20 @@ final readonly class TaskProcessor
     protected function mapToTask(array $row): Task
     {
         $daysOfYear = self::splitField($row['days_of_year'] ?? '', '/^(\d\d\d\d-)?\d\d-\d\d$/');
+        foreach ($daysOfYear as $doy) {
+            if ($doy === '*') {
+                continue;
+            }
+            $dateStr = preg_match('/^\d{2}-\d{2}$/', $doy) ? '2000-' . $doy : $doy;
+            $dt = \DateTime::createFromFormat('Y-m-d', $dateStr);
+            if ($dt === false || $dt->format('Y-m-d') !== $dateStr) {
+                throw new InvalidArgumentException("Invalid date in days_of_year: $doy");
+            }
+        }
+
         $daysOfMonth = self::splitField($row['days_of_month'] ?? '', '/^([1-9]|[12]\d|3[01])$/', true);
         $daysOfWeek = self::splitField($row['days_of_week'] ?? '', '/^[1-7]$/', true);
-        $timesOfDay = self::splitField($row['time_of_day'] ?? '', '/^\d\d:\d\d$/');
+        $timesOfDay = self::splitField($row['time_of_day'] ?? '', '/^([01]\d|2[0-3]):[0-5]\d$/');
 
         $lastTimeReminded = 0;
         if ($row['last_reminded_at'] !== null) {
