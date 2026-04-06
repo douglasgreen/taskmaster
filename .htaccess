@@ -1,0 +1,18 @@
+Options -Indexes
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    # Redirect all requests to the public directory
+    RewriteRule ^$ public/ [L]
+    RewriteRule (.*) public/$1 [L]
+</IfModule>
+
+# Deny direct access to sensitive files
+<FilesMatch "\.(env|ini|log|sql|json|neon|dist|php)$">
+    Require all denied
+</FilesMatch>
+
+# Deny direct access to sensitive directories
+<IfModule mod_rewrite.c>
+    RewriteRule ^(vendor|src|config|docs|bin|templates)/ - [F,L]
+</IfModule>
