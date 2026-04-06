@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster;
 
+use DateTime;
 use DouglasGreen\TaskMaster\Domain\RecurringTask\RecurringTaskRepositoryInterface;
 use DouglasGreen\TaskMaster\Domain\Task\TaskRepositoryInterface;
 use DouglasGreen\TaskMaster\Domain\TaskGroup\TaskGroupRepositoryInterface;
@@ -189,10 +190,11 @@ final readonly class TaskProcessor
             if ($doy === '*') {
                 continue;
             }
+
             $dateStr = preg_match('/^\d{2}-\d{2}$/', $doy) ? '2000-' . $doy : $doy;
-            $dt = \DateTime::createFromFormat('Y-m-d', $dateStr);
+            $dt = DateTime::createFromFormat('Y-m-d', $dateStr);
             if ($dt === false || $dt->format('Y-m-d') !== $dateStr) {
-                throw new InvalidArgumentException("Invalid date in days_of_year: $doy");
+                throw new InvalidArgumentException('Invalid date in days_of_year: ' . $doy);
             }
         }
 

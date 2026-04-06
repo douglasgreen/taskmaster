@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster;
 
+use DateTime;
 use InvalidArgumentException;
 
 /**
@@ -114,14 +115,14 @@ readonly class Task
     protected function validateRecurDates(): void
     {
         if ($this->recurStart !== null) {
-            $dt = \DateTime::createFromFormat('Y-m-d', $this->recurStart);
+            $dt = DateTime::createFromFormat('Y-m-d', $this->recurStart);
             if ($dt === false || $dt->format('Y-m-d') !== $this->recurStart) {
                 $this->error('Bad recur start date');
             }
         }
 
         if ($this->recurEnd !== null) {
-            $dt = \DateTime::createFromFormat('Y-m-d', $this->recurEnd);
+            $dt = DateTime::createFromFormat('Y-m-d', $this->recurEnd);
             if ($dt === false || $dt->format('Y-m-d') !== $this->recurEnd) {
                 $this->error('Bad recur end date');
             }
