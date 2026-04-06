@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster\Controller;
 
-use DouglasGreen\TaskMaster\Domain\RecurringTask\RecurringTaskRepositoryInterface;
+use DouglasGreen\TaskMaster\Infrastructure\Persistence\RecurringTaskRepository;
 use InvalidArgumentException;
 use Throwable;
 
 final readonly class RecurringTaskController
 {
-    public function __construct(private RecurringTaskRepositoryInterface $repo) {}
+    public function __construct(private RecurringTaskRepository $repo) {}
 
     public function handleAjax(string $action): void
     {

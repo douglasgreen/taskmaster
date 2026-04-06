@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace DouglasGreen\TaskMaster;
 
 use DateTime;
-use DouglasGreen\TaskMaster\Domain\RecurringTask\RecurringTaskRepositoryInterface;
-use DouglasGreen\TaskMaster\Domain\Task\TaskRepositoryInterface;
-use DouglasGreen\TaskMaster\Domain\TaskGroup\TaskGroupRepositoryInterface;
+use DouglasGreen\TaskMaster\Infrastructure\Persistence\RecurringTaskRepository;
+use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskRepository;
+use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskGroupRepository;
 use InvalidArgumentException;
 
 final readonly class TaskProcessor
@@ -23,9 +23,9 @@ final readonly class TaskProcessor
     protected int $daysInCurrentMonth;
 
     public function __construct(
-        protected RecurringTaskRepositoryInterface $recurringTaskRepo,
-        protected TaskRepositoryInterface $taskRepo,
-        protected TaskGroupRepositoryInterface $groupRepo,
+        protected RecurringTaskRepository $recurringTaskRepo,
+        protected TaskRepository $taskRepo,
+        protected TaskGroupRepository $groupRepo,
     ) {
         $this->currentTime = time();
         $this->currentDate = date('Y-m-d', $this->currentTime);

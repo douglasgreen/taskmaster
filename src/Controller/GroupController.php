@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster\Controller;
 
-use DouglasGreen\TaskMaster\Domain\TaskGroup\TaskGroupRepositoryInterface;
+use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskGroupRepository;
 use InvalidArgumentException;
 use PDOException;
 use Throwable;
 
 final readonly class GroupController
 {
-    public function __construct(private TaskGroupRepositoryInterface $groupRepo) {}
+    public function __construct(private TaskGroupRepository $groupRepo) {}
 
     public function handleAjax(string $action): void
     {

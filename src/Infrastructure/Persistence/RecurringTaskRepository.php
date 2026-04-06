@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster\Infrastructure\Persistence;
 
-use DouglasGreen\TaskMaster\Domain\RecurringTask\RecurringTaskRepositoryInterface;
 use PDO;
 
-final readonly class RecurringTaskRepository implements RecurringTaskRepositoryInterface
+final readonly class RecurringTaskRepository
 {
     public function __construct(private PDO $pdo) {}
 

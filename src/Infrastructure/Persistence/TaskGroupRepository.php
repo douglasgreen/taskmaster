@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster\Infrastructure\Persistence;
 
-use DouglasGreen\TaskMaster\Domain\TaskGroup\TaskGroupRepositoryInterface;
 use PDO;
 
-final readonly class TaskGroupRepository implements TaskGroupRepositoryInterface
+final readonly class TaskGroupRepository
 {
     public function __construct(private PDO $pdo) {}
 
@@ -20,6 +19,9 @@ final readonly class TaskGroupRepository implements TaskGroupRepositoryInterface
         return $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function findById(int $id): ?array
     {
         $stmt = $this->pdo->prepare('SELECT * FROM task_groups WHERE id = ?');

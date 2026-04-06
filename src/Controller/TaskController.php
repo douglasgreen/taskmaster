@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster\Controller;
 
-use DouglasGreen\TaskMaster\Domain\Task\TaskRepositoryInterface;
-use DouglasGreen\TaskMaster\Domain\TaskGroup\TaskGroupRepositoryInterface;
+use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskRepository;
+use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskGroupRepository;
 use InvalidArgumentException;
 use Throwable;
 
 final readonly class TaskController
 {
     public function __construct(
-        private TaskRepositoryInterface $taskRepo,
-        private TaskGroupRepositoryInterface $groupRepo,
+        private TaskRepository $taskRepo,
+        private TaskGroupRepository $groupRepo,
     ) {}
 
     public function handleAjax(string $action): void
