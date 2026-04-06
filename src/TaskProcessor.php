@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace DouglasGreen\TaskMaster;
 
 use DateTime;
-use DouglasGreen\TaskMaster\Infrastructure\Persistence\RecurringTaskRepository;
-use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskRepository;
-use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskGroupRepository;
+use DouglasGreen\TaskMaster\Persistence\RecurringTaskRepository;
+use DouglasGreen\TaskMaster\Persistence\TaskRepository;
+use DouglasGreen\TaskMaster\Persistence\TaskGroupRepository;
 use InvalidArgumentException;
 
 final readonly class TaskProcessor

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster\Controller;
 
-use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskGroupRepository;
+use DouglasGreen\TaskMaster\Persistence\TaskGroupRepository;
 use InvalidArgumentException;
 use PDOException;
 use Throwable;

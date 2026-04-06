@@ -4,9 +4,9 @@
 declare(strict_types=1);
 
 use DouglasGreen\OptParser\OptParser;
-use DouglasGreen\TaskMaster\Infrastructure\Persistence\RecurringTaskRepository;
-use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskGroupRepository;
-use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskRepository;
+use DouglasGreen\TaskMaster\Persistence\RecurringTaskRepository;
+use DouglasGreen\TaskMaster\Persistence\TaskGroupRepository;
+use DouglasGreen\TaskMaster\Persistence\TaskRepository;
 use DouglasGreen\TaskMaster\TaskProcessor;
 
 ['pdo' => $pdo] = require __DIR__ . '/../bootstrap.php';

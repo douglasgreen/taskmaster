@@ -5,10 +5,10 @@ declare(strict_types=1);
 use DouglasGreen\TaskMaster\Controller\GroupController;
 use DouglasGreen\TaskMaster\Controller\RecurringTaskController;
 use DouglasGreen\TaskMaster\Controller\TaskController;
-use DouglasGreen\TaskMaster\Infrastructure\Persistence\RecurringTaskRepository;
-use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskGroupRepository;
+use DouglasGreen\TaskMaster\Persistence\RecurringTaskRepository;
+use DouglasGreen\TaskMaster\Persistence\TaskGroupRepository;
 use DouglasGreen\TaskMaster\Helper\DateHelper;
-use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskRepository;
+use DouglasGreen\TaskMaster\Persistence\TaskRepository;
 
 ['pdo' => $pdo, 'twig' => $twig] = require __DIR__ . '/../bootstrap.php';
 
@@ -24,7 +24,7 @@ $recurringTaskController = new RecurringTaskController($recurringTaskRepo);
 if (isset($_GET['ajax'])) {
     $action = $_GET['ajax'];
     $isRecurring = ($_GET['type'] ?? '') === 'recurring';
-    
+
     if ($isRecurring && in_array($action, ['add_task', 'edit_task', 'delete_task', 'get_task'], true)) {
         $recurringTaskController->handleAjax($action);
     } elseif (in_array($action, ['add_task', 'edit_task', 'delete_task', 'move_task', 'get_task'], true)) {

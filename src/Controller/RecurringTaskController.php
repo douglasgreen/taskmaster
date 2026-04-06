@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster\Controller;
 
-use DouglasGreen\TaskMaster\Infrastructure\Persistence\RecurringTaskRepository;
+use DouglasGreen\TaskMaster\Persistence\RecurringTaskRepository;
 use InvalidArgumentException;
 use Throwable;
 

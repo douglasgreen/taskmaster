@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DouglasGreen\TaskMaster\Infrastructure\Persistence;
+namespace DouglasGreen\TaskMaster\Persistence;
 
 use PDO;
 
