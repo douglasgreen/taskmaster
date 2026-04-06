@@ -11,7 +11,6 @@ final readonly class RecurringTaskRepository implements RecurringTaskRepositoryI
 {
     public function __construct(private PDO $pdo) {}
 
-    /** @return array<string, mixed>|null */
     /**
      * @return array<string, mixed>|null
      */
@@ -23,7 +22,7 @@ final readonly class RecurringTaskRepository implements RecurringTaskRepositoryI
     }
 
     /**
-     * @return list<array<string, mixed>>
+     * @return array<array<string, mixed>>
      */
     public function findAll(): array
     {
@@ -31,9 +30,8 @@ final readonly class RecurringTaskRepository implements RecurringTaskRepositoryI
         return $stmt ? $stmt->fetchAll(PDO::FETCH_ASSOC) : [];
     }
 
-    /** @return list<array<string, mixed>> */
     /**
-     * @return list<array<string, mixed>>
+     * @return array<array<string, mixed>>
      */
     public function search(string $term): array
     {

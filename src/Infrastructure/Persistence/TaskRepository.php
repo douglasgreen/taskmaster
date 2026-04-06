@@ -22,7 +22,7 @@ final readonly class TaskRepository implements TaskRepositoryInterface
     }
 
     /**
-     * @return list<array<string, mixed>>
+     * @return array<array<string, mixed>>
      */
     public function findByGroupId(int $groupId): array
     {
@@ -31,6 +31,9 @@ final readonly class TaskRepository implements TaskRepositoryInterface
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
 
+    /**
+     * @return array<array<string, mixed>>
+     */
     public function search(string $term): array
     {
         $searchTerm = '%' . $term . '%';

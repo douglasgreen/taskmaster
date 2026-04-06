@@ -43,6 +43,7 @@ final readonly class TaskProcessor
                 'task' => $this->mapToTask($row),
             ];
         }
+
         $reminderSent = false;
         $updatedLastReminded = [];
 

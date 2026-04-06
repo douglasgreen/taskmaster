@@ -12,7 +12,7 @@ final readonly class TaskGroupRepository implements TaskGroupRepositoryInterface
     public function __construct(private PDO $pdo) {}
 
     /**
-     * @return list<array<string, mixed>>
+     * @return array<array<string, mixed>>
      */
     public function findAll(): array
     {
