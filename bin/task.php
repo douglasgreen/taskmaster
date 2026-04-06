@@ -9,6 +9,8 @@ use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskGroupRepository;
 use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskRepository;
 use DouglasGreen\TaskMaster\TaskProcessor;
 
+['pdo' => $pdo] = require __DIR__ . '/../bootstrap.php';
+
 $optParser = new OptParser('Task Manager', 'Command-line version of task manager');
 $optParser
     ->addCommand(['process'], 'Process recurring tasks and insert into task list')
@@ -30,8 +32,6 @@ $optParser->addUsage('process', []);
 
 $input = $optParser->parse();
 $command = $input->getCommand();
-
-['pdo' => $pdo] = require __DIR__ . '/../bootstrap.php';
 
 $recurringTaskRepo = new RecurringTaskRepository($pdo);
 $taskRepo = new TaskRepository($pdo);
