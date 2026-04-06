@@ -8,6 +8,7 @@ use DouglasGreen\TaskMaster\Infrastructure\Persistence\RecurringTaskRepository;
 use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskGroupRepository;
 use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskRepository;
 use DouglasGreen\TaskMaster\TaskProcessor;
+use InvalidArgumentException;
 
 $optParser = new OptParser('Task Manager', 'Command-line version of task manager');
 $optParser
@@ -37,12 +38,12 @@ $recurringTaskRepo = new RecurringTaskRepository($pdo);
 $taskRepo = new TaskRepository($pdo);
 $groupRepo = new TaskGroupRepository($pdo);
 
-switch ($command) {
-    case 'process':
+match ($command) {
+    'process' => (function () use ($recurringTaskRepo, $taskRepo, $groupRepo): void {
         $taskProcessor = new TaskProcessor($recurringTaskRepo, $taskRepo, $groupRepo);
         $taskProcessor->processTasks();
-        break;
-    case 'add':
+    })(),
+    'add' => (function () use ($recurringTaskRepo, $input): void {
         $recurringTaskRepo->insert(
             (string) $input->get('name'),
             (string) $input->get('url'),
@@ -54,8 +55,8 @@ switch ($command) {
             (string) $input->get('time') ?: null,
         );
         echo "Task added successfully.\n";
-        break;
-    case 'search':
+    })(),
+    'search' => (function () use ($recurringTaskRepo, $input): void {
         $term = (string) $input->get('term');
         $rows = $recurringTaskRepo->search($term);
         foreach ($rows as $row) {
@@ -86,5 +87,6 @@ switch ($command) {
             }
             echo '---------------------------------------' . PHP_EOL;
         }
-        break;
-}
+    })(),
+    default => throw new InvalidArgumentException('Unknown command: ' . $command),
+};

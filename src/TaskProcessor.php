@@ -7,7 +7,7 @@ namespace DouglasGreen\TaskMaster;
 use DouglasGreen\TaskMaster\Domain\RecurringTask\RecurringTaskRepositoryInterface;
 use DouglasGreen\TaskMaster\Domain\Task\TaskRepositoryInterface;
 use DouglasGreen\TaskMaster\Domain\TaskGroup\TaskGroupRepositoryInterface;
-use Exception;
+use InvalidArgumentException;
 
 final readonly class TaskProcessor
 {
@@ -36,10 +36,18 @@ final readonly class TaskProcessor
     public function processTasks(): void
     {
         $rows = $this->recurringTaskRepo->findAll();
-        $tasks = array_map($this->mapToTask(...), $rows);
+        $tasks = [];
+        foreach ($rows as $row) {
+            $tasks[] = [
+                'id' => (int) $row['id'],
+                'task' => $this->mapToTask($row),
+            ];
+        }
         $reminderSent = false;
+        $updatedLastReminded = [];
 
-        foreach ($tasks as $task) {
+        foreach ($tasks as $item) {
+            $task = $item['task'];
             if (! $this->shouldSendReminder($task)) {
                 continue;
             }
@@ -54,18 +62,19 @@ final readonly class TaskProcessor
                 if ($scheduledTime < $this->currentTime && $task->lastTimeReminded < $scheduledTime) {
                     $this->storeReminder($task->taskName, $task->taskUrl, $frequency);
                     $reminderSent = true;
-                    $task->lastTimeReminded = $this->currentTime;
+                    $updatedLastReminded[$item['id']] = $this->currentTime;
                     break;
                 }
             }
         }
 
         if ($reminderSent) {
-            foreach ($tasks as $task) {
-                $lastRemindedAt = $task->lastTimeReminded > 0
-                    ? date('Y-m-d H:i:s', $task->lastTimeReminded)
+            foreach ($tasks as $item) {
+                $id = $item['id'];
+                $lastRemindedAt = isset($updatedLastReminded[$id])
+                    ? date('Y-m-d H:i:s', $updatedLastReminded[$id])
                     : null;
-                $this->recurringTaskRepo->updateLastRemindedAt((int) $task->dbId, $lastRemindedAt);
+                $this->recurringTaskRepo->updateLastRemindedAt($id, $lastRemindedAt);
             }
         }
     }
@@ -130,7 +139,7 @@ final readonly class TaskProcessor
                     } elseif ($rangeValues[0] === $rangeValues[1]) {
                         $value = $rangeValues[0];
                     } else {
-                        throw new Exception('Invalid range: ' . $value);
+                        throw new InvalidArgumentException('Invalid range: ' . $value);
                     }
                 }
             } else {
@@ -147,7 +156,7 @@ final readonly class TaskProcessor
     protected static function checkValue(string $value, string $regex): void
     {
         if (! preg_match($regex, $value)) {
-            throw new Exception(sprintf('Value "%s" doesn\'t match regex "%s"', $value, $regex));
+            throw new InvalidArgumentException(sprintf('Value "%s" doesn\'t match regex "%s"', $value, $regex));
         }
     }
 
@@ -187,23 +196,26 @@ final readonly class TaskProcessor
         if ($row['last_reminded_at'] !== null) {
             $lastTimeReminded = strtotime($row['last_reminded_at']);
             if ($lastTimeReminded === false) {
-                throw new Exception('Bad last reminded at: ' . $row['last_reminded_at']);
+                throw new InvalidArgumentException('Bad last reminded at: ' . $row['last_reminded_at']);
             }
         }
 
-        $task = new Task(
-            $row['title'],
-            $row['details'] ?? '',
-            $row['recur_start'],
-            $row['recur_end'],
+        $taskName = trim((string) preg_replace('/\s+/', ' ', $row['title'] ?? ''));
+        $taskUrl = trim($row['details'] ?? '');
+        $recurStart = ($row['recur_start'] ?? '') === '' ? null : $row['recur_start'];
+        $recurEnd = ($row['recur_end'] ?? '') === '' ? null : $row['recur_end'];
+
+        return new Task(
+            $taskName,
+            $taskUrl,
+            $recurStart,
+            $recurEnd,
             $daysOfYear,
             $daysOfMonth,
             $daysOfWeek,
             $timesOfDay,
             $lastTimeReminded,
         );
-        $task->dbId = (int) $row['id'];
-        return $task;
     }
 
     /**

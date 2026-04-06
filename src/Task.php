@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster;
 
-use Exception;
+use InvalidArgumentException;
 
 /**
  * Represents a task with various attributes.
  */
-class Task
+readonly class Task
 {
     /** @var array<int, string> */
     protected const DAYS_OF_WEEK_NAMES = [
@@ -21,9 +21,6 @@ class Task
         6 => 'Saturday',
         7 => 'Sunday',
     ];
-
-    /** Database ID for this task (set when loaded from database) */
-    public ?int $dbId = null;
 
     /**
      * @param array<int, string> $daysOfYear
@@ -42,30 +39,16 @@ class Task
         public array $timesOfDay,
         public int $lastTimeReminded,
     ) {
-        $this->taskName = trim((string) preg_replace('/\s+/', ' ', $this->taskName));
-
-        $this->taskUrl = trim($this->taskUrl);
-
-        if ($this->recurStart === '') {
-            $this->recurStart = null;
-        }
-
-        if ($this->recurEnd === '') {
-            $this->recurEnd = null;
-        }
-
-        $this->checkRecurDates();
+        $this->validateRecurDates();
 
         $dayTypeCount = $this->getDayTypeCount();
         if ($dayTypeCount > 1) {
             $this->error('Only one type of day should be specified');
         }
 
-        // If there is a time, then there must be a date so use today.
         $hasDayType = $dayTypeCount !== 0;
-        if ($this->timesOfDay && ! $hasDayType) {
-            $this->daysOfYear = [date('Y-m-d')];
-            $hasDayType = true;
+        if ($this->timesOfDay !== [] && ! $hasDayType) {
+            $this->error('Recurring tasks with time must specify a day');
         }
 
         if (! $hasDayType) {
@@ -136,7 +119,7 @@ class Task
         return $names;
     }
 
-    protected function checkRecurDates(): void
+    protected function validateRecurDates(): void
     {
         if (
             $this->recurStart !== null &&
@@ -162,12 +145,11 @@ class Task
     }
 
     /**
-     * @throws Exception
+     * @throws InvalidArgumentException
      */
     protected function error(string $message): void
     {
-        $fullMessage = $this->taskName . ': ' . $message;
-        throw new Exception($fullMessage);
+        throw new InvalidArgumentException($this->taskName . ': ' . $message);
     }
 
     protected function getDayTypeCount(): int
