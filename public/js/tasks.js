@@ -29,7 +29,6 @@ function showLoading() {
 function hideLoading() {
     document.getElementById('loadingSpinner').classList.remove('show');
 }
-const mobileMenuToggle = document.getElementById('mobileMenuToggle');
 const leftPanel = document.getElementById('leftPanel');
 const sidebarOverlay = document.getElementById('sidebarOverlay');
 function toggleSidebar() {
@@ -37,14 +36,11 @@ function toggleSidebar() {
     if (isOpen) {
         leftPanel.classList.remove('show');
         sidebarOverlay.classList.remove('show');
-        mobileMenuToggle.setAttribute('aria-expanded', 'false');
     } else {
         leftPanel.classList.add('show');
         sidebarOverlay.classList.add('show');
-        mobileMenuToggle.setAttribute('aria-expanded', 'true');
     }
 }
-mobileMenuToggle.addEventListener('click', toggleSidebar);
 sidebarOverlay.addEventListener('click', toggleSidebar);
 document.querySelectorAll('.list-group-item-action').forEach((link) => {
     link.addEventListener('click', () => {
