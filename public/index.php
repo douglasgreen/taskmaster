@@ -23,12 +23,14 @@ $recurringTaskController = new RecurringTaskController($recurringTaskRepo);
 // Handle AJAX requests
 if (isset($_GET['ajax'])) {
     $action = $_GET['ajax'];
-    if (in_array($action, ['add_task', 'edit_task', 'delete_task', 'move_task', 'get_task'], true)) {
+    $isRecurring = ($_GET['type'] ?? '') === 'recurring';
+    
+    if ($isRecurring && in_array($action, ['add_task', 'edit_task', 'delete_task', 'get_task'], true)) {
+        $recurringTaskController->handleAjax($action);
+    } elseif (in_array($action, ['add_task', 'edit_task', 'delete_task', 'move_task', 'get_task'], true)) {
         $taskController->handleAjax($action);
     } elseif ($action === 'rename_group') {
         $groupController->handleAjax($action);
-    } elseif (in_array($action, ['add_task', 'edit_task', 'delete_task', 'get_task'], true)) {
-        $recurringTaskController->handleAjax($action);
     } else {
         header('Content-Type: application/json');
         http_response_code(400);
