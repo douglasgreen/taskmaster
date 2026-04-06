@@ -6,13 +6,19 @@ namespace DouglasGreen\TaskMaster\Domain\RecurringTask;
 
 interface RecurringTaskRepositoryInterface
 {
-    /** @return array<string, mixed>|null */
+    /**
+     * @return array<string, mixed>|null
+     */
     public function findById(int $id): ?array;
 
-    /** @return list<array<string, mixed>> */
+    /**
+     * @return list<array<string, mixed>>
+     */
     public function findAll(): array;
 
-    /** @return list<array<string, mixed>> */
+    /**
+     * @return list<array<string, mixed>>
+     */
     public function search(string $term): array;
 
     public function insert(

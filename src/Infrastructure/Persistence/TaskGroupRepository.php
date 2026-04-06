@@ -11,7 +11,9 @@ final readonly class TaskGroupRepository implements TaskGroupRepositoryInterface
 {
     public function __construct(private PDO $pdo) {}
 
-    /** @return list<array<string, mixed>> */
+    /**
+     * @return list<array<string, mixed>>
+     */
     public function findAll(): array
     {
         $stmt = $this->pdo->query('SELECT * FROM task_groups ORDER BY name');
@@ -25,7 +27,9 @@ final readonly class TaskGroupRepository implements TaskGroupRepositoryInterface
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     }
 
-    /** @return array<string, mixed>|null */
+    /**
+     * @return array<string, mixed>|null
+     */
     public function findByName(string $name): ?array
     {
         $stmt = $this->pdo->prepare('SELECT * FROM task_groups WHERE name = ?');

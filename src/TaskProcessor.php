@@ -173,7 +173,9 @@ final readonly class TaskProcessor
         $this->taskRepo->insert($groupId, $title, $details, $today);
     }
 
-    /** @param array<string, mixed> $row */
+    /**
+     * @param array<string, mixed> $row
+     */
     protected function mapToTask(array $row): Task
     {
         $daysOfYear = self::splitField($row['days_of_year'] ?? '', '/^(\d\d\d\d-)?\d\d-\d\d$/');

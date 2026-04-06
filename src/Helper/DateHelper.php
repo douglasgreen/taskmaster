@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace DouglasGreen\TaskMaster\Helper;
 
+use DateTime;
+
 final class DateHelper
 {
     public static function formatDueDate(?string $dueDateStr): string
@@ -11,9 +13,11 @@ final class DateHelper
         if (empty($dueDateStr) || $dueDateStr === '0000-00-00') {
             return '';
         }
-        $due = new \DateTime($dueDateStr);
-        $now = new \DateTime();
+
+        $due = new DateTime($dueDateStr);
+        $now = new DateTime();
         $now->setTime(0, 0, 0);
+
         $due->setTime(0, 0, 0);
         $interval = $now->diff($due);
         $daysFromNow = (int) ($interval->invert ? -$interval->days : $interval->days);
@@ -21,15 +25,19 @@ final class DateHelper
         if ($absDays > 99) {
             return $dueDateStr;
         }
+
         if ($daysFromNow < 0) {
             return $absDays === 1 ? 'yesterday' : $absDays . ' days ago';
         }
+
         if ($daysFromNow === 0) {
             return 'today';
         }
+
         if ($daysFromNow === 1) {
             return 'tomorrow';
         }
+
         return 'in ' . $daysFromNow . ' days';
     }
 
@@ -38,8 +46,9 @@ final class DateHelper
         if (empty($dueDateStr) || $dueDateStr === '0000-00-00') {
             return false;
         }
-        $due = new \DateTime($dueDateStr);
-        $now = new \DateTime();
+
+        $due = new DateTime($dueDateStr);
+        $now = new DateTime();
         $due->setTime(0, 0, 0);
         $now->setTime(0, 0, 0);
         return $due <= $now;
