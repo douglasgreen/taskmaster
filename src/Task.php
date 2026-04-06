@@ -48,12 +48,8 @@ readonly class Task
         }
 
         $hasDayType = $dayTypeCount !== 0;
-        if ($this->timesOfDay !== [] && ! $hasDayType) {
-            $this->error('Recurring tasks with time must specify a day');
-        }
-
-        if (! $hasDayType) {
-            $this->error('Recurring tasks must specify a day');
+        if (! $hasDayType && $this->timesOfDay === []) {
+            $this->error('Recurring tasks must specify a day or time');
         }
     }
 
