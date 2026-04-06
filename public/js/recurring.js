@@ -46,7 +46,7 @@ document.addEventListener('click', (e) => {
     if (btn) {
         const id = btn.dataset.taskId;
         showLoading();
-        fetch(`?ajax=get_task&task_id=${id}`)
+        fetch(`?ajax=get_task&task_id=${id}&type=recurring`)
             .then((r) => r.json())
             .then((data) => {
                 hideLoading();
@@ -101,7 +101,7 @@ form.addEventListener('submit', (e) => {
     const id = document.getElementById('taskId').value;
     const action = id ? 'edit_task' : 'add_task';
     showLoading();
-    fetch(`?ajax=${action}`, { method: 'POST', body: formData })
+    fetch(`?ajax=${action}&type=recurring`, { method: 'POST', body: formData })
         .then((r) => r.json())
         .then((data) => {
             hideLoading();
@@ -134,7 +134,7 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', () => {
     const fd = new FormData();
     fd.append('task_id', deleteId);
     showLoading();
-    fetch('?ajax=delete_task', { method: 'POST', body: fd })
+    fetch('?ajax=delete_task&type=recurring', { method: 'POST', body: fd })
         .then((r) => r.json())
         .then((data) => {
             hideLoading();
