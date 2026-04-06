@@ -8,7 +8,6 @@ use DouglasGreen\TaskMaster\Infrastructure\Persistence\RecurringTaskRepository;
 use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskGroupRepository;
 use DouglasGreen\TaskMaster\Infrastructure\Persistence\TaskRepository;
 use DouglasGreen\TaskMaster\TaskProcessor;
-use InvalidArgumentException;
 
 $optParser = new OptParser('Task Manager', 'Command-line version of task manager');
 $optParser
