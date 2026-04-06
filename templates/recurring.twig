@@ -65,7 +65,7 @@
                                     {% if task.details is not empty and task.details matches '~^https?:\/\/~' %}
                                         <a href="{{ task.details }}" target="_blank">Link <i class="bi bi-box-arrow-up-right small"></i></a>
                                     {% else %}
-                                        {{ task.details|truncate(50) }}
+                                        {{ task.details|u.truncate(50) }}
                                     {% endif %}
                                 </td>
                                 <td>{{ task.schedule }}</td>
