@@ -290,9 +290,6 @@ final readonly class TaskProcessor
             }
 
             $datetimes = self::addTimes($dates, $task->timesOfDay);
-        } elseif ($task->timesOfDay !== []) {
-            $frequency = Frequency::Daily;
-            $datetimes = self::addTimes([$this->currentDate], $task->timesOfDay);
         }
 
         return ['frequency' => $frequency, 'datetimes' => $datetimes];
