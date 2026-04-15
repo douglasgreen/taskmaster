@@ -13,6 +13,25 @@ const showLoading = () =>
     document.getElementById('loadingSpinner').classList.add('show');
 const hideLoading = () =>
     document.getElementById('loadingSpinner').classList.remove('show');
+const leftPanel = document.getElementById('leftPanel');
+const sidebarOverlay = document.getElementById('sidebarOverlay');
+function toggleSidebar() {
+    const isOpen = leftPanel.classList.contains('show');
+    if (isOpen) {
+        leftPanel.classList.remove('show');
+        sidebarOverlay.classList.remove('show');
+    } else {
+        leftPanel.classList.add('show');
+        sidebarOverlay.classList.add('show');
+    }
+}
+if (sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', toggleSidebar);
+}
+const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+if (mobileMenuToggle) {
+    mobileMenuToggle.addEventListener('click', toggleSidebar);
+}
 const taskModal = new bootstrap.Modal(document.getElementById('taskModal'));
 const form = document.getElementById('taskForm');
 const freqRadios = document.getElementsByName('frequency_type');

@@ -15,7 +15,12 @@
         <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"><span class="visually-hidden">Loading...</span></div>
     </div>
     <header class="header" role="banner">
-        <h1>{% block header_title %}Task Manager{% endblock %}</h1>
+        <div class="d-flex align-items-center gap-3">
+            <button class="mobile-menu-toggle d-lg-none" id="mobileMenuToggle" aria-label="Toggle menu">
+                <i class="bi bi-list"></i>
+            </button>
+            <h1>{% block header_title %}Task Manager{% endblock %}</h1>
+        </div>
         {% block header_extra %}{% endblock %}
     </header>
     <div class="toast-container" aria-live="polite" aria-atomic="true" id="toastContainer"></div>

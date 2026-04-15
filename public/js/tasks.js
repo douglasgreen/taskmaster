@@ -42,6 +42,10 @@ function toggleSidebar() {
     }
 }
 sidebarOverlay.addEventListener('click', toggleSidebar);
+const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+if (mobileMenuToggle) {
+    mobileMenuToggle.addEventListener('click', toggleSidebar);
+}
 document.querySelectorAll('.list-group-item-action').forEach((link) => {
     link.addEventListener('click', () => {
         if (window.innerWidth < 992) {
