@@ -206,6 +206,8 @@
             {% endfor %}
         {% endif %}
     {% endif %}
+
+    <button class="btn btn-gradient btn-add-task" id="addTaskBtn" aria-label="Add new task" title="Add new task (Press 'n')"><i class="bi bi-plus-lg"></i></button>
 {% endblock %}
 
 {% block header_extra %}
@@ -266,7 +268,20 @@
                 <form id="taskForm">
                     <div class="modal-body">
                         <input type="hidden" id="taskId" name="task_id">
-                        <input type="hidden" id="taskGroupId" name="group_id" value="{{ selected_group ?? '' }}">
+                        <div class="mb-3">
+                            <label for="taskGroupId" class="form-label">Task Group <span class="text-danger">*</span></label>
+                            <select class="form-select" id="taskGroupId" name="group_id" required>
+                                {% if groups is empty %}
+                                    <option value="" disabled selected>No groups available. Please create one first.</option>
+                                {% else %}
+                                    {% for group in groups %}
+                                        <option value="{{ group.id }}" {% if group.id == selected_group %}selected{% endif %}>
+                                            {{ group.name }}
+                                        </option>
+                                    {% endfor %}
+                                {% endif %}
+                            </select>
+                        </div>
                         <div class="mb-3">
                             <label for="taskTitle" class="form-label">Task Title <span class="text-danger">*</span></label>
                             <input type="text" class="form-control" id="taskTitle" name="title" required aria-required="true" autofocus>
