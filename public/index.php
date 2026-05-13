@@ -48,6 +48,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_group'])) {
     }
 }
 
+// Set an expiration date in the past
+header("Expires: Tue, 01 Jan 2000 00:00:00 GMT");
+
+// Standard headers for most modern browsers (HTTP/1.1)
+header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+header("Cache-Control: post-check=0, pre-check=0", false);
+
+// Legacy support for older browsers (HTTP/1.0)
+header("Pragma: no-cache");
+
+// Record the current time as the last modification
+header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+
 // Simple Front Controller Routing
 $page = $_GET['page'] ?? 'tasks';
 
