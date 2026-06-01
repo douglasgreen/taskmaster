@@ -65,7 +65,7 @@
                                     {% if task.details|u.filter_url %}
                                         <a href="{{ task.details }}" target="_blank">Link <i class="bi bi-box-arrow-up-right small"></i></a>
                                     {% else %}
-                                        {{ task.details|u.truncate(50) }}
+                                        {{ task.details|u.truncate(250) }}
                                     {% endif %}
                                 </td>
                                 <td>{{ task.schedule }}</td>
