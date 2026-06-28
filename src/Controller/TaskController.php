@@ -57,13 +57,19 @@ final readonly class TaskController
         $title = trim((string) ($_POST['title'] ?? ''));
         $details = trim((string) ($_POST['details'] ?? ''));
         $due_date = empty($_POST['due_date']) ? null : $_POST['due_date'];
+        $group_id = isset($_POST['group_id']) ? (int) $_POST['group_id'] : null;
 
         if ($title === '') {
             throw new InvalidArgumentException('Task title is required');
         }
 
-        $this->taskRepo->update($task_id, $title, $details, $due_date);
-        echo json_encode(['success' => true, 'message' => 'Task updated successfully']);
+        $old_group_id = $this->taskRepo->update($task_id, $title, $details, $due_date, $group_id);
+        if ($old_group_id !== null) {
+            $old_group_empty = $this->groupRepo->deleteIfEmpty($old_group_id);
+            echo json_encode(['success' => true, 'old_group_empty' => $old_group_empty, 'message' => 'Task updated successfully']);
+        } else {
+            echo json_encode(['success' => true, 'message' => 'Task updated successfully']);
+        }
     }
 
     private function deleteTask(): void

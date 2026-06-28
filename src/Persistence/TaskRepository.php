@@ -54,10 +54,23 @@ final readonly class TaskRepository
         return (int) $this->pdo->lastInsertId();
     }
 
-    public function update(int $id, string $title, string $details, ?string $dueDate): void
+    public function update(int $id, string $title, string $details, ?string $dueDate, ?int $groupId = null): ?int
     {
+        if ($groupId !== null) {
+            $stmt = $this->pdo->prepare('SELECT group_id FROM tasks WHERE id = ?');
+            $stmt->execute([$id]);
+            $oldGroupId = $stmt->fetchColumn();
+            if ($oldGroupId === false) {
+                return null;
+            }
+            if ($oldGroupId != $groupId) {
+                $this->pdo->prepare('UPDATE tasks SET group_id = ? WHERE id = ?')->execute([$groupId, $id]);
+                return (int) $oldGroupId;
+            }
+        }
         $stmt = $this->pdo->prepare('UPDATE tasks SET title = ?, details = ?, due_date = ? WHERE id = ?');
         $stmt->execute([$title, $details, $dueDate, $id]);
+        return null;
     }
 
     public function delete(int $id): ?int
