@@ -63,11 +63,13 @@ final readonly class TaskRepository
             if ($oldGroupId === false) {
                 return null;
             }
+
             if ($oldGroupId != $groupId) {
                 $this->pdo->prepare('UPDATE tasks SET group_id = ? WHERE id = ?')->execute([$groupId, $id]);
                 return (int) $oldGroupId;
             }
         }
+
         $stmt = $this->pdo->prepare('UPDATE tasks SET title = ?, details = ?, due_date = ? WHERE id = ?');
         $stmt->execute([$title, $details, $dueDate, $id]);
         return null;
