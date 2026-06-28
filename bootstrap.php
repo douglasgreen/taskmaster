@@ -55,11 +55,11 @@ $twig->addFilter(new \Twig\TwigFilter('format_details', function ($details) {
         $parsed = parse_url($url);
         $domain = $parsed['host'] ?? '';
         if ($domain) {
-            $link_html = '<a target="_blank" href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($domain, ENT_QUOTES, 'UTF-8') . '</a>';
+            $linkHtml = '<a target="_blank" href="' . htmlspecialchars($url, ENT_QUOTES, 'UTF-8') . '">' . htmlspecialchars($domain, ENT_QUOTES, 'UTF-8') . '</a>';
         } else {
-            $link_html = htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
+            $linkHtml = htmlspecialchars($url, ENT_QUOTES, 'UTF-8');
         }
-        $escaped = str_replace($ph, $link_html, $escaped);
+        $escaped = str_replace($ph, $linkHtml, $escaped);
     }
     return $escaped;
 }));

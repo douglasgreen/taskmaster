@@ -45,14 +45,14 @@ final readonly class GroupController
 
     private function renameGroup(): void
     {
-        $group_id = (int) ($_POST['group_id'] ?? 0);
+        $groupId = (int) ($_POST['group_id'] ?? 0);
         $name = trim((string) ($_POST['name'] ?? ''));
 
         if ($name === '') {
             throw new InvalidArgumentException('Group name is required');
         }
 
-        $this->groupRepo->updateName($group_id, $name);
+        $this->groupRepo->updateName($groupId, $name);
         echo json_encode(['success' => true, 'message' => 'Group renamed successfully']);
     }
 }

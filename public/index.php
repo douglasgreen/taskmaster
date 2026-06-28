@@ -10,7 +10,7 @@ use DouglasGreen\TaskMaster\Persistence\TaskGroupRepository;
 use DouglasGreen\TaskMaster\Helper\DateHelper;
 use DouglasGreen\TaskMaster\Persistence\TaskRepository;
 
-['pdo' => $pdo, 'twig' => $twig] = require __DIR__ . '/../bootstrap.php';
+['pdo' => $pdo, 'twig' => $twig] = require_once __DIR__ . '/../bootstrap.php';
 
 $taskRepo = new TaskRepository($pdo);
 $groupRepo = new TaskGroupRepository($pdo);
@@ -41,9 +41,9 @@ if (isset($_GET['ajax'])) {
 
 // Handle traditional POST requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_group'])) {
-    $new_group_id = $groupController->handleAddGroup();
-    if ($new_group_id !== null) {
-        header(sprintf('Location: ?group=%s&msg=group_added', $new_group_id));
+    $newGroupId = $groupController->handleAddGroup();
+    if ($newGroupId !== null) {
+        header(sprintf('Location: ?group=%s&msg=group_added', $newGroupId));
         exit;
     }
 }
@@ -66,11 +66,11 @@ $page = $_GET['page'] ?? 'tasks';
 
 match ($page) {
     'recurring' => (function () use ($twig, $recurringTaskRepo) {
-        $search_query = $_GET['search'] ?? '';
-        $is_searching = !empty($search_query);
+        $searchQuery = $_GET['search'] ?? '';
+        $isSearching = !empty($searchQuery);
 
-        if ($is_searching) {
-            $rows = $recurringTaskRepo->search($search_query);
+        if ($isSearching) {
+            $rows = $recurringTaskRepo->search($searchQuery);
         } else {
             $rows = $recurringTaskRepo->findAll();
         }
@@ -107,23 +107,23 @@ match ($page) {
         }
 
         echo $twig->render('recurring.twig', [
-            'search_query' => $search_query,
-            'is_searching' => $is_searching,
+            'search_query' => $searchQuery,
+            'is_searching' => $isSearching,
             'view_tasks' => $viewTasks,
         ]);
     })(),
     default => (function () use ($twig, $taskRepo, $groupRepo) {
-        $selected_group = $_GET['group'] ?? null;
-        $search_query = $_GET['search'] ?? '';
+        $selectedGroup = $_GET['group'] ?? null;
+        $searchQuery = $_GET['search'] ?? '';
         $message = '';
 
         if (isset($_GET['msg']) && $_GET['msg'] === 'group_added') {
             $message = 'Group added successfully.';
         }
 
-        if ($selected_group) {
-            $group = $groupRepo->findById((int) $selected_group);
-            if (!$group) { $selected_group = null; }
+        if ($selectedGroup) {
+            $group = $groupRepo->findById((int) $selectedGroup);
+            if (!$group) { $selectedGroup = null; }
         }
 
         $rawGroups = $groupRepo->findAll();
@@ -134,38 +134,38 @@ match ($page) {
         }
 
         $tasks = [];
-        $search_results_by_group = [];
-        $is_searching = !empty($search_query);
+        $searchResultsByGroup = [];
+        $isSearching = !empty($searchQuery);
 
-        if ($is_searching) {
-            $all_results = $taskRepo->search($search_query);
-            foreach ($all_results as $result) {
-                if (!isset($search_results_by_group[$result['group_id']])) {
-                    $search_results_by_group[$result['group_id']] = [
+        if ($isSearching) {
+            $allResults = $taskRepo->search($searchQuery);
+            foreach ($allResults as $result) {
+                if (!isset($searchResultsByGroup[$result['group_id']])) {
+                    $searchResultsByGroup[$result['group_id']] = [
                         'group_name' => $result['group_name'],
                         'tasks' => []
                     ];
                 }
-                $search_results_by_group[$result['group_id']]['tasks'][] = $result;
+                $searchResultsByGroup[$result['group_id']]['tasks'][] = $result;
             }
-        } elseif ($selected_group) {
-            $tasks = $taskRepo->findByGroupId((int) $selected_group);
+        } elseif ($selectedGroup) {
+            $tasks = $taskRepo->findByGroupId((int) $selectedGroup);
         }
 
-        $selected_group_name = '';
-        if ($selected_group) {
-            $group = $groupRepo->findById((int) $selected_group);
-            $selected_group_name = $group['name'] ?? '';
+        $selectedGroupName = '';
+        if ($selectedGroup) {
+            $group = $groupRepo->findById((int) $selectedGroup);
+            $selectedGroupName = $group['name'] ?? '';
         }
 
         $context = [
             'groups' => $groups,
-            'selected_group' => $selected_group,
-            'selected_group_name' => $selected_group_name,
+            'selected_group' => $selectedGroup,
+            'selected_group_name' => $selectedGroupName,
             'tasks' => $tasks,
-            'is_searching' => $is_searching,
-            'search_query' => $search_query,
-            'search_results_by_group' => $search_results_by_group,
+            'is_searching' => $isSearching,
+            'search_query' => $searchQuery,
+            'search_results_by_group' => $searchResultsByGroup,
             'message' => $message,
         ];
 
