@@ -38,35 +38,35 @@ final readonly class TaskController
 
     private function addTask(): void
     {
-        $group_id = (int) ($_POST['group_id'] ?? 0);
+        $groupId = (int) ($_POST['group_id'] ?? 0);
         $title = trim((string) ($_POST['title'] ?? ''));
         $details = trim((string) ($_POST['details'] ?? ''));
-        $due_date = empty($_POST['due_date']) ? null : $_POST['due_date'];
+        $dueDate = empty($_POST['due_date']) ? null : $_POST['due_date'];
 
         if ($title === '') {
             throw new InvalidArgumentException('Task title is required');
         }
 
-        $task_id = $this->taskRepo->insert($group_id, $title, $details, $due_date);
-        echo json_encode(['success' => true, 'task_id' => $task_id, 'message' => 'Task added successfully']);
+        $taskId = $this->taskRepo->insert($groupId, $title, $details, $dueDate);
+        echo json_encode(['success' => true, 'task_id' => $taskId, 'message' => 'Task added successfully']);
     }
 
     private function editTask(): void
     {
-        $task_id = (int) ($_POST['task_id'] ?? 0);
+        $taskId = (int) ($_POST['task_id'] ?? 0);
         $title = trim((string) ($_POST['title'] ?? ''));
         $details = trim((string) ($_POST['details'] ?? ''));
-        $due_date = empty($_POST['due_date']) ? null : $_POST['due_date'];
-        $group_id = isset($_POST['group_id']) ? (int) $_POST['group_id'] : null;
+        $dueDate = empty($_POST['due_date']) ? null : $_POST['due_date'];
+        $groupId = isset($_POST['group_id']) ? (int) $_POST['group_id'] : null;
 
         if ($title === '') {
             throw new InvalidArgumentException('Task title is required');
         }
 
-        $old_group_id = $this->taskRepo->update($task_id, $title, $details, $due_date, $group_id);
-        if ($old_group_id !== null) {
-            $old_group_empty = $this->groupRepo->deleteIfEmpty($old_group_id);
-            echo json_encode(['success' => true, 'old_group_empty' => $old_group_empty, 'message' => 'Task updated successfully']);
+        $oldGroupId = $this->taskRepo->update($taskId, $title, $details, $dueDate, $groupId);
+        if ($oldGroupId !== null) {
+            $oldGroupEmpty = $this->groupRepo->deleteIfEmpty($oldGroupId);
+            echo json_encode(['success' => true, 'old_group_empty' => $oldGroupEmpty, 'message' => 'Task updated successfully']);
         } else {
             echo json_encode(['success' => true, 'message' => 'Task updated successfully']);
         }
@@ -74,35 +74,35 @@ final readonly class TaskController
 
     private function deleteTask(): void
     {
-        $task_id = (int) ($_POST['task_id'] ?? 0);
-        $group_id = $this->taskRepo->delete($task_id);
+        $taskId = (int) ($_POST['task_id'] ?? 0);
+        $groupId = $this->taskRepo->delete($taskId);
 
-        if ($group_id === null) {
+        if ($groupId === null) {
             throw new InvalidArgumentException('Task not found');
         }
 
-        $group_empty = $this->groupRepo->deleteIfEmpty($group_id);
-        echo json_encode(['success' => true, 'group_empty' => $group_empty, 'message' => 'Task deleted successfully']);
+        $groupEmpty = $this->groupRepo->deleteIfEmpty($groupId);
+        echo json_encode(['success' => true, 'group_empty' => $groupEmpty, 'message' => 'Task deleted successfully']);
     }
 
     private function moveTask(): void
     {
-        $task_id = (int) ($_POST['task_id'] ?? 0);
-        $new_group_id = (int) ($_POST['new_group_id'] ?? 0);
+        $taskId = (int) ($_POST['task_id'] ?? 0);
+        $newGroupId = (int) ($_POST['new_group_id'] ?? 0);
 
-        $old_group_id = $this->taskRepo->move($task_id, $new_group_id);
-        if ($old_group_id === null) {
+        $oldGroupId = $this->taskRepo->move($taskId, $newGroupId);
+        if ($oldGroupId === null) {
             throw new InvalidArgumentException('Task not found');
         }
 
-        $old_group_empty = $this->groupRepo->deleteIfEmpty($old_group_id);
-        echo json_encode(['success' => true, 'old_group_empty' => $old_group_empty, 'message' => 'Task moved successfully']);
+        $oldGroupEmpty = $this->groupRepo->deleteIfEmpty($oldGroupId);
+        echo json_encode(['success' => true, 'old_group_empty' => $oldGroupEmpty, 'message' => 'Task moved successfully']);
     }
 
     private function getTask(): void
     {
-        $task_id = (int) ($_GET['task_id'] ?? 0);
-        $task = $this->taskRepo->findById($task_id);
+        $taskId = (int) ($_GET['task_id'] ?? 0);
+        $task = $this->taskRepo->findById($taskId);
 
         if ($task) {
             echo json_encode(['success' => true, 'task' => $task]);
