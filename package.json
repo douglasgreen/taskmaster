@@ -1,6 +1,6 @@
 {
   "modified": "2026-02-26",
-  "name": "douglasgreen/taskmaster",
+  "name": "douglasgreen-taskmaster",
   "version": "1.0.0",
   "description": "A to-do list manager",
   "type": "module",

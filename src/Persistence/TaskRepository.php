@@ -6,12 +6,24 @@ namespace DouglasGreen\TaskMaster\Persistence;
 
 use PDO;
 
+/**
+ * Repository for task persistence operations.
+ */
 final readonly class TaskRepository
 {
+    /**
+     * Constructor.
+     *
+     * @param PDO $pdo The PDO database connection instance.
+     */
     public function __construct(private PDO $pdo) {}
 
     /**
-     * @return array<string, mixed>|null
+     * Find a task by its primary key.
+     *
+     * @param int $id The task ID.
+     *
+     * @return array<string, mixed>|null The task data or null if not found.
      */
     public function findById(int $id): ?array
     {
@@ -21,7 +33,11 @@ final readonly class TaskRepository
     }
 
     /**
-     * @return array<array<string, mixed>>
+     * Find all tasks belonging to a group, ordered by due date and title.
+     *
+     * @param int $groupId The group ID.
+     *
+     * @return array<array<string, mixed>> The list of tasks.
      */
     public function findByGroupId(int $groupId): array
     {
@@ -31,7 +47,11 @@ final readonly class TaskRepository
     }
 
     /**
-     * @return array<array<string, mixed>>
+     * Search tasks by term in title or details.
+     *
+     * @param string $term The search term.
+     *
+     * @return array<array<string, mixed>> The matching tasks with group names.
      */
     public function search(string $term): array
     {
@@ -47,6 +67,16 @@ final readonly class TaskRepository
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
 
+    /**
+     * Insert a new task record.
+     *
+     * @param int $groupId The group the task belongs to.
+     * @param string $title The task title.
+     * @param string $details Additional details or description.
+     * @param string|null $dueDate The due date in 'Y-m-d' format or null.
+     *
+     * @return int The ID of the newly inserted task.
+     */
     public function insert(int $groupId, string $title, string $details, ?string $dueDate): int
     {
         $stmt = $this->pdo->prepare('INSERT INTO tasks (group_id, title, details, due_date, created_at) VALUES (?, ?, ?, ?, NOW())');
@@ -54,6 +84,17 @@ final readonly class TaskRepository
         return (int) $this->pdo->lastInsertId();
     }
 
+    /**
+     * Update a task's properties; optionally move it to a different group.
+     *
+     * @param int $id The task ID.
+     * @param string $title The new title.
+     * @param string $details The new details.
+     * @param string|null $dueDate The new due date or null.
+     * @param int|null $groupId Optional new group ID to move the task.
+     *
+     * @return int|null The previous group ID if the task was moved; null otherwise or if task not found.
+     */
     public function update(int $id, string $title, string $details, ?string $dueDate, ?int $groupId = null): ?int
     {
         if ($groupId !== null) {
@@ -75,6 +116,13 @@ final readonly class TaskRepository
         return null;
     }
 
+    /**
+     * Delete a task by its ID.
+     *
+     * @param int $id The task ID.
+     *
+     * @return int|null The group ID of the deleted task, or null if not found.
+     */
     public function delete(int $id): ?int
     {
         $stmt = $this->pdo->prepare('SELECT group_id FROM tasks WHERE id = ?');
@@ -89,6 +137,14 @@ final readonly class TaskRepository
         return (int) $groupId;
     }
 
+    /**
+     * Move a task to another group.
+     *
+     * @param int $taskId The task to move.
+     * @param int $newGroupId The target group ID.
+     *
+     * @return int|null The previous group ID, or null if task not found.
+     */
     public function move(int $taskId, int $newGroupId): ?int
     {
         $stmt = $this->pdo->prepare('SELECT group_id FROM tasks WHERE id = ?');
@@ -103,6 +159,13 @@ final readonly class TaskRepository
         return (int) $oldGroupId;
     }
 
+    /**
+     * Count tasks that are due today or earlier within a group.
+     *
+     * @param int $groupId The group ID.
+     *
+     * @return int Number of due tasks.
+     */
     public function countDueByGroupId(int $groupId): int
     {
         $stmt = $this->pdo->prepare("SELECT COUNT(*) FROM tasks WHERE group_id = ? AND due_date IS NOT NULL AND due_date != '0000-00-00' AND due_date <= CURDATE()");

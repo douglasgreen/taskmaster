@@ -36,7 +36,7 @@ TaskMaster is a flexible, dual-interface (Web & CLI) to-do list manager built wi
    ```bash
    mysql -u your_user -p < docs/schema.sql
    ```
-   *Note: The schema creates a database named `nurdsite_task_manager`.*
+   *Note: The schema creates a database named `nurdsite_task_manager`*
 
 4. **Configuration:**
    Copy the sample configuration file and update it with your database credentials:
